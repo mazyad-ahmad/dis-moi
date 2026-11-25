@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type GameRecord } from './db';
+import { requestPersistentStorage } from './storage';
 
 type NewRecord = Omit<GameRecord, 'id' | 'startedAt' | 'updatedAt' | 'playerIds'>;
 
@@ -7,6 +8,8 @@ type NewRecord = Omit<GameRecord, 'id' | 'startedAt' | 'updatedAt' | 'playerIds'
 export async function startRecord(data: NewRecord): Promise<number> {
   const now = Date.now();
   const playerIds = (await db.players.toArray()).map((p) => p.id);
+  // Première partie : l'appli a désormais quelque chose à garder.
+  void requestPersistentStorage();
   return db.games.add({ ...data, startedAt: now, updatedAt: now, playerIds } as GameRecord);
 }
 

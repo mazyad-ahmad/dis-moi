@@ -9,6 +9,8 @@ export interface Settings {
   drawSeconds: number;
   /** Jeux du catalogue ajoutés à l'accueil. */
   catalogue: string[];
+  /** Date de la dernière sauvegarde complète (« Sauvegarder tout »). */
+  lastBackupAt: number | null;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -16,6 +18,7 @@ export const DEFAULT_SETTINGS: Settings = {
   rounds: 10,
   drawSeconds: 60,
   catalogue: [],
+  lastBackupAt: null,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

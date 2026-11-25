@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import type { Deck, DeckItem, DeckKind } from '../games/deck/types';
 import { db, type CustomGame } from './db';
+import { requestPersistentStorage } from './storage';
 
 export const MAX_GAME_NAME = 30;
 export const MAX_ITEMS = 50;
@@ -44,6 +45,7 @@ export async function createCustomGame(rawName: string, kind: DeckKind): Promise
   const name = cleanGameName(rawName);
   const now = Date.now();
   const items: DeckItem[] = [];
+  void requestPersistentStorage();
   return db.customGames.add({ name, kind, items, createdAt: now, updatedAt: now } as CustomGame);
 }
 

@@ -1050,3 +1050,25 @@ a.pill {
   flex-direction: column;
   gap: 10px;
 }
+
+/* ---------- Sauvegarde (BackupSection.tsx) ---------- */
+.backup-reminder {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--dawn);
+  color: var(--ink);
+}
+.restore-choice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 16px;
+}
+.restore-choice p {
+  margin: 0;
+}
+.restore-choice .restore-choice__help {
+  font: var(--text-small);
+  margin-bottom: var(--space-1);
+}
