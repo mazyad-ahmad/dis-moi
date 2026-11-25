@@ -14,7 +14,6 @@ beforeEach(async () => {
     db.customGames.clear(),
   ]);
   await loadSettings();
-  vi.spyOn(window, 'confirm').mockReturnValue(true);
 });
 
 afterEach(() => vi.restoreAllMocks());
@@ -22,6 +21,13 @@ afterEach(() => vi.restoreAllMocks());
 function open(path: string) {
   window.location.hash = `#${path}`;
   return render(<App />);
+}
+
+/** Répond au dialogue de confirmation ouvert. */
+async function answer(user: ReturnType<typeof userEvent.setup>, label: string) {
+  const dialog = await screen.findByRole('alertdialog');
+  await user.click(within(dialog).getByRole('button', { name: label }));
+  await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
 }
 
 async function playAll(user: ReturnType<typeof userEvent.setup>, found: string, n: number) {
@@ -149,8 +155,10 @@ describe('Créer mon propre jeu', () => {
     open(`/creer/${id}`);
     expect(await screen.findByText('un chat')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Supprimer un chat' }));
+    await answer(user, 'Supprimer la carte');
     expect(await screen.findByText('0 carte')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Supprimer le jeu' }));
+    await answer(user, 'Supprimer le jeu');
     await waitFor(() => expect(window.location.hash).toBe('#/ajouter'));
     expect(await db.customGames.count()).toBe(0);
   });
@@ -244,11 +252,13 @@ describe('Espace parent', () => {
     open('/parent');
 
     await user.click(screen.getByRole('button', { name: 'Remettre les étoiles à zéro' }));
+    await answer(user, 'Remettre à zéro');
     expect(await screen.findByText('Les étoiles sont remises à zéro.')).toBeInTheDocument();
     expect(await db.games.count()).toBe(0);
     expect(await db.players.count()).toBe(1);
 
     await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
+    await answer(user, 'Tout effacer');
     expect(await screen.findByText('Toutes les données ont été effacées.')).toBeInTheDocument();
     expect(await db.players.count()).toBe(0);
     expect(await db.customGames.count()).toBe(0);
@@ -258,10 +268,11 @@ describe('Espace parent', () => {
 
   it('ne fait rien si le parent annule', async () => {
     const user = userEvent.setup();
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
     await addPlayer('Léa');
     open('/parent');
     await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
+    await answer(user, 'Annuler');
     expect(await db.players.count()).toBe(1);
+    expect(screen.getByRole('status')).toHaveTextContent('');
   });
 });
