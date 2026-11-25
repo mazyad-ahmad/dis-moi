@@ -1,3 +1,4 @@
+import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type GameRecord } from './db';
 
 type NewRecord = Omit<GameRecord, 'id' | 'startedAt' | 'updatedAt' | 'playerIds'>;
@@ -16,3 +17,27 @@ export async function updateRecord(id: number, data: Pick<GameRecord, 'played' |
 export async function listRecords(): Promise<GameRecord[]> {
   return db.games.orderBy('startedAt').reverse().toArray();
 }
+
+/** `undefined` tant que la base n'a pas répondu ; la plus récente en premier. */
+export function useRecords(): GameRecord[] | undefined {
+  return useLiveQuery(listRecords, []);
+}
+
+/** Remise à zéro des étoiles : efface l'historique des parties. */
+export async function clearRecords(): Promise<void> {
+  await db.games.clear();
+}
+
+export function totalStars(records: GameRecord[]): number {
+  return records.reduce((sum, r) => sum + r.stars, 0);
+}
+
+/** Petites récompenses débloquées par le total d'étoiles gagnées ensemble. */
+export const REWARDS = [
+  { stars: 1, emoji: '🌱', label: 'Première étoile' },
+  { stars: 10, emoji: '🌼', label: '10 étoiles' },
+  { stars: 25, emoji: '🌳', label: '25 étoiles' },
+  { stars: 50, emoji: '🌈', label: '50 étoiles' },
+  { stars: 100, emoji: '🚀', label: '100 étoiles' },
+  { stars: 250, emoji: '🌟', label: '250 étoiles' },
+] as const;

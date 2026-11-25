@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
@@ -6,13 +7,10 @@ import { IconRefresh, IconTimer, IconTrash } from '../../components/icons';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
 import { shuffle } from '../shuffle';
-import { useRounds } from '../useRounds';
+import { useRoundSetting, useRounds } from '../useRounds';
 import { DrawingCanvas, type DrawingCanvasHandle } from './DrawingCanvas';
 import { useCountdown } from './useCountdown';
 import { DRAW_WORDS } from './words';
-
-/** Durée du minuteur (docs/FONCTIONNEMENT.md). Réglable plus tard (#12). */
-export const DRAW_SECONDS = 60;
 
 const PENS = [
   { label: 'Noir', color: 'var(--ink)' },
@@ -22,14 +20,36 @@ const PENS = [
   { label: 'Rouge', color: 'var(--ember)' },
 ];
 
-function DrawingSession({ onReplay }: { onReplay: () => void }) {
-  const { round, rounds, stars, finished, answer } = useRounds('dessin');
-  const words = useMemo(() => shuffle(DRAW_WORDS), []);
+interface DrawingProps {
+  gameId?: string;
+  category?: string;
+  title?: string;
+  /** Banque de mots (par défaut celle de « Dessine ça »). */
+  words?: readonly string[];
+}
+
+function DrawingSession({
+  onReplay,
+  gameId = 'dessin',
+  category = 'Dessin',
+  title = 'Dessine ça',
+  words: bank = DRAW_WORDS,
+}: DrawingProps & { onReplay: () => void }) {
+  // Tirage figé pour la partie (la banque peut venir d'une requête qui se met à jour).
+  const [words] = useState(() => shuffle(bank));
+  const setting = useRoundSetting();
+  // Pas plus de manches que de mots (jeux créés avec peu de mots).
+  const { round, rounds, stars, finished, answer } = useRounds(
+    gameId,
+    Math.min(setting, words.length),
+  );
   // Index du mot affiché : avance à chaque manche et avec « Autre mot ».
   const [index, setIndex] = useState(0);
   const [pen, setPen] = useState(PENS[0].color);
   const canvas = useRef<DrawingCanvasHandle>(null);
-  const left = useCountdown(DRAW_SECONDS, index);
+  // Durée réglée dans l'espace Parent, figée pour la partie.
+  const [seconds] = useState(() => getSettings().drawSeconds);
+  const left = useCountdown(seconds, index);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
@@ -50,8 +70,8 @@ function DrawingSession({ onReplay }: { onReplay: () => void }) {
         round={round}
         rounds={rounds}
         stars={stars}
-        category="Dessin"
-        title="Dessine ça"
+        category={category}
+        title={title}
         aside={
           <span
             className={`timer${timeUp ? ' timer--done' : ''}`}
@@ -116,6 +136,6 @@ function DrawingSession({ onReplay }: { onReplay: () => void }) {
   );
 }
 
-export function DrawingGame() {
-  return <Replayable>{(replay) => <DrawingSession onReplay={replay} />}</Replayable>;
+export function DrawingGame(props: DrawingProps = {}) {
+  return <Replayable>{(replay) => <DrawingSession {...props} onReplay={replay} />}</Replayable>;
 }

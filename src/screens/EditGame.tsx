@@ -1,0 +1,334 @@
+import { useState, type FormEvent } from 'react';
+import { href, navigate } from '../app/router';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { IconCamera, IconMic, IconPencil, IconStop, IconTrash } from '../components/icons';
+import {
+  addItem,
+  cleanItem,
+  customRouteId,
+  CustomGameError,
+  deleteCustomGame,
+  MAX_GAME_NAME,
+  MAX_ITEMS,
+  MAX_TEXT,
+  removeItem,
+  renameCustomGame,
+  updateItem,
+  useCustomGame,
+} from '../data/customGames';
+import type { CustomGame } from '../data/db';
+import { canRecord, MAX_RECORD_SECONDS, shrinkImage, useRecorder } from '../data/media';
+import { kindLabel, type DeckItem, type DeckKind } from '../games/deck/types';
+import { useObjectUrl } from '../games/deck/useObjectUrl';
+import { NotFound } from './Placeholder';
+
+/** Libellés des champs selon le type de jeu. */
+const LABELS: Record<DeckKind, { text?: string; answer: string; placeholder: string }> = {
+  question: { text: 'Question', answer: 'Réponse', placeholder: 'Ex. : Qui dit « meuh » ?' },
+  image: { text: 'Texte à montrer (si pas de photo)', answer: 'Réponse', placeholder: 'Ex. : 🍎' },
+  sound: {
+    text: 'Bruit à imiter (si pas d’enregistrement)',
+    answer: 'Réponse',
+    placeholder: 'Ex. : Vroum !',
+  },
+  draw: { answer: 'Mot à dessiner', placeholder: '' },
+};
+
+function Photo({ blob }: { blob: Blob }) {
+  const url = useObjectUrl(blob);
+  return url ? <img className="item-thumb" src={url} alt="" /> : null;
+}
+
+function Recorder({ audio, onChange }: { audio?: Blob; onChange: (a?: Blob) => void }) {
+  const { state, start, stop } = useRecorder(onChange);
+  const url = useObjectUrl(audio);
+  if (!canRecord())
+    return <p className="muted">L’enregistrement n’est pas disponible sur cet appareil.</p>;
+  return (
+    <div className="media-row">
+      {state === 'recording' ? (
+        <Button variant="danger" icon={<IconStop size={18} />} onClick={stop}>
+          Arrêter
+        </Button>
+      ) : (
+        <Button variant="secondary" icon={<IconMic size={20} />} onClick={() => void start()}>
+          {audio ? 'Réenregistrer' : 'Enregistrer un son'}
+        </Button>
+      )}
+      {audio && state !== 'recording' && (
+        <>
+          {url && <audio controls src={url} aria-label="Son enregistré" />}
+          <button type="button" className="link-btn" onClick={() => onChange(undefined)}>
+            Retirer le son
+          </button>
+        </>
+      )}
+      <span className="muted" role="status">
+        {state === 'recording' && `Enregistrement… (${MAX_RECORD_SECONDS} s maximum)`}
+        {state === 'denied' && 'Autorise le micro pour enregistrer un son.'}
+      </span>
+    </div>
+  );
+}
+
+function ItemForm({
+  kind,
+  initial,
+  onSave,
+  onCancel,
+}: {
+  kind: DeckKind;
+  initial?: DeckItem;
+  onSave: (item: DeckItem) => Promise<void>;
+  onCancel?: () => void;
+}) {
+  const empty: DeckItem = { answer: '' };
+  const [item, setItem] = useState<DeckItem>(initial ?? empty);
+  const [error, setError] = useState('');
+  const labels = LABELS[kind];
+  const set = (patch: Partial<DeckItem>) => setItem((it) => ({ ...it, ...patch }));
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError('');
+    try {
+      cleanItem(kind, item); // message d'erreur clair avant d'écrire
+      await onSave(item);
+      setItem(empty);
+    } catch (err) {
+      setError(err instanceof CustomGameError ? err.message : 'Impossible d’enregistrer la carte.');
+    }
+  }
+
+  async function onPhoto(file: File | undefined) {
+    if (file) set({ image: await shrinkImage(file) });
+  }
+
+  return (
+    <form
+      className="item-form"
+      onSubmit={onSubmit}
+      aria-label={initial ? 'Modifier la carte' : 'Nouvelle carte'}
+    >
+      {kind === 'image' && (
+        <div className="media-row">
+          {item.image && <Photo blob={item.image} />}
+          <label className="btn btn--secondary">
+            <IconCamera size={20} />
+            {item.image ? 'Changer la photo' : 'Ajouter une photo'}
+            <input
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => void onPhoto(e.target.files?.[0])}
+            />
+          </label>
+          {item.image && (
+            <button type="button" className="link-btn" onClick={() => set({ image: undefined })}>
+              Retirer la photo
+            </button>
+          )}
+        </div>
+      )}
+      {kind === 'sound' && <Recorder audio={item.audio} onChange={(audio) => set({ audio })} />}
+
+      {labels.text && (
+        <label className="field-label">
+          {labels.text}
+          <input
+            className="field"
+            maxLength={MAX_TEXT}
+            placeholder={labels.placeholder}
+            value={item.text ?? ''}
+            onChange={(e) => set({ text: e.target.value })}
+          />
+        </label>
+      )}
+      <label className="field-label">
+        {labels.answer}
+        <input
+          className="field"
+          maxLength={MAX_TEXT}
+          value={item.answer}
+          onChange={(e) => set({ answer: e.target.value })}
+        />
+      </label>
+      {kind !== 'draw' && (
+        <label className="field-label">
+          Indice (facultatif)
+          <input
+            className="field"
+            maxLength={MAX_TEXT}
+            value={item.hint ?? ''}
+            onChange={(e) => set({ hint: e.target.value })}
+          />
+        </label>
+      )}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      {onCancel ? (
+        <div className="answer-bar">
+          <Button variant="secondary" onClick={onCancel}>
+            Annuler
+          </Button>
+          <Button type="submit">Enregistrer</Button>
+        </div>
+      ) : (
+        <Button type="submit" block>
+          Ajouter la carte
+        </Button>
+      )}
+    </form>
+  );
+}
+
+function ItemRow({ game, index, onEdit }: { game: CustomGame; index: number; onEdit: () => void }) {
+  const item = game.items[index];
+  return (
+    <li>
+      <Card className="item-row">
+        {item.image && <Photo blob={item.image} />}
+        {item.audio && <IconMic aria-label="Son enregistré" />}
+        <span className="item-row__text">
+          {item.text && game.kind !== 'draw' && <span className="muted">{item.text}</span>}
+          <strong>{item.answer}</strong>
+        </span>
+        <button
+          type="button"
+          className="icon-btn icon-btn--plain"
+          aria-label={`Modifier ${item.answer}`}
+          onClick={onEdit}
+        >
+          <IconPencil size={20} />
+        </button>
+        <button
+          type="button"
+          className="icon-btn icon-btn--plain"
+          aria-label={`Supprimer ${item.answer}`}
+          onClick={() => {
+            if (window.confirm(`Supprimer la carte « ${item.answer} » ?`))
+              void removeItem(game.id, index);
+          }}
+        >
+          <IconTrash size={20} />
+        </button>
+      </Card>
+    </li>
+  );
+}
+
+function NameField({ game }: { game: CustomGame }) {
+  const [name, setName] = useState(game.name);
+  const [error, setError] = useState('');
+  async function commit() {
+    if (name === game.name) return;
+    try {
+      await renameCustomGame(game.id, name);
+      setError('');
+    } catch (e) {
+      setName(game.name);
+      setError(e instanceof CustomGameError ? e.message : 'Impossible de renommer.');
+    }
+  }
+  return (
+    <label className="field-label">
+      Nom du jeu
+      <input
+        className="field"
+        value={name}
+        maxLength={MAX_GAME_NAME}
+        onChange={(e) => setName(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+      />
+      {error && (
+        <span className="error" role="alert">
+          {error}
+        </span>
+      )}
+    </label>
+  );
+}
+
+function Editor({ game }: { game: CustomGame }) {
+  const [editing, setEditing] = useState<number | null>(null);
+  const full = game.items.length >= MAX_ITEMS;
+
+  return (
+    <main className="screen">
+      <ScreenHeader title={game.name} back="/ajouter" />
+      <NameField key={game.name} game={game} />
+      <p className="muted">
+        Type : {kindLabel(game.kind)}. Une carte = une manche ; les photos et les sons restent sur
+        ce téléphone.
+      </p>
+
+      <section aria-labelledby="cards-title" className="catalogue">
+        <h2 id="cards-title" className="eyebrow">
+          {game.items.length} {game.items.length > 1 ? 'cartes' : 'carte'}
+        </h2>
+        {game.items.length > 0 && (
+          <ul className="catalogue__list">
+            {game.items.map((_, i) =>
+              editing === i ? (
+                <li key={i}>
+                  <ItemForm
+                    kind={game.kind}
+                    initial={game.items[i]}
+                    onCancel={() => setEditing(null)}
+                    onSave={async (it) => {
+                      await updateItem(game.id, i, it);
+                      setEditing(null);
+                    }}
+                  />
+                </li>
+              ) : (
+                <ItemRow key={i} game={game} index={i} onEdit={() => setEditing(i)} />
+              ),
+            )}
+          </ul>
+        )}
+      </section>
+
+      {editing === null &&
+        (full ? (
+          <p className="muted">{MAX_ITEMS} cartes maximum.</p>
+        ) : (
+          <ItemForm kind={game.kind} onSave={(it) => addItem(game.id, it)} />
+        ))}
+
+      {game.items.length > 0 ? (
+        <a className="btn btn--primary btn--block" href={href(`/jeu/${customRouteId(game.id)}`)}>
+          Jouer
+        </a>
+      ) : (
+        <Button block disabled>
+          Jouer
+        </Button>
+      )}
+      <Button
+        variant="danger"
+        block
+        onClick={async () => {
+          if (!window.confirm(`Supprimer le jeu « ${game.name} » et toutes ses cartes ?`)) return;
+          await deleteCustomGame(game.id);
+          navigate('/ajouter');
+        }}
+      >
+        Supprimer le jeu
+      </Button>
+    </main>
+  );
+}
+
+export function EditGame({ id }: { id: number }) {
+  const game = useCustomGame(id);
+  if (game === undefined) return <main className="screen" />;
+  if (game === null) return <NotFound />;
+  return <Editor game={game} />;
+}
