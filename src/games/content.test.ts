@@ -1,7 +1,9 @@
 import { extractLength, noteFreq, parseMelody, schedule } from './chanson/melody';
 import { EXTRACT_SECONDS, SONGS } from './chanson/songs';
 import { DRAW_WORDS } from './dessin/words';
-import { clock, starsLabel } from './format';
+import { cleanItem } from '../data/customGames';
+import { CATALOGUE, findCatalogueGame } from './catalogue/catalogue';
+import { clock, dayLabel, starsLabel } from './format';
 import { DIGITS, LETTERS } from './lettres/bank';
 import { draw, shuffle } from './shuffle';
 import { DEFAULT_ROUNDS } from './useRounds';
@@ -74,4 +76,31 @@ it('formate les étoiles et le minuteur', () => {
   expect(clock(60)).toBe('1:00');
   expect(clock(42)).toBe('0:42');
   expect(clock(-3)).toBe('0:00');
+});
+
+describe('catalogue', () => {
+  it('a 4 jeux avec assez de cartes et des réponses uniques', () => {
+    expect(CATALOGUE.map((g) => g.id)).toEqual(['animal', 'couleur', 'mime', 'devinette']);
+    for (const g of CATALOGUE) {
+      expect(g.items.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);
+      expect(new Set(g.items.map((i) => i.answer)).size).toBe(g.items.length);
+      if (g.kind === 'question' || g.kind === 'sound')
+        for (const item of g.items) expect(() => cleanItem(g.kind, item)).not.toThrow();
+    }
+  });
+  it('montre une image pour chaque carte image et un bruit pour chaque cri', () => {
+    for (const g of CATALOGUE.filter((c) => c.kind === 'image'))
+      for (const i of g.items) expect(i.color ?? i.emoji).toBeTruthy();
+    for (const i of findCatalogueGame('animal')!.items) expect(i.text).toBeTruthy();
+    for (const i of findCatalogueGame('couleur')!.items) expect(i.color).toMatch(/^#[0-9a-f]{6}$/);
+  });
+});
+
+describe('dates', () => {
+  it('écrit le jour de la partie', () => {
+    const now = new Date(2026, 10, 25, 18).getTime();
+    expect(dayLabel(new Date(2026, 10, 25, 8).getTime(), now)).toBe('aujourd’hui');
+    expect(dayLabel(new Date(2026, 10, 24, 23).getTime(), now)).toBe('hier');
+    expect(dayLabel(new Date(2026, 10, 20, 10).getTime(), now)).toBe('vendredi 20 novembre');
+  });
 });

@@ -5,7 +5,12 @@ import { Parent } from '../screens/Parent';
 import { SongGame } from '../games/chanson/SongGame';
 import { DrawingGame } from '../games/dessin/DrawingGame';
 import { LettersGame } from '../games/lettres/LettersGame';
-import { AddGamePlaceholder, NotFound } from '../screens/Placeholder';
+import { NotFound } from '../screens/Placeholder';
+import { AddGame } from '../screens/AddGame';
+import { EditGame } from '../screens/EditGame';
+import { customDeck, parseCustomRouteId, useCustomGame } from '../data/customGames';
+import { findCatalogueGame } from '../games/catalogue/catalogue';
+import { DeckGame } from '../games/deck/DeckGame';
 import { Players } from '../screens/Players';
 import { Stars } from '../screens/Stars';
 import { useRoute, type Route } from './router';
@@ -15,6 +20,23 @@ const GAME_SCREENS: Record<string, () => React.ReactElement> = {
   lettres: LettersGame,
   dessin: DrawingGame,
 };
+
+function CustomGameScreen({ id }: { id: number }) {
+  const game = useCustomGame(id);
+  if (game === undefined) return <main className="screen" />;
+  if (game === null) return <NotFound />;
+  return <DeckGame deck={customDeck(game)} />;
+}
+
+function GameScreen({ id }: { id: string }) {
+  const Game = GAME_SCREENS[id];
+  if (Game) return <Game />;
+  const catalogue = findCatalogueGame(id);
+  if (catalogue) return <DeckGame deck={catalogue} />;
+  const custom = parseCustomRouteId(id);
+  if (custom !== undefined) return <CustomGameScreen id={custom} />;
+  return <NotFound />;
+}
 
 function screenFor(route: Route) {
   switch (route.name) {
@@ -27,12 +49,12 @@ function screenFor(route: Route) {
     case 'players':
       return <Players />;
     case 'add-game':
-      return <AddGamePlaceholder />;
-    case 'game': {
-      const Game = GAME_SCREENS[route.id];
+      return <AddGame />;
+    case 'edit-game':
+      return <EditGame key={route.id} id={route.id} />;
+    case 'game':
       // key : changer de jeu repart d'une partie neuve.
-      return Game ? <Game key={route.id} /> : <NotFound />;
-    }
+      return <GameScreen key={route.id} id={route.id} />;
     case 'not-found':
       return <NotFound />;
   }

@@ -1,8 +1,14 @@
 import { useCallback, useRef, useState } from 'react';
 import { startRecord, updateRecord } from '../data/history';
+import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
 
-/** Nombre de manches par partie (docs/FONCTIONNEMENT.md). Réglable plus tard (#12). */
-export const DEFAULT_ROUNDS = 10;
+/** Nombre de manches par défaut (docs/FONCTIONNEMENT.md), réglable dans l'espace Parent. */
+export const DEFAULT_ROUNDS = DEFAULT_SETTINGS.rounds;
+
+/** Nombre de manches réglé, figé au lancement de la partie. */
+export function useRoundSetting(): number {
+  return useState(() => getSettings().rounds)[0];
+}
 
 export interface Rounds {
   /** Manche en cours, à partir de 1. */
@@ -19,7 +25,9 @@ export interface Rounds {
  * La partie est enregistrée dès la première manche puis mise à jour,
  * pour garder les étoiles même si on quitte en cours de route.
  */
-export function useRounds(gameId: string, rounds = DEFAULT_ROUNDS): Rounds {
+export function useRounds(gameId: string, wanted?: number): Rounds {
+  const setting = useRoundSetting();
+  const rounds = wanted ?? setting;
   const [played, setPlayed] = useState(0);
   const [stars, setStars] = useState(0);
   const record = useRef<Promise<number> | null>(null);

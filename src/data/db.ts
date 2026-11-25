@@ -1,4 +1,5 @@
 import { Dexie, type EntityTable } from 'dexie';
+import type { DeckItem, DeckKind } from '../games/deck/types';
 
 export interface Player {
   id: number;
@@ -26,6 +27,16 @@ export interface GameRecord {
   playerIds: number[];
 }
 
+/** Jeu créé par le parent (#10). Les photos et sons sont des Blob dans les cartes. */
+export interface CustomGame {
+  id: number;
+  name: string;
+  kind: DeckKind;
+  items: DeckItem[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface Setting {
   key: string;
   value: unknown;
@@ -36,6 +47,7 @@ export const db = new Dexie('dis-moi') as Dexie & {
   players: EntityTable<Player, 'id'>;
   settings: EntityTable<Setting, 'key'>;
   games: EntityTable<GameRecord, 'id'>;
+  customGames: EntityTable<CustomGame, 'id'>;
 };
 
 db.version(1).stores({
@@ -45,4 +57,8 @@ db.version(1).stores({
 
 db.version(2).stores({
   games: '++id, startedAt, gameId',
+});
+
+db.version(3).stores({
+  customGames: '++id, createdAt',
 });

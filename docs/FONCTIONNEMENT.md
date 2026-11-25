@@ -24,7 +24,10 @@
 
 - Les étoiles sont **communes** à la famille (« gagnées ensemble »), pas un classement entre enfants.
 - Chaque partie est enregistrée : date, jeu, joueurs présents, étoiles.
-- L'accueil rappelle la dernière partie ; l'onglet Étoiles montre le total et l'historique.
+- L'accueil rappelle la dernière partie ; l'onglet Étoiles montre le total, les 30 dernières
+  parties (jeu, jour, joueurs, manches si la partie a été quittée) et des **récompenses** débloquées
+  à 1, 10, 25, 50, 100 et 250 étoiles.
+- Remise à zéro des étoiles depuis l'espace Parent (efface l'historique).
 
 ## Plusieurs enfants (proposition)
 
@@ -50,6 +53,31 @@
   audio à télécharger, et le jeu marche hors ligne.
 - Chaque partie tire 10 chansons différentes.
 
+### Jeux du catalogue
+
+Le parent les ajoute depuis « Ajouter un jeu » (bouton Ajouter / Ajouté) ; ils apparaissent
+alors sur l'accueil. Ils suivent le même déroulé (manches, étoiles) et un format commun de
+cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou une couleur.
+
+| Jeu                  | Règle proposée                                                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Quel animal ?**    | Le **parent imite le cri** affiché (« Meuh ! ») et l'enfant devine. Pas d'enregistrement de cris pour la v1 (droits) : à revoir si besoin. |
+| **Quelle couleur ?** | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
+| **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
+| **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
+
+### Créer mon propre jeu
+
+- Nom (30 caractères), type choisi à la création : **Son**, **Image**, **Mot à dessiner** ou **Question**.
+- Cartes (50 maximum) : réponse et indice facultatif, plus selon le type :
+  - Son : un **enregistrement** au micro (10 s maximum) ou un bruit à imiter par le parent ;
+  - Image : une **photo** de l'appareil (réduite à 1280 px) ou un texte à montrer ;
+  - Question : le texte de la question ;
+  - Mot à dessiner : le mot, joué comme « Dessine ça ».
+- Une partie compte autant de manches que réglé, ou moins si le jeu a moins de cartes.
+- Les cartes se modifient et se suppriment ; le jeu entier aussi. Photos et sons restent dans le
+  téléphone (IndexedDB). L'export / import d'un jeu est reporté.
+
 ### Enregistrement des parties
 
 - Une partie est enregistrée dès la première manche jouée, puis mise à jour à chaque manche :
@@ -63,8 +91,10 @@
 
 ## Espace Parent (proposition)
 
-- Joueurs, thème (auto / jour / nuit), nombre de manches, durée du minuteur,
-  remise à zéro des étoiles.
+- Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), remise à zéro des étoiles,
+  effacement de toutes les données. Chaque action destructive demande confirmation.
+- Les réglages s'appliquent à la partie suivante.
 - Pas de verrou dans la v1 : l'appli est déjà tenue par le parent. Un verrou simple
   (ex. « 7 + 5 = ? ») pourra être ajouté si besoin.
 

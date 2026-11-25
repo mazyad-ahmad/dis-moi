@@ -7,7 +7,7 @@ import { ParentBlock } from '../../components/ParentBlock';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
 import { draw } from '../shuffle';
-import { DEFAULT_ROUNDS, useRounds } from '../useRounds';
+import { useRoundSetting, useRounds } from '../useRounds';
 import { EXTRACT_SECONDS, SONGS, type Song } from './songs';
 import { useMelody } from './useMelody';
 
@@ -49,7 +49,8 @@ function Player({ song }: { song: Song }) {
 }
 
 function SongSession({ onReplay }: { onReplay: () => void }) {
-  const songs = useMemo(() => draw(SONGS, DEFAULT_ROUNDS), []);
+  const wanted = useRoundSetting();
+  const songs = useMemo(() => draw(SONGS, wanted), [wanted]);
   const { round, rounds, stars, finished, answer } = useRounds('chanson', songs.length);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
