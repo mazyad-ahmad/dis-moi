@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { href } from '../app/router';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { BackupSection } from './BackupSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
@@ -108,6 +110,7 @@ function Install() {
 export function Parent() {
   const settings = useSettings();
   const [notice, setNotice] = useState('');
+  const [confirmDialog, confirm] = useConfirm();
 
   return (
     <main className="screen">
@@ -142,6 +145,8 @@ export function Parent() {
 
       <Install />
 
+      <BackupSection />
+
       <section className="setting" aria-labelledby="reset-title">
         <h2 id="reset-title" className="eyebrow">
           Remise à zéro
@@ -150,10 +155,13 @@ export function Parent() {
           variant="secondary"
           block
           onClick={async () => {
-            if (
-              !window.confirm('Remettre les étoiles à zéro ? L’historique des parties sera effacé.')
-            )
-              return;
+            const ok = await confirm({
+              title: 'Remettre les étoiles à zéro ?',
+              message: 'L’historique des parties sera effacé.',
+              confirmLabel: 'Remettre à zéro',
+              danger: true,
+            });
+            if (!ok) return;
             await clearRecords();
             setNotice('Les étoiles sont remises à zéro.');
           }}
@@ -164,12 +172,13 @@ export function Parent() {
           variant="danger"
           block
           onClick={async () => {
-            if (
-              !window.confirm(
-                'Tout effacer ? Joueurs, étoiles, jeux créés et réglages seront supprimés de ce téléphone.',
-              )
-            )
-              return;
+            const ok = await confirm({
+              title: 'Tout effacer ?',
+              message: 'Joueurs, étoiles, jeux créés et réglages seront supprimés de ce téléphone.',
+              confirmLabel: 'Tout effacer',
+              danger: true,
+            });
+            if (!ok) return;
             await eraseEverything();
             setNotice('Toutes les données ont été effacées.');
           }}
@@ -185,6 +194,7 @@ export function Parent() {
         Toutes les données restent sur ce téléphone : pas de compte, pas de publicité, pas de suivi.{' '}
         <a href={href('/confidentialite')}>Confidentialité</a>
       </p>
+      {confirmDialog}
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
 import { cleanGameName, cleanItem, CustomGameError, MAX_GAME_NAME, MAX_ITEMS } from './customGames';
 import { db, type CustomGame } from './db';
+import { requestPersistentStorage } from './storage';
 
 /**
  * Fichier d'un jeu créé, pour le partager avec un autre téléphone (#10).
@@ -22,7 +23,7 @@ interface FileItem {
   audio?: string;
 }
 
-interface GameFile {
+export interface GameFile {
   format: typeof GAME_FILE_FORMAT;
   version: number;
   name: string;
@@ -63,8 +64,10 @@ function optionalText(value: unknown): string | undefined {
   return value;
 }
 
-/** Contenu du fichier d'un jeu, prêt à être enregistré ou partagé. */
-export async function gameToFile(game: CustomGame): Promise<File> {
+/** Jeu mis en forme pour un fichier (aussi repris tel quel dans une sauvegarde complète). */
+export async function encodeGame(
+  game: Pick<CustomGame, 'name' | 'kind' | 'items'>,
+): Promise<GameFile> {
   const items: FileItem[] = [];
   for (const it of game.items) {
     const item: FileItem = { answer: it.answer };
@@ -76,13 +79,18 @@ export async function gameToFile(game: CustomGame): Promise<File> {
     if (it.audio) item.audio = await blobToDataUrl(it.audio);
     items.push(item);
   }
-  const content: GameFile = {
+  return {
     format: GAME_FILE_FORMAT,
     version: GAME_FILE_VERSION,
     name: game.name,
     kind: game.kind,
     items,
   };
+}
+
+/** Contenu du fichier d'un jeu, prêt à être enregistré ou partagé. */
+export async function gameToFile(game: CustomGame): Promise<File> {
+  const content = await encodeGame(game);
   return new File([JSON.stringify(content)], gameFileName(game.name), {
     type: 'application/json',
   });
@@ -107,6 +115,11 @@ export function parseGameFile(text: string): Pick<CustomGame, 'name' | 'kind' | 
   } catch {
     throw new CustomGameError(INVALID);
   }
+  return decodeGame(data);
+}
+
+/** Vérifie un jeu déjà lu (fichier de jeu ou entrée d'une sauvegarde). */
+export function decodeGame(data: unknown): Pick<CustomGame, 'name' | 'kind' | 'items'> {
   if (typeof data !== 'object' || data === null) throw new CustomGameError(INVALID);
   const raw = data as Record<string, unknown>;
   if (raw.format !== GAME_FILE_FORMAT) throw new CustomGameError(INVALID);
@@ -136,17 +149,24 @@ export function parseGameFile(text: string): Pick<CustomGame, 'name' | 'kind' | 
   return { name: cleanGameName(raw.name), kind, items };
 }
 
+/** « Devinettes » déjà pris → « Devinettes (2) », sans dépasser la longueur maximale. */
+export function uniqueGameName(wanted: string, taken: Set<string>): string {
+  let name = wanted;
+  for (let n = 2; taken.has(name); n++) {
+    const suffix = ` (${n})`;
+    name = `${wanted.slice(0, MAX_GAME_NAME - suffix.length).trimEnd()}${suffix}`;
+  }
+  return name;
+}
+
 /** Importe un fichier de jeu comme un nouveau jeu créé ; renvoie son identifiant. */
 export async function importGameFile(file: Blob): Promise<number> {
   if (file.size > MAX_GAME_FILE_SIZE) throw new CustomGameError('Ce fichier est trop gros.');
   const game = parseGameFile(await file.text());
   const names = new Set((await db.customGames.toArray()).map((g) => g.name));
-  let name = game.name;
-  for (let n = 2; names.has(name); n++) {
-    const suffix = ` (${n})`;
-    name = `${game.name.slice(0, MAX_GAME_NAME - suffix.length).trimEnd()}${suffix}`;
-  }
+  const name = uniqueGameName(game.name, names);
   const now = Date.now();
+  void requestPersistentStorage();
   return db.customGames.add({ ...game, name, createdAt: now, updatedAt: now } as CustomGame);
 }
 
@@ -154,11 +174,17 @@ export async function importGameFile(file: Blob): Promise<number> {
  * Envoie le fichier : partage Android (WhatsApp, e-mail, Drive…) quand le navigateur le permet,
  * sinon téléchargement dans le téléphone.
  */
-export async function shareGame(game: CustomGame): Promise<'shared' | 'downloaded' | 'cancelled'> {
-  const file = await gameToFile(game);
+export async function shareGame(game: CustomGame): Promise<ShareResult> {
+  return shareFile(await gameToFile(game), game.name);
+}
+
+export type ShareResult = 'shared' | 'downloaded' | 'cancelled';
+
+/** Partage Android si possible, sinon téléchargement. */
+export async function shareFile(file: File, title: string): Promise<ShareResult> {
   if (navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: game.name });
+      await navigator.share({ files: [file], title });
       return 'shared';
     } catch (e) {
       if (e instanceof DOMException && e.name === 'AbortError') return 'cancelled';
