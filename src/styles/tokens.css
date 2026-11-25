@@ -1,0 +1,84 @@
+/* Fichier généré par scripts/gen-tokens.mjs depuis Cadmus v2. Ne pas modifier à la main. */
+
+:root {
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 32px;
+  --space-4: 64px;
+  --space-5: 128px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Figtree", system-ui, sans-serif;
+  --text-display: 500 56px/60px var(--font-serif);
+  --tracking-display: -0.02em;
+  --text-h1: 500 36px/44px var(--font-serif);
+  --tracking-h1: -0.01em;
+  --text-h2: 600 24px/32px var(--font-sans);
+  --tracking-h2: normal;
+  --text-h3: 600 19px/28px var(--font-sans);
+  --tracking-h3: normal;
+  --text-body: 400 17px/28px var(--font-sans);
+  --tracking-body: normal;
+  --text-small: 400 14px/22px var(--font-sans);
+  --tracking-small: normal;
+  --text-label: 600 13px/18px var(--font-sans);
+  --tracking-label: 0.02em;
+  color-scheme: light;
+  --mist: #f5f4ee;
+  --paper: #ffffff;
+  --ink: #1f2a24;
+  --ink-muted: #56605a;
+  --stone: #6b706a;
+  --forest: #2f6b4f;
+  --on-forest: #ffffff;
+  --meadow: #cfe3c8;
+  --river: #2e6f8e;
+  --on-river: #ffffff;
+  --sky: #dbe8ee;
+  --sun: #a8701c;
+  --dawn: #f3e6cc;
+  --ember: #a8432f;
+  --shadow-soft: 0 1px 2px rgba(31,42,36,0.06), 0 8px 24px rgba(31,42,36,0.06);
+}
+
+:root[data-theme='night'] {
+  color-scheme: dark;
+  --mist: #0f1a1f;
+  --paper: #16252c;
+  --ink: #e8ede6;
+  --ink-muted: #a9b5ad;
+  --stone: #87938c;
+  --forest: #86c4a0;
+  --on-forest: #0f1a1f;
+  --meadow: #22402f;
+  --river: #86bcd6;
+  --on-river: #0f1a1f;
+  --sky: #1f3642;
+  --sun: #e3b45c;
+  --dawn: #3b311e;
+  --ember: #f0957f;
+  --shadow-soft: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+:root:not([data-theme='light']) {
+  color-scheme: dark;
+  --mist: #0f1a1f;
+  --paper: #16252c;
+  --ink: #e8ede6;
+  --ink-muted: #a9b5ad;
+  --stone: #87938c;
+  --forest: #86c4a0;
+  --on-forest: #0f1a1f;
+  --meadow: #22402f;
+  --river: #86bcd6;
+  --on-river: #0f1a1f;
+  --sky: #1f3642;
+  --sun: #e3b45c;
+  --dawn: #3b311e;
+  --ember: #f0957f;
+  --shadow-soft: 0 8px 24px rgba(0,0,0,0.35);
+}
+}
