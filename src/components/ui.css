@@ -1089,3 +1089,39 @@ a.pill {
   gap: var(--space-1);
   margin-top: var(--space-1);
 }
+
+/* ---------- Écran « Oups » (ErrorBoundary.tsx) ---------- */
+.oops {
+  justify-content: center;
+}
+.oops__emoji {
+  margin: 0;
+  font-size: 56px;
+  line-height: 1;
+}
+.oops__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+.oops__details summary {
+  cursor: pointer;
+  color: var(--ink-muted);
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+}
+.oops__trace {
+  max-height: 200px;
+  overflow: auto;
+  margin: 0 0 var(--space-1);
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
