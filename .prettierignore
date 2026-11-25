@@ -1,0 +1,6 @@
+dist
+docs/maquette
+package-lock.json
+playwright-report
+test-results
+src/styles/tokens.css
