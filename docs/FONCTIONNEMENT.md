@@ -18,6 +18,8 @@
 4. Après la 10ᵉ manche : écran de résultat (« 7 étoiles gagnées ensemble ! »),
    boutons **Rejouer** et **Accueil**.
 5. Le bouton ✕ en haut quitte la partie à tout moment ; les étoiles déjà gagnées sont gardées.
+   Un rafraîchissement de la page (ou le rechargement après une mise à jour) reprend la partie
+   là où elle en était : même carte, même manche, mêmes étoiles.
 6. Pas d'échec ni de compte à rebours punitif : le jeu reste un moment partagé.
 
 ## Étoiles (proposition)
@@ -108,6 +110,10 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 - Une partie est enregistrée dès la première manche jouée, puis mise à jour à chaque manche :
   si on quitte en cours de route, les étoiles gagnées sont gardées.
+- La partie en cours (tirage, manche, étoiles) est aussi gardée pour l'onglet (`sessionStorage`) :
+  après un rafraîchissement, elle reprend et continue le même enregistrement, sans doublon.
+  Elle est effacée en fin de partie, quand on quitte le jeu et à la fermeture de l'onglet.
+  Dans « Dessine ça », le mot est gardé ; le minuteur et le dessin repartent à zéro.
 - Données gardées : jeu, date, manches jouées, étoiles, joueurs présents (sur l'appareil uniquement).
 
 ## Public visé (proposition)

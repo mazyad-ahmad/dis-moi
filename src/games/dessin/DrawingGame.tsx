@@ -6,6 +6,7 @@ import { GameResult } from '../../components/GameResult';
 import { IconRefresh, IconTimer, IconTrash } from '../../components/icons';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
+import { useSaved, useSavedDraw } from '../session';
 import { shuffle } from '../shuffle';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { DrawingCanvas, type DrawingCanvasHandle } from './DrawingCanvas';
@@ -35,8 +36,15 @@ function DrawingSession({
   title = 'Dessine ça',
   words: bank = DRAW_WORDS,
 }: DrawingProps & { onReplay: () => void }) {
-  // Tirage figé pour la partie (la banque peut venir d'une requête qui se met à jour).
-  const [words] = useState(() => shuffle(bank));
+  // Tirage figé pour la partie (la banque peut venir d'une requête qui se met à jour),
+  // retrouvé après un rafraîchissement.
+  const words = useSavedDraw(
+    gameId,
+    'draw',
+    bank,
+    () => shuffle(bank),
+    (w) => w,
+  );
   const setting = useRoundSetting();
   // Pas plus de manches que de mots (jeux créés avec peu de mots).
   const { round, rounds, stars, finished, answer } = useRounds(
@@ -44,7 +52,12 @@ function DrawingSession({
     Math.min(setting, words.length),
   );
   // Index du mot affiché : avance à chaque manche et avec « Autre mot ».
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useSaved(
+    gameId,
+    'index',
+    () => 0,
+    (i) => (Number.isInteger(i) && (i as number) >= 0 ? (i as number) : undefined),
+  );
   const [pen, setPen] = useState(PENS[0].color);
   const canvas = useRef<DrawingCanvasHandle>(null);
   // Durée réglée dans l'espace Parent, figée pour la partie.
@@ -56,7 +69,7 @@ function DrawingSession({
   const word = words[index % words.length];
   const nextWord = () => {
     canvas.current?.clear();
-    setIndex((i) => i + 1);
+    setIndex(index + 1);
   };
   const next = (found: boolean) => {
     nextWord();

@@ -6,6 +6,7 @@ import { IconEar, IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { DrawingGame } from '../dessin/DrawingGame';
 import { Replayable } from '../Replayable';
+import { useSavedDraw } from '../session';
 import { shuffle } from '../shuffle';
 import { useRoundSetting, useRounds } from '../useRounds';
 import type { Deck, DeckItem } from './types';
@@ -100,14 +101,28 @@ function QuestionCard({ item }: { item: DeckItem }) {
   );
 }
 
+/**
+ * Clé d'une carte dans le tirage sauvegardé. Les cartes créées n'ont pas d'identifiant :
+ * position et réponse, pour qu'un jeu modifié entre-temps donne une nouvelle partie.
+ */
+function cardKey(item: DeckItem, index: number) {
+  return item.id ?? `${index}:${item.answer}`;
+}
+
 function answerOf(item: DeckItem) {
   return item.emoji && !item.color ? `${item.emoji} ${item.answer}` : item.answer;
 }
 
 function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
   const setting = useRoundSetting();
-  // Tirage figé pour la partie, même si le jeu est modifié entre-temps.
-  const [items] = useState(() => shuffle(deck.items).slice(0, setting));
+  // Tirage figé pour la partie, même si le jeu est modifié entre-temps ou la page rafraîchie.
+  const items = useSavedDraw(
+    deck.id,
+    'draw',
+    deck.items,
+    () => shuffle(deck.items).slice(0, setting),
+    cardKey,
+  );
   const { round, rounds, stars, finished, answer } = useRounds(deck.id, items.length);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
