@@ -444,3 +444,211 @@
 .spacer {
   flex: 1;
 }
+
+/* ---------- Jeux : commun ---------- */
+.game-header__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.answer-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.answer-bar .btn {
+  min-height: 60px;
+}
+.screen--tight {
+  gap: 14px;
+  padding-top: 20px;
+}
+.segmented--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.result {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+.result .answer-bar {
+  width: 100%;
+}
+.result__stars {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-full);
+  background: var(--dawn);
+  color: var(--sun);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-3);
+}
+.result__stars svg {
+  fill: currentColor;
+}
+
+/* ---------- Quelle chanson ? ---------- */
+.song-player {
+  background: var(--meadow);
+  border-radius: 20px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.song-player__wave {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 64px;
+}
+.song-player__wave span {
+  width: 6px;
+  border-radius: 3px;
+  background: var(--stone);
+  transition: background 120ms linear;
+}
+.song-player__wave span.is-played {
+  background: var(--forest);
+}
+.song-player__play {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-full);
+  border: 0;
+  background: var(--forest);
+  color: var(--on-forest);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(31, 42, 36, 0.18);
+  cursor: pointer;
+}
+.song-player__play:active {
+  transform: scale(0.96);
+}
+.song-player [role='status'] {
+  font-size: 15px;
+  text-align: center;
+}
+
+/* ---------- Quelle lettre, quel chiffre ? ---------- */
+.glyph-card {
+  margin: 0;
+  background: var(--sky);
+  border-radius: 24px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.glyph-card__glyph {
+  font-family: var(--font-serif);
+  font-size: 200px;
+  line-height: 210px;
+  font-weight: 600;
+  color: var(--river);
+}
+.glyph-card figcaption {
+  font-size: 14px;
+}
+
+/* ---------- Dessine ça ---------- */
+.timer {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  background: var(--dawn);
+  font-weight: 700;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.timer--done {
+  background: var(--ember);
+  color: var(--paper);
+}
+.word-card {
+  background: var(--forest);
+  color: var(--on-forest);
+  border-radius: 16px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.word-card__label {
+  display: block;
+  font: var(--text-label);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.word-card__word {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 600;
+}
+.word-card__other {
+  background: transparent;
+  color: var(--on-forest);
+  border-color: var(--on-forest);
+}
+.drawing-area {
+  position: relative;
+  flex: 1;
+  min-height: 240px;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.drawing-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+.drawing-area__hint {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  font-size: 13px;
+  pointer-events: none;
+}
+.pen-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pen-bar__colors {
+  display: flex;
+  gap: 10px;
+}
+.pen {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  outline-offset: 0;
+  cursor: pointer;
+}
+.pen[aria-checked='true'] {
+  box-shadow:
+    0 0 0 3px var(--mist),
+    0 0 0 6px var(--river);
+}

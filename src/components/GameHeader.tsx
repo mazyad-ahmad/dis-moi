@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react';
 import { href } from '../app/router';
+import { starsLabel } from '../games/format';
 import { IconClose, IconStar } from './icons';
 
 interface Props {
@@ -7,10 +9,12 @@ interface Props {
   stars?: number;
   category: string;
   title: string;
+  /** Élément affiché à droite du titre (ex. minuteur). */
+  aside?: ReactNode;
 }
 
 /** En-tête commun des jeux : quitter, manche, étoiles, catégorie et titre. */
-export function GameHeader({ round, rounds, stars, category, title }: Props) {
+export function GameHeader({ round, rounds, stars, category, title, aside }: Props) {
   return (
     <header className="game-header">
       <div className="game-header__bar">
@@ -23,13 +27,18 @@ export function GameHeader({ round, rounds, stars, category, title }: Props) {
           </span>
         )}
         {stars !== undefined && (
-          <span className="game-header__stars" aria-label={`${stars} étoiles`}>
+          <span className="game-header__stars" aria-label={starsLabel(stars)}>
             <IconStar size={20} /> {stars}
           </span>
         )}
       </div>
-      <span className="eyebrow">{category}</span>
-      <h1 className="game-header__title">{title}</h1>
+      <div className="game-header__heading">
+        <div>
+          <span className="eyebrow">{category}</span>
+          <h1 className="game-header__title">{title}</h1>
+        </div>
+        {aside}
+      </div>
     </header>
   );
 }

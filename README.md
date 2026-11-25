@@ -45,8 +45,8 @@ La CI GitHub Actions lance lint, format, types, tests, build et e2e à chaque PR
 src/
   app/          routeur (hash) et composition des écrans
   components/   composants du design system (Button, Card, ParentBlock, GameHeader, BottomNav…)
-  data/         base locale IndexedDB (Dexie) : joueurs, réglages
-  games/        liste des jeux
+  data/         base locale IndexedDB (Dexie) : joueurs, réglages, parties
+  games/        jeux : moteur de manches commun, chanson/, lettres/, dessin/
   screens/      écrans
   styles/       tokens générés + styles globaux
 e2e/            tests Playwright

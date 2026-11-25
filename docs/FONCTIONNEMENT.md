@@ -37,9 +37,24 @@
 
 | Jeu                               | Règle proposée                                                                                                                    |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Quelle chanson ?**              | Extrait de 10 s, réécoutable. Indice visible, titre caché derrière « Voir la réponse ».                                           |
+| **Quelle chanson ?**              | Extrait de 10 s, réécoutable. Indice visible, titre caché derrière « Voir la réponse ». Voir « Contenu des chansons ».            |
 | **Quelle lettre, quel chiffre ?** | Lettres majuscules A-Z ou chiffres 0-9, tirés au hasard sans répétition dans la partie. Consigne parent associée à chaque glyphe. |
 | **Dessine ça**                    | Minuteur de **60 s** ; à zéro, le dessin reste visible et le parent valide. Pas de note du dessin : « C'est fini » = +1 étoile.   |
+
+### Contenu des chansons
+
+- Uniquement des **airs traditionnels ou du domaine public** (Frère Jacques, Au clair de la lune,
+  Joyeux anniversaire, Vive le vent, Ode à la joie…), liste dans `src/games/chanson/songs.ts`.
+- Les mélodies sont **jouées par un petit synthétiseur** dans l'appli (Web Audio), à partir
+  d'une notation texte : aucun enregistrement, donc pas de droits d'interprète ni de fichier
+  audio à télécharger, et le jeu marche hors ligne.
+- Chaque partie tire 10 chansons différentes.
+
+### Enregistrement des parties
+
+- Une partie est enregistrée dès la première manche jouée, puis mise à jour à chaque manche :
+  si on quitte en cours de route, les étoiles gagnées sont gardées.
+- Données gardées : jeu, date, manches jouées, étoiles, joueurs présents (sur l'appareil uniquement).
 
 ## Public visé (proposition)
 

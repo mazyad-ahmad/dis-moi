@@ -1,20 +1,5 @@
 import { href } from '../app/router';
-import { GameHeader } from '../components/GameHeader';
-import { ParentBlock } from '../components/ParentBlock';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { findGame } from '../games/registry';
-
-/** Écran d'attente tant qu'un jeu n'est pas développé. */
-export function GamePlaceholder({ id }: { id: string }) {
-  const game = findGame(id);
-  if (!game) return <NotFound />;
-  return (
-    <main className="screen">
-      <GameHeader category={game.category} title={game.name} />
-      <ParentBlock>Ce jeu arrive bientôt.</ParentBlock>
-    </main>
-  );
-}
 
 export function AddGamePlaceholder() {
   return (

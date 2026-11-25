@@ -81,3 +81,25 @@ export const IconEye = (p: P) => (
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
+export const IconTimer = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="13" r="8" />
+    <path d="M12 9v4l2.5 2M10 3h4" />
+  </svg>
+);
+export const IconRefresh = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5" />
+  </svg>
+);
+export const IconPlay = ({ size = 24, ...rest }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden {...rest}>
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+export const IconPause = ({ size = 24, ...rest }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden {...rest}>
+    <rect x="6" y="5" width="4" height="14" rx="1" />
+    <rect x="14" y="5" width="4" height="14" rx="1" />
+  </svg>
+);
