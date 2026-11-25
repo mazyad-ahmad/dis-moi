@@ -76,7 +76,13 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   - Mot à dessiner : le mot, joué comme « Dessine ça ».
 - Une partie compte autant de manches que réglé, ou moins si le jeu a moins de cartes.
 - Les cartes se modifient et se suppriment ; le jeu entier aussi. Photos et sons restent dans le
-  téléphone (IndexedDB). L'export / import d'un jeu est reporté.
+  téléphone (IndexedDB).
+- **Partager un jeu** : « Partager le jeu (fichier) » crée un fichier `nom-du-jeu.dismoi.json`
+  (cartes, photos et sons compris) et ouvre le partage Android (WhatsApp, e-mail, Drive…) ; sans
+  partage disponible, le fichier est téléchargé. Rien n'est envoyé sans ce geste du parent.
+- **Importer un jeu** : « Importer un jeu (fichier) » dans « Ajouter un jeu ». Le fichier est
+  vérifié (format, type, 50 cartes, seulement des images et des sons, 30 Mo maximum) puis ajouté
+  comme un nouveau jeu ; si le nom existe déjà, il devient « Nom (2) ».
 
 ### Enregistrement des parties
 

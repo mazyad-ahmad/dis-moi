@@ -3,7 +3,14 @@ import { href, navigate } from '../app/router';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { IconCamera, IconMic, IconPencil, IconStop, IconTrash } from '../components/icons';
+import {
+  IconCamera,
+  IconMic,
+  IconPencil,
+  IconShare,
+  IconStop,
+  IconTrash,
+} from '../components/icons';
 import {
   addItem,
   cleanItem,
@@ -19,6 +26,7 @@ import {
   useCustomGame,
 } from '../data/customGames';
 import type { CustomGame } from '../data/db';
+import { shareGame } from '../data/gameFile';
 import { canRecord, MAX_RECORD_SECONDS, shrinkImage, useRecorder } from '../data/media';
 import { kindLabel, type DeckItem, type DeckKind } from '../games/deck/types';
 import { useObjectUrl } from '../games/deck/useObjectUrl';
@@ -255,6 +263,35 @@ function NameField({ game }: { game: CustomGame }) {
   );
 }
 
+function ExportButton({ game }: { game: CustomGame }) {
+  const [status, setStatus] = useState('');
+  async function onClick() {
+    setStatus('');
+    try {
+      const result = await shareGame(game);
+      if (result === 'downloaded')
+        setStatus('Fichier enregistré dans les téléchargements du téléphone.');
+    } catch {
+      setStatus('Impossible de préparer le fichier.');
+    }
+  }
+  return (
+    <>
+      <Button
+        variant="secondary"
+        block
+        icon={<IconShare size={20} />}
+        onClick={() => void onClick()}
+      >
+        Partager le jeu (fichier)
+      </Button>
+      <p className="muted" role="status">
+        {status}
+      </p>
+    </>
+  );
+}
+
 function Editor({ game }: { game: CustomGame }) {
   const [editing, setEditing] = useState<number | null>(null);
   const full = game.items.length >= MAX_ITEMS;
@@ -311,6 +348,7 @@ function Editor({ game }: { game: CustomGame }) {
           Jouer
         </Button>
       )}
+      {game.items.length > 0 && <ExportButton game={game} />}
       <Button
         variant="danger"
         block
