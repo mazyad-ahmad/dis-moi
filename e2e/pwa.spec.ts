@@ -41,6 +41,25 @@ test('hors ligne : l’appli se recharge et se joue sans réseau', async ({ page
   await expect(page.getByText(/Manche 2/)).toBeVisible();
 });
 
+test('le service worker laisse les autres dossiers du site (prévisualisations) au réseau', async ({
+  page,
+}) => {
+  await page.goto('./');
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  const scope = new URL(page.url()).pathname;
+
+  // Caches rangés au nom du dossier de l'appli : une prévisualisation n'efface pas ceux-ci.
+  const keys = await page.evaluate(() => caches.keys());
+  expect(keys).toHaveLength(1);
+  expect(keys[0]).toMatch(new RegExp(`^dis-moi:${scope}:[0-9a-f]+$`));
+
+  // La page de l'appli vient du cache ; celle d'un sous-dossier part au réseau.
+  expect((await page.goto('./'))?.fromServiceWorker()).toBe(true);
+  expect((await page.goto('./pr/12/'))?.fromServiceWorker()).toBe(false);
+});
+
 test('aucune requête vers un autre site', async ({ page }) => {
   const origin = 'http://localhost:4173';
   const outside: string[] = [];
