@@ -14,6 +14,7 @@ import {
   useSettings,
 } from '../data/settings';
 import { clock } from '../games/format';
+import { promptInstall, usePwa } from '../pwa/pwa';
 
 const THEMES: { value: Theme; label: string }[] = [
   { value: 'auto', label: 'Auto' },
@@ -81,6 +82,29 @@ async function eraseEverything() {
   await loadSettings();
 }
 
+/** Installer l'appli sur l'écran d'accueil : bouton si Chrome le propose, sinon la marche à suivre. */
+function Install() {
+  const { install, installed } = usePwa();
+  if (installed) return null;
+  return (
+    <section className="setting" aria-labelledby="install-title">
+      <h2 id="install-title" className="eyebrow">
+        Appli
+      </h2>
+      {install ? (
+        <Button block onClick={() => void promptInstall()}>
+          Installer l’appli
+        </Button>
+      ) : (
+        <p className="muted">
+          Pour l’avoir sur l’écran d’accueil et jouer sans réseau : dans Chrome, menu ⋮ puis «
+          Ajouter à l’écran d’accueil ».
+        </p>
+      )}
+    </section>
+  );
+}
+
 export function Parent() {
   const settings = useSettings();
   const [notice, setNotice] = useState('');
@@ -115,6 +139,8 @@ export function Parent() {
         options={DRAW_SECONDS_CHOICES.map((n) => ({ value: n, label: clock(n) }))}
         onChange={(v) => void setSetting('drawSeconds', v)}
       />
+
+      <Install />
 
       <section className="setting" aria-labelledby="reset-title">
         <h2 id="reset-title" className="eyebrow">
@@ -156,7 +182,8 @@ export function Parent() {
       </section>
 
       <p className="muted">
-        Toutes les données restent sur ce téléphone : pas de compte, pas de publicité, pas de suivi.
+        Toutes les données restent sur ce téléphone : pas de compte, pas de publicité, pas de suivi.{' '}
+        <a href={href('/confidentialite')}>Confidentialité</a>
       </p>
     </main>
   );
