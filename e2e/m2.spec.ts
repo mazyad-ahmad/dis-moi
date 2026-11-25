@@ -16,6 +16,7 @@ test('créer un jeu avec une photo et un son, puis y jouer', async ({ page }) =>
   await page.getByLabel('Nom du jeu').fill('Ma maison');
   await page.getByText('Image', { exact: true }).click();
   await page.getByRole('button', { name: 'Ajouter les questions' }).click();
+  await expect(page.getByRole('heading', { name: 'Ma maison' })).toBeVisible();
 
   await page.locator('input[type=file]').setInputFiles(path.join(import.meta.dirname, 'photo.png'));
   await page.getByLabel('Réponse').fill('La cuisine');
@@ -65,4 +66,40 @@ test('étoiles et réglages', async ({ page }) => {
   await page.getByRole('link', { name: 'Étoiles', exact: true }).click();
   await expect(page.getByText('5 étoiles', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Première étoile : gagnée')).toBeVisible();
+});
+
+test('partager un jeu créé dans un fichier, puis l’importer', async ({ page }) => {
+  await page.goto('./#/ajouter');
+  await page.getByLabel('Nom du jeu').fill('Chez mamie');
+  await page.getByText('Image', { exact: true }).click();
+  await page.getByRole('button', { name: 'Ajouter les questions' }).click();
+  await expect(page.getByRole('heading', { name: 'Chez mamie' })).toBeVisible();
+  await page.locator('input[type=file]').setInputFiles(path.join(import.meta.dirname, 'photo.png'));
+  await page.getByLabel('Réponse').fill('Le jardin');
+  await page.getByRole('button', { name: 'Ajouter la carte' }).click();
+  await expect(page.getByText('1 carte')).toBeVisible();
+
+  // Pas de partage Android dans Chromium de bureau : le fichier est téléchargé.
+  const downloading = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Partager le jeu (fichier)' }).click();
+  const download = await downloading;
+  expect(download.suggestedFilename()).toBe('chez-mamie.dismoi.json');
+  await expect(page.getByRole('status').filter({ hasText: 'téléchargements' })).toBeVisible();
+
+  // Fichier invalide : message clair, rien n'est créé.
+  await page.goto('./#/ajouter');
+  await page.getByLabel('Importer un jeu (fichier)').setInputFiles({
+    name: 'autre.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('{"bonjour": 1}'),
+  });
+  await expect(page.getByRole('alert')).toHaveText('Ce fichier n’est pas un jeu Dis-moi.');
+
+  await page.getByLabel('Importer un jeu (fichier)').setInputFiles(await download.path());
+  await expect(page.getByRole('heading', { name: 'Chez mamie (2)' })).toBeVisible();
+  await expect(page.getByText('Le jardin')).toBeVisible();
+  await expect(page.locator('.item-row img')).toHaveJSProperty('complete', true);
+  expect(
+    await page.locator('.item-row img').evaluate((i: HTMLImageElement) => i.naturalWidth),
+  ).toBe(64);
 });

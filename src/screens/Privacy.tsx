@@ -45,6 +45,15 @@ export function Privacy() {
       </Card>
 
       <Card>
+        <h2 className="h3">Partager un jeu créé</h2>
+        <p>
+          « Partager le jeu (fichier) » crée un fichier avec les cartes, les photos et les sons du
+          jeu. Il ne part que si le parent choisit où l'envoyer (message, e-mail…). Un fichier
+          importé reste lui aussi sur ce téléphone.
+        </p>
+      </Card>
+
+      <Card>
         <h2 className="h3">Tout effacer</h2>
         <p>
           Dans l'<a href={href('/parent')}>espace Parent</a>, « Effacer toutes les données »

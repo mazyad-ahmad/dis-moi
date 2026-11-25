@@ -1,0 +1,171 @@
+import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
+import { cleanGameName, cleanItem, CustomGameError, MAX_GAME_NAME, MAX_ITEMS } from './customGames';
+import { db, type CustomGame } from './db';
+
+/**
+ * Fichier d'un jeu créé, pour le partager avec un autre téléphone (#10).
+ * Un seul fichier JSON : les photos et les sons y sont rangés en base64.
+ */
+export const GAME_FILE_FORMAT = 'dis-moi/jeu';
+export const GAME_FILE_VERSION = 1;
+export const GAME_FILE_EXT = '.dismoi.json';
+/** Taille maximale d'un fichier importé (50 cartes avec photo réduite et son de 10 s). */
+export const MAX_GAME_FILE_SIZE = 30 * 1024 * 1024;
+
+interface FileItem {
+  answer: string;
+  text?: string;
+  hint?: string;
+  image?: string;
+  audio?: string;
+}
+
+interface GameFile {
+  format: typeof GAME_FILE_FORMAT;
+  version: number;
+  name: string;
+  kind: DeckKind;
+  items: FileItem[];
+}
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = '';
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK)
+    binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+  return `data:${blob.type || 'application/octet-stream'};base64,${btoa(binary)}`;
+}
+
+/** Relit un média du fichier ; refuse tout ce qui n'est pas une image ou un son. */
+function dataUrlToBlob(value: unknown, family: 'image' | 'audio'): Blob | undefined {
+  if (value === undefined) return undefined;
+  const match = typeof value === 'string' && /^data:([\w.+-]+\/[\w.+-]+);base64,(.*)$/s.exec(value);
+  if (!match || !match[1].startsWith(`${family}/`)) throw new CustomGameError(INVALID);
+  let binary: string;
+  try {
+    binary = atob(match[2]);
+  } catch {
+    throw new CustomGameError(INVALID);
+  }
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: match[1] });
+}
+
+const INVALID = 'Ce fichier n’est pas un jeu Dis-moi.';
+
+function optionalText(value: unknown): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string') throw new CustomGameError(INVALID);
+  return value;
+}
+
+/** Contenu du fichier d'un jeu, prêt à être enregistré ou partagé. */
+export async function gameToFile(game: CustomGame): Promise<File> {
+  const items: FileItem[] = [];
+  for (const it of game.items) {
+    const item: FileItem = { answer: it.answer };
+    if (it.text) item.text = it.text;
+    if (it.hint) item.hint = it.hint;
+    if (it.image) item.image = await blobToDataUrl(it.image);
+    if (it.audio) item.audio = await blobToDataUrl(it.audio);
+    items.push(item);
+  }
+  const content: GameFile = {
+    format: GAME_FILE_FORMAT,
+    version: GAME_FILE_VERSION,
+    name: game.name,
+    kind: game.kind,
+    items,
+  };
+  return new File([JSON.stringify(content)], gameFileName(game.name), {
+    type: 'application/json',
+  });
+}
+
+/** « Devinettes de Léa » → « devinettes-de-lea.dismoi.json ». */
+export function gameFileName(name: string): string {
+  const slug = name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `${slug || 'jeu'}${GAME_FILE_EXT}`;
+}
+
+/** Lit et vérifie un fichier de jeu. Lève une CustomGameError au message lisible. */
+export function parseGameFile(text: string): Pick<CustomGame, 'name' | 'kind' | 'items'> {
+  let data: unknown;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new CustomGameError(INVALID);
+  }
+  if (typeof data !== 'object' || data === null) throw new CustomGameError(INVALID);
+  const raw = data as Record<string, unknown>;
+  if (raw.format !== GAME_FILE_FORMAT) throw new CustomGameError(INVALID);
+  if (typeof raw.version !== 'number' || raw.version > GAME_FILE_VERSION)
+    throw new CustomGameError(
+      'Ce jeu vient d’une version plus récente de Dis-moi. Mets l’appli à jour.',
+    );
+  const kind = raw.kind as DeckKind;
+  if (!DECK_KINDS.some((k) => k.value === kind)) throw new CustomGameError(INVALID);
+  if (typeof raw.name !== 'string' || !Array.isArray(raw.items)) throw new CustomGameError(INVALID);
+  if (raw.items.length > MAX_ITEMS) throw new CustomGameError(`${MAX_ITEMS} cartes maximum.`);
+
+  const items: DeckItem[] = raw.items.map((entry: unknown) => {
+    if (typeof entry !== 'object' || entry === null) throw new CustomGameError(INVALID);
+    const e = entry as Record<string, unknown>;
+    if (typeof e.answer !== 'string') throw new CustomGameError(INVALID);
+    return cleanItem(kind, {
+      answer: e.answer,
+      text: optionalText(e.text),
+      hint: optionalText(e.hint),
+      image: kind === 'image' ? dataUrlToBlob(e.image, 'image') : undefined,
+      audio: kind === 'sound' ? dataUrlToBlob(e.audio, 'audio') : undefined,
+    });
+  });
+  return { name: cleanGameName(raw.name), kind, items };
+}
+
+/** Importe un fichier de jeu comme un nouveau jeu créé ; renvoie son identifiant. */
+export async function importGameFile(file: Blob): Promise<number> {
+  if (file.size > MAX_GAME_FILE_SIZE) throw new CustomGameError('Ce fichier est trop gros.');
+  const game = parseGameFile(await file.text());
+  const names = new Set((await db.customGames.toArray()).map((g) => g.name));
+  let name = game.name;
+  for (let n = 2; names.has(name); n++) {
+    const suffix = ` (${n})`;
+    name = `${game.name.slice(0, MAX_GAME_NAME - suffix.length).trimEnd()}${suffix}`;
+  }
+  const now = Date.now();
+  return db.customGames.add({ ...game, name, createdAt: now, updatedAt: now } as CustomGame);
+}
+
+/**
+ * Envoie le fichier : partage Android (WhatsApp, e-mail, Drive…) quand le navigateur le permet,
+ * sinon téléchargement dans le téléphone.
+ */
+export async function shareGame(game: CustomGame): Promise<'shared' | 'downloaded' | 'cancelled'> {
+  const file = await gameToFile(game);
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: game.name });
+      return 'shared';
+    } catch (e) {
+      if (e instanceof DOMException && e.name === 'AbortError') return 'cancelled';
+      // Partage refusé par le navigateur : on retombe sur le téléchargement.
+    }
+  }
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = file.name;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return 'downloaded';
+}

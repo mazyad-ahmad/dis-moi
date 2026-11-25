@@ -1045,3 +1045,8 @@ a.pill {
 .prose .card ul {
   padding-left: 20px;
 }
+.import-game {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

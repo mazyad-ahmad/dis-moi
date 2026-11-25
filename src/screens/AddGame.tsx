@@ -2,13 +2,14 @@ import { useState, type FormEvent } from 'react';
 import { href, navigate } from '../app/router';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { IconBack } from '../components/icons';
+import { IconBack, IconImport } from '../components/icons';
 import {
   createCustomGame,
   CustomGameError,
   MAX_GAME_NAME,
   useCustomGames,
 } from '../data/customGames';
+import { GAME_FILE_EXT, importGameFile } from '../data/gameFile';
 import { useSettings } from '../data/settings';
 import { CATALOGUE } from '../games/catalogue/catalogue';
 import { DECK_KINDS, kindLabel, type DeckKind } from '../games/deck/types';
@@ -70,6 +71,40 @@ function CreateForm() {
         Ajouter les questions
       </Button>
     </form>
+  );
+}
+
+function ImportButton() {
+  const [error, setError] = useState('');
+  async function onFile(input: HTMLInputElement) {
+    const file = input.files?.[0];
+    input.value = ''; // pour pouvoir réimporter le même fichier
+    if (!file) return;
+    setError('');
+    try {
+      navigate(`/creer/${await importGameFile(file)}`);
+    } catch (err) {
+      setError(err instanceof CustomGameError ? err.message : 'Impossible d’importer ce fichier.');
+    }
+  }
+  return (
+    <div className="import-game">
+      <label className="btn btn--secondary btn--block">
+        <IconImport size={20} />
+        Importer un jeu (fichier)
+        <input
+          type="file"
+          accept={`${GAME_FILE_EXT},.json,application/json`}
+          className="sr-only"
+          onChange={(e) => void onFile(e.currentTarget)}
+        />
+      </label>
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -153,6 +188,7 @@ export function AddGame() {
       )}
 
       <CreateForm />
+      <ImportButton />
     </main>
   );
 }
