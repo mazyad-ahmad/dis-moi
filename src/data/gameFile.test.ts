@@ -117,3 +117,22 @@ it('nomme le fichier d’après le jeu', () => {
   expect(gameFileName('Devinettes de Léa !')).toBe('devinettes-de-lea.dismoi.json');
   expect(gameFileName('🍎')).toBe('jeu.dismoi.json');
 });
+
+it('garde les visuels intégrés (emoji, couleur) des cartes image, et refuse une couleur invalide', () => {
+  const copy = parseGameFile(
+    JSON.stringify({
+      ...base,
+      kind: 'image',
+      items: [
+        { answer: 'Rouge', color: '#D7263D' },
+        { answer: 'Chat', emoji: '🐈' },
+        { answer: 'Bleu', color: 'blue', text: 'Bleu' },
+      ],
+    }),
+  );
+  expect(copy.items).toEqual([
+    { answer: 'Rouge', color: '#d7263d' },
+    { answer: 'Chat', emoji: '🐈' },
+    { answer: 'Bleu', text: 'Bleu' },
+  ]);
+});

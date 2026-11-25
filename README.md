@@ -99,6 +99,7 @@ Les design tokens (thème « Cadmus », jour / nuit) sont dans `docs/maquette/ds
 ## Documentation
 
 - [Fonctionnement de l'application](docs/FONCTIONNEMENT.md)
+- [Packs de contenu des jeux](docs/PACKS.md) : ajouter des cartes sans toucher au code
 
 ## Avancement
 
