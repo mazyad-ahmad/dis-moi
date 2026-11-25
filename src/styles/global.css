@@ -1,0 +1,61 @@
+@import './tokens.css';
+
+:root {
+  /* Filet clair des cartes (maquette : #e3e2da), dérivé de stone pour suivre le thème. */
+  --hairline: color-mix(in srgb, var(--stone) 22%, var(--mist));
+  --tap: 48px;
+  font: var(--text-body);
+  color: var(--ink);
+  background: var(--mist);
+  -webkit-tap-highlight-color: transparent;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--mist);
+  overscroll-behavior: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--forest);
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
