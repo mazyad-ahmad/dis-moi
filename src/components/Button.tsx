@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -6,6 +6,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   block?: boolean;
   icon?: ReactNode;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 /** Bouton pilule (radius-full), hauteur tactile ≥ 48 px. */

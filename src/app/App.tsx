@@ -1,4 +1,5 @@
 import { BottomNav, type Tab } from '../components/BottomNav';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useApplyTheme } from '../data/settings';
 import { Home } from '../screens/Home';
 import { Parent } from '../screens/Parent';
@@ -77,7 +78,7 @@ export function App() {
   return (
     <div className="app">
       <UpdateBanner />
-      {screenFor(route)}
+      <ErrorBoundary resetKey={JSON.stringify(route)}>{screenFor(route)}</ErrorBoundary>
       {tab && <BottomNav active={tab} />}
     </div>
   );

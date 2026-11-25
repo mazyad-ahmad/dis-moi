@@ -28,6 +28,20 @@ npm run dev:phone    # accessible depuis un téléphone sur le même Wi-Fi
 
 Sur le téléphone Android, ouvrir dans Chrome l'adresse « Network » affichée par `npm run dev:phone`.
 
+## Mise en ligne
+
+L'appli publiée : **https://mazyad-ahmad.github.io/dis-moi/** (HTTPS, nécessaire au service worker).
+L'ouvrir dans Chrome sur Android, puis « Installer l'appli » dans l'espace Parent ; elle marche ensuite en mode avion.
+
+- Chaque fusion dans `main` publie l'appli, une fois la CI verte (job `deploy` de `.github/workflows/ci.yml`).
+  Les téléphones où elle est installée voient alors le bandeau « Mettre à jour ».
+- Chaque PR a sa prévisualisation dans `…/dis-moi/pr/<numéro>/`, dont le lien est posté en commentaire de la PR.
+  Elle est retirée quand la PR est fusionnée ou fermée (`.github/workflows/preview-cleanup.yml`).
+- Le site est la branche `gh-pages`, écrite par `scripts/publish-pages.sh` (un seul commit, réécrit à chaque publication).
+  Réglage unique du dépôt : _Settings → Pages → Source : Deploy from a branch_, branche `gh-pages`, dossier `/ (root)`.
+- Le service worker ne s'occupe que de son dossier : une prévisualisation n'efface pas le cache de l'appli
+  installée, et l'appli installée ne remplace pas la page d'une prévisualisation.
+
 | Commande                          | Rôle                                                                                                           |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `npm run build`                   | Build de production dans `dist/`                                                                               |
@@ -66,7 +80,7 @@ Détail pour les familles : page « Confidentialité » de l'espace Parent (`src
 - Mise à jour : la nouvelle version attend ; un bandeau « Mettre à jour » la propose, jamais de rechargement en pleine partie.
 - Installation : bouton « Installer l'appli » dans l'espace Parent quand Chrome le propose, sinon la marche à suivre.
 - Pendant une partie, l'écran reste allumé (Wake Lock), puis se remet en veille normalement.
-- Les tests e2e vérifient le manifest, le jeu hors ligne, l'absence de requête vers un autre site et un audit
+- Les tests e2e tournent sur le build servi sous `/dis-moi/`, comme en ligne. Ils vérifient le manifest, le jeu hors ligne, l'absence de requête vers un autre site et un audit
   d'accessibilité axe (WCAG 2.1 AA) de chaque écran en thème jour et nuit.
 
 ## Maquette

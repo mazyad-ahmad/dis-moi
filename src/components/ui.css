@@ -1051,6 +1051,81 @@ a.pill {
   gap: 10px;
 }
 
+/* ---------- Dialogue (Dialog.tsx) ---------- */
+.dialog {
+  width: min(100% - 48px, 400px);
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+}
+.dialog::backdrop {
+  /* Valeur fixe : les variables ne sont pas toujours lues dans ::backdrop. */
+  background: rgba(20, 26, 22, 0.6);
+}
+.dialog__body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.dialog__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 500;
+}
+.dialog__message {
+  margin: 0;
+  color: var(--ink-muted);
+}
+.dialog__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+/* ---------- Écran « Oups » (ErrorBoundary.tsx) ---------- */
+.oops {
+  justify-content: center;
+}
+.oops__emoji {
+  margin: 0;
+  font-size: 56px;
+  line-height: 1;
+}
+.oops__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+.oops__details summary {
+  cursor: pointer;
+  color: var(--ink-muted);
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+}
+.oops__trace {
+  max-height: 200px;
+  overflow: auto;
+  margin: 0 0 var(--space-1);
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* ---------- Sauvegarde (BackupSection.tsx) ---------- */
 .backup-reminder {
   margin: 0;
