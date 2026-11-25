@@ -2,10 +2,19 @@ import { BottomNav, type Tab } from '../components/BottomNav';
 import { useApplyTheme } from '../data/settings';
 import { Home } from '../screens/Home';
 import { Parent } from '../screens/Parent';
-import { AddGamePlaceholder, GamePlaceholder, NotFound } from '../screens/Placeholder';
+import { SongGame } from '../games/chanson/SongGame';
+import { DrawingGame } from '../games/dessin/DrawingGame';
+import { LettersGame } from '../games/lettres/LettersGame';
+import { AddGamePlaceholder, NotFound } from '../screens/Placeholder';
 import { Players } from '../screens/Players';
 import { Stars } from '../screens/Stars';
 import { useRoute, type Route } from './router';
+
+const GAME_SCREENS: Record<string, () => React.ReactElement> = {
+  chanson: SongGame,
+  lettres: LettersGame,
+  dessin: DrawingGame,
+};
 
 function screenFor(route: Route) {
   switch (route.name) {
@@ -19,8 +28,11 @@ function screenFor(route: Route) {
       return <Players />;
     case 'add-game':
       return <AddGamePlaceholder />;
-    case 'game':
-      return <GamePlaceholder id={route.id} />;
+    case 'game': {
+      const Game = GAME_SCREENS[route.id];
+      // key : changer de jeu repart d'une partie neuve.
+      return Game ? <Game key={route.id} /> : <NotFound />;
+    }
     case 'not-found':
       return <NotFound />;
   }
