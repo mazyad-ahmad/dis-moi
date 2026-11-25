@@ -18,6 +18,14 @@ export function kindLabel(kind: DeckKind): string {
 }
 
 export interface DeckItem {
+  /** Identifiant stable de la carte dans son pack (contenu intégré, src/content/). */
+  id?: string;
+  /** Âge à partir duquel la carte convient (niveaux par âge). */
+  level?: number;
+  /** Thèmes de la carte (« ferme », « noel »…). */
+  tags?: string[];
+  /** Langue de la carte, si elle diffère de celle du pack (code à deux lettres). */
+  lang?: string;
   /** Réponse attendue (pour « Mot à dessiner » : le mot). */
   answer: string;
   /**

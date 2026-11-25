@@ -28,12 +28,17 @@ export function cleanItem(kind: DeckKind, raw: DeckItem): DeckItem {
   if (text && kind !== 'draw') item.text = text;
   if (hint && kind !== 'draw') item.hint = hint;
   if (raw.image && kind === 'image') item.image = raw.image;
+  // Visuels intégrés (cartes du catalogue, packs partagés) : emoji ou couleur montrés en grand.
+  const emoji = clean(raw.emoji, 16);
+  if (emoji && kind === 'image') item.emoji = emoji;
+  if (raw.color && kind === 'image' && /^#[0-9a-f]{6}$/i.test(raw.color))
+    item.color = raw.color.toLowerCase();
   if (raw.audio && kind === 'sound') item.audio = raw.audio;
 
   if (!item.answer)
     throw new CustomGameError(kind === 'draw' ? 'Écris le mot à dessiner.' : 'Écris la réponse.');
   if (kind === 'question' && !item.text) throw new CustomGameError('Écris la question.');
-  if (kind === 'image' && !item.image && !item.text)
+  if (kind === 'image' && !item.image && !item.text && !item.emoji && !item.color)
     throw new CustomGameError('Ajoute une photo ou un texte à montrer.');
   if (kind === 'sound' && !item.audio && !item.text)
     throw new CustomGameError('Enregistre un son ou écris le bruit à imiter.');

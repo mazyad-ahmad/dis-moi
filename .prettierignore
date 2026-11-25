@@ -4,3 +4,5 @@ package-lock.json
 playwright-report
 test-results
 src/styles/tokens.css
+# Packs de contenu : une carte par ligne (docs/PACKS.md).
+src/content/*.json

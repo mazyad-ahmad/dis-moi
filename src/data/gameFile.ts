@@ -16,6 +16,8 @@ interface FileItem {
   answer: string;
   text?: string;
   hint?: string;
+  emoji?: string;
+  color?: string;
   image?: string;
   audio?: string;
 }
@@ -68,6 +70,8 @@ export async function gameToFile(game: CustomGame): Promise<File> {
     const item: FileItem = { answer: it.answer };
     if (it.text) item.text = it.text;
     if (it.hint) item.hint = it.hint;
+    if (it.emoji) item.emoji = it.emoji;
+    if (it.color) item.color = it.color;
     if (it.image) item.image = await blobToDataUrl(it.image);
     if (it.audio) item.audio = await blobToDataUrl(it.audio);
     items.push(item);
@@ -123,6 +127,8 @@ export function parseGameFile(text: string): Pick<CustomGame, 'name' | 'kind' | 
       answer: e.answer,
       text: optionalText(e.text),
       hint: optionalText(e.hint),
+      emoji: optionalText(e.emoji),
+      color: optionalText(e.color),
       image: kind === 'image' ? dataUrlToBlob(e.image, 'image') : undefined,
       audio: kind === 'sound' ? dataUrlToBlob(e.audio, 'audio') : undefined,
     });
