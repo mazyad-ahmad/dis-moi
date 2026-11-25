@@ -1,0 +1,68 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Accueil — les jeux",
+      "is_interactive": true,
+      "radius": 32
+    },
+    {
+      "file": "Musique.dc.html",
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Quelle chanson ?",
+      "is_interactive": true,
+      "radius": 32
+    },
+    {
+      "file": "Image.dc.html",
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Quelle lettre, quel chiffre ?",
+      "is_interactive": true,
+      "radius": 32
+    },
+    {
+      "file": "Dessine.dc.html",
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Dessine ça",
+      "is_interactive": true,
+      "radius": 32
+    },
+    {
+      "file": "Ajouter.dc.html",
+      "x": 1880,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Ajouter un jeu",
+      "is_interactive": true,
+      "radius": 32
+    }
+  ],
+  "annotations": [
+    {
+      "id": "titre",
+      "x": 0,
+      "y": -260,
+      "w": 240,
+      "maxW": 2270,
+      "text": "Dis-moi — appli Android (PWA), jeux enfants menés par un parent",
+      "kind": "title1"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}
