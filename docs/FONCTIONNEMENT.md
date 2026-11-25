@@ -84,6 +84,26 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   vérifié (format, type, 50 cartes, seulement des images et des sons, 30 Mo maximum) puis ajouté
   comme un nouveau jeu ; si le nom existe déjà, il devient « Nom (2) ».
 
+### Sauvegarde complète et stockage
+
+- **Stockage protégé** : après la première partie ou la première création de jeu, l'appli demande
+  au navigateur un stockage persistant (`navigator.storage.persist()`) pour qu'il ne l'efface pas
+  si le téléphone manque de place. L'espace Parent affiche l'état et la place utilisée.
+- **Sauvegarder tout** (espace Parent) : un fichier `dis-moi-AAAA-MM-JJ.dismoi-sauvegarde.json`
+  avec joueurs, parties, réglages et jeux créés (photos et sons en base64, au même format que les
+  fichiers de jeu). Format `dis-moi/sauvegarde`, version 1. Même canal que le partage d'un jeu :
+  partage Android, sinon téléchargement.
+- **Restaurer une sauvegarde** : le fichier est entièrement vérifié avant toute écriture (format,
+  version, chaque joueur, partie et jeu, 200 Mo maximum) ; un fichier refusé ne change rien. Le
+  parent voit le contenu et choisit :
+  - **Tout remplacer** : les données du téléphone sont remplacées à l'identique ;
+  - **Fusionner** : la sauvegarde s'ajoute sans doublon (joueurs reconnus par leur prénom, parties
+    par leur jeu et leur heure de début, jeux créés par leur type, leur date et leurs réponses) ;
+    les réglages du téléphone sont gardés, les jeux du catalogue s'additionnent ; refusé s'il y
+    aurait plus de 6 joueurs.
+- **Rappel** : s'il y a des jeux créés et aucune sauvegarde depuis plus de 30 jours (ou jamais), un
+  rappel discret apparaît dans l'espace Parent.
+
 ### Enregistrement des parties
 
 - Une partie est enregistrée dès la première manche jouée, puis mise à jour à chaque manche :

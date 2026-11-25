@@ -4,6 +4,7 @@ import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { BackupSection } from './BackupSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
@@ -143,6 +144,8 @@ export function Parent() {
       />
 
       <Install />
+
+      <BackupSection />
 
       <section className="setting" aria-labelledby="reset-title">
         <h2 id="reset-title" className="eyebrow">

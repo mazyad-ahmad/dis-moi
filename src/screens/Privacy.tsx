@@ -20,7 +20,9 @@ export function Privacy() {
         </ul>
         <p>
           Ces données sont rangées dans le stockage du navigateur, sur cet appareil uniquement.
-          Elles ne sont ni envoyées, ni partagées, ni sauvegardées ailleurs.
+          Elles ne sont ni envoyées, ni partagées, ni sauvegardées ailleurs sans le geste du parent
+          (voir « Sauvegarde » plus bas). L’appli demande au navigateur de protéger ce stockage pour
+          qu’il ne l’efface pas quand le téléphone manque de place.
         </p>
       </Card>
 
@@ -50,6 +52,17 @@ export function Privacy() {
           « Partager le jeu (fichier) » crée un fichier avec les cartes, les photos et les sons du
           jeu. Il ne part que si le parent choisit où l'envoyer (message, e-mail…). Un fichier
           importé reste lui aussi sur ce téléphone.
+        </p>
+      </Card>
+
+      <Card>
+        <h2 className="h3">Sauvegarde</h2>
+        <p>
+          « Sauvegarder tout », dans l’espace Parent, crée un fichier avec les prénoms des joueurs,
+          les parties et les étoiles, les réglages et les jeux créés (photos et sons compris). Comme
+          pour un jeu partagé, il ne part que si le parent choisit où le mettre (Drive, e-mail,
+          téléchargements…) ; il n’est pas chiffré, il faut donc le garder dans un endroit sûr. «
+          Restaurer une sauvegarde » relit ce fichier sur le téléphone, sans rien envoyer.
         </p>
       </Card>
 
