@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
@@ -6,6 +5,7 @@ import { IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
+import { useSavedDraw } from '../session';
 import { draw } from '../shuffle';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { EXTRACT_SECONDS, SONGS, type Song } from './songs';
@@ -50,7 +50,13 @@ function Player({ song }: { song: Song }) {
 
 function SongSession({ onReplay }: { onReplay: () => void }) {
   const wanted = useRoundSetting();
-  const songs = useMemo(() => draw(SONGS, wanted), [wanted]);
+  const songs = useSavedDraw(
+    'chanson',
+    'draw',
+    SONGS,
+    () => draw(SONGS, wanted),
+    (s) => s.id,
+  );
   const { round, rounds, stars, finished, answer } = useRounds('chanson', songs.length);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;

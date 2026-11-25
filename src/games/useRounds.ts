@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { startRecord, updateRecord } from '../data/history';
 import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
 import { useWakeLock } from '../pwa/useWakeLock';
+import { clearSaved, readSaved, useClearSavedOnLeave, useSaved, writeSaved } from './session';
 
 /** Nombre de manches par défaut (docs/FONCTIONNEMENT.md), réglable dans l'espace Parent. */
 export const DEFAULT_ROUNDS = DEFAULT_SETTINGS.rounds;
@@ -21,30 +22,56 @@ export interface Rounds {
   answer: (found: boolean) => void;
 }
 
+interface Progress {
+  played: number;
+  stars: number;
+}
+
+function restoreProgress(saved: unknown): Progress | undefined {
+  const p = saved as Partial<Progress> | null;
+  const ok = (n: unknown): n is number => Number.isInteger(n) && (n as number) >= 0;
+  return p && ok(p.played) && ok(p.stars) && p.stars <= p.played
+    ? ({ ...p } as Progress)
+    : undefined;
+}
+
 /**
  * Déroulé commun des jeux : manches, étoiles, fin de partie.
  * La partie est enregistrée dès la première manche puis mise à jour,
  * pour garder les étoiles même si on quitte en cours de route.
+ * Elle est aussi gardée pour l'onglet (`session.ts`) : un rafraîchissement la reprend
+ * là où elle en était, sans créer de doublon dans l'historique.
  */
 export function useRounds(gameId: string, wanted?: number): Rounds {
   const setting = useRoundSetting();
   const rounds = wanted ?? setting;
-  const [played, setPlayed] = useState(0);
-  const [stars, setStars] = useState(0);
-  const record = useRef<Promise<number> | null>(null);
+  const [progress, setProgress] = useSaved<Progress>(
+    gameId,
+    'progress',
+    () => ({ played: 0, stars: 0 }),
+    restoreProgress,
+  );
+  const { played, stars } = progress;
+  // Partie reprise après un rafraîchissement : on continue son enregistrement.
+  const [resumed] = useState(() => {
+    const id = readSaved(gameId, 'record');
+    return Number.isInteger(id) ? Promise.resolve(id as number) : null;
+  });
+  const record = useRef<Promise<number> | null>(resumed);
+  useClearSavedOnLeave(gameId);
 
   const answer = useCallback(
     (found: boolean) => {
-      const nextPlayed = Math.min(played + 1, rounds);
-      const nextStars = stars + (found ? 1 : 0);
       if (played >= rounds) return;
-      setPlayed(nextPlayed);
-      setStars(nextStars);
-      const data = { played: nextPlayed, stars: nextStars };
-      if (!record.current) record.current = startRecord({ gameId, rounds, ...data });
-      else void record.current.then((id) => updateRecord(id, data));
+      const data = { played: played + 1, stars: stars + (found ? 1 : 0) };
+      setProgress(data);
+      if (data.played >= rounds) clearSaved(gameId);
+      if (!record.current) {
+        record.current = startRecord({ gameId, rounds, ...data });
+        void record.current.then((id) => writeSaved(gameId, 'record', id, true));
+      } else void record.current.then((id) => updateRecord(id, data));
     },
-    [gameId, played, rounds, stars],
+    [gameId, played, rounds, setProgress, stars],
   );
 
   // L'enfant réfléchit, le parent attend : l'écran ne doit pas s'éteindre en pleine partie.
