@@ -7,7 +7,9 @@ export type Route =
   | { name: 'parent' }
   | { name: 'players' }
   | { name: 'add-game' }
+  | { name: 'privacy' }
   | { name: 'game'; id: string }
+  | { name: 'edit-game'; id: number }
   | { name: 'not-found'; path: string };
 
 export function parseHash(hash: string): Route {
@@ -17,6 +19,9 @@ export function parseHash(hash: string): Route {
   if (path === '/parent') return { name: 'parent' };
   if (path === '/joueurs') return { name: 'players' };
   if (path === '/ajouter') return { name: 'add-game' };
+  if (path === '/confidentialite') return { name: 'privacy' };
+  const edit = /^\/creer\/(\d+)$/.exec(path);
+  if (edit) return { name: 'edit-game', id: Number(edit[1]) };
   const game = /^\/jeu\/([a-z0-9-]+)$/.exec(path);
   if (game) return { name: 'game', id: game[1] };
   return { name: 'not-found', path };

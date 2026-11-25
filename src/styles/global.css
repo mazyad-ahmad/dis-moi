@@ -3,6 +3,9 @@
 :root {
   /* Filet clair des cartes (maquette : #e3e2da), dérivé de stone pour suivre le thème. */
   --hairline: color-mix(in srgb, var(--stone) 22%, var(--mist));
+  /* Or lisible en petit texte (AA ≥ 4,5:1 sur mist, paper et dawn, jour et nuit) :
+     --sun seul n'atteint que 3,4 à 4,2 en thème jour. */
+  --sun-text: color-mix(in srgb, var(--sun) 70%, var(--ink));
   --tap: 48px;
   font: var(--text-body);
   color: var(--ink);
@@ -37,6 +40,11 @@ input {
 a {
   color: var(--forest);
   text-decoration: none;
+}
+/* Lien au milieu d'un texte : souligné, pas seulement coloré (WCAG 1.4.1). */
+p a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 :focus-visible {

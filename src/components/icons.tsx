@@ -81,3 +81,48 @@ export const IconEye = (p: P) => (
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
+export const IconTimer = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="13" r="8" />
+    <path d="M12 9v4l2.5 2M10 3h4" />
+  </svg>
+);
+export const IconRefresh = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5" />
+  </svg>
+);
+export const IconPlay = ({ size = 24, ...rest }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden {...rest}>
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+export const IconPause = ({ size = 24, ...rest }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden {...rest}>
+    <rect x="6" y="5" width="4" height="14" rx="1" />
+    <rect x="14" y="5" width="4" height="14" rx="1" />
+  </svg>
+);
+export const IconEar = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M7 9a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-5.5 1.6" />
+    <path d="M10 9a2 2 0 0 1 4 0c0 1.2-1 1.6-1.6 2.4" />
+  </svg>
+);
+export const IconCamera = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </svg>
+);
+export const IconMic = (p: P) => (
+  <svg {...base(p)}>
+    <rect x="9" y="3" width="6" height="11" rx="3" />
+    <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+  </svg>
+);
+export const IconStop = ({ size = 24, ...rest }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden {...rest}>
+    <rect x="6" y="6" width="12" height="12" rx="2" />
+  </svg>
+);

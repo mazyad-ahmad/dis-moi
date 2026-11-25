@@ -6,9 +6,9 @@ export interface GameInfo {
   name: string;
   category: string;
   tint: Tint;
-  icon: GameIcon;
-  /** Issue GitHub qui livre le jeu. */
-  issue: number;
+  /** Icône des jeux de base, sinon une marque de 1 à 3 caractères. */
+  icon?: GameIcon;
+  mark?: string;
 }
 
 /** Jeux de base, dans l'ordre de l'accueil (maquette Main). */
@@ -19,7 +19,6 @@ export const GAMES: GameInfo[] = [
     category: 'Musique',
     tint: 'meadow',
     icon: 'music',
-    issue: 6,
   },
   {
     id: 'lettres',
@@ -27,9 +26,8 @@ export const GAMES: GameInfo[] = [
     category: 'Lettres et chiffres',
     tint: 'sky',
     icon: 'letters',
-    issue: 7,
   },
-  { id: 'dessin', name: 'Dessine ça', category: 'Dessin', tint: 'dawn', icon: 'pencil', issue: 8 },
+  { id: 'dessin', name: 'Dessine ça', category: 'Dessin', tint: 'dawn', icon: 'pencil' },
 ];
 
 export function findGame(id: string): GameInfo | undefined {

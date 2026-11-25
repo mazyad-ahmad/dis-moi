@@ -1,24 +1,28 @@
 import { href } from '../app/router';
 import { Card } from '../components/Card';
 import { Logo } from '../components/Logo';
-import { IconMusic, IconPencil, IconPerson, IconPlus, IconStar } from '../components/icons';
+import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
 import { usePlayers } from '../data/players';
-import { GAMES, type GameInfo } from '../games/registry';
+import type { GameInfo } from '../games/registry';
+import { useHomeGames } from '../games/useGames';
+import { LastGame } from './LastGame';
 
 const ICON_COLOR = { music: 'var(--forest)', letters: 'var(--river)', pencil: 'var(--sun)' };
 
-function TileIcon({ icon }: { icon: GameInfo['icon'] }) {
+function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
   return (
-    <span className="game-tile__icon" style={{ color: ICON_COLOR[icon] }}>
+    <span className="game-tile__icon" style={icon && { color: ICON_COLOR[icon] }}>
       {icon === 'music' && <IconMusic size={26} />}
       {icon === 'letters' && 'A1'}
       {icon === 'pencil' && <IconPencil size={26} />}
+      {!icon && mark}
     </span>
   );
 }
 
 export function Home() {
   const players = usePlayers();
+  const games = useHomeGames();
 
   return (
     <main className="screen">
@@ -51,9 +55,9 @@ export function Home() {
       </Card>
 
       <div className="game-grid">
-        {GAMES.map((g) => (
+        {games.map((g) => (
           <a key={g.id} href={href(`/jeu/${g.id}`)} className={`game-tile game-tile--${g.tint}`}>
-            <TileIcon icon={g.icon} />
+            <TileIcon game={g} />
             <span>
               <span className="game-tile__name">{g.name}</span>
               <span className="game-tile__category">{g.category}</span>
@@ -73,11 +77,7 @@ export function Home() {
 
       <div className="spacer" />
 
-      {/* L'historique des parties arrive avec l'issue #11. */}
-      <Card raised className="last-game">
-        <IconStar />
-        <span>Pas encore de partie : choisis un jeu pour gagner tes premières étoiles.</span>
-      </Card>
+      <LastGame />
     </main>
   );
 }
