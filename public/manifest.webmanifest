@@ -1,0 +1,25 @@
+{
+  "name": "Dis-moi — jeux menés par un parent",
+  "short_name": "Dis-moi",
+  "description": "Jeux pour enfants menés par un parent : chansons, lettres, dessin et jeux à créer.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "lang": "fr",
+  "dir": "ltr",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f4ee",
+  "theme_color": "#f5f4ee",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

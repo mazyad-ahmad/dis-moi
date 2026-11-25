@@ -142,7 +142,7 @@
   font: var(--text-label);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--sun);
+  color: var(--sun-text);
 }
 .parent-block__answer {
   font: var(--text-h2);
@@ -186,7 +186,7 @@
   align-items: center;
   gap: 4px;
   font-weight: 700;
-  color: var(--sun);
+  color: var(--sun-text);
 }
 .game-header__title {
   margin: 0;
@@ -986,7 +986,7 @@ a.pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--sun);
+  color: var(--sun-text);
   font-weight: 700;
 }
 
@@ -1018,4 +1018,30 @@ a.pill {
 }
 .screen > p.muted {
   margin: 0;
+}
+
+/* ---------- Appli installable ---------- */
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px 12px 24px;
+  background: var(--sky);
+  color: var(--ink);
+  font: var(--text-small);
+}
+.update-banner .btn {
+  flex-shrink: 0;
+}
+.h3 {
+  margin: 0 0 4px;
+  font: var(--text-h3);
+}
+.prose .card p,
+.prose .card ul {
+  margin: 8px 0 0;
+}
+.prose .card ul {
+  padding-left: 20px;
 }

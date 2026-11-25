@@ -9,6 +9,7 @@ import './styles/global.css';
 import './components/ui.css';
 import { App } from './app/App';
 import { loadSettings } from './data/settings';
+import { listenForInstall, registerServiceWorker } from './pwa/pwa';
 
 function start() {
   createRoot(document.getElementById('root')!).render(
@@ -22,3 +23,9 @@ function start() {
 loadSettings()
   .catch(() => undefined)
   .finally(start);
+
+listenForInstall();
+// Service worker seulement sur le build : en dev, il garderait d'anciens fichiers en cache.
+if (import.meta.env.PROD) {
+  window.addEventListener('load', () => void registerServiceWorker().catch(() => undefined));
+}

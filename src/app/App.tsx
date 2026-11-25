@@ -13,6 +13,8 @@ import { findCatalogueGame } from '../games/catalogue/catalogue';
 import { DeckGame } from '../games/deck/DeckGame';
 import { Players } from '../screens/Players';
 import { Stars } from '../screens/Stars';
+import { Privacy } from '../screens/Privacy';
+import { UpdateBanner } from '../pwa/UpdateBanner';
 import { useRoute, type Route } from './router';
 
 const GAME_SCREENS: Record<string, () => React.ReactElement> = {
@@ -50,6 +52,8 @@ function screenFor(route: Route) {
       return <Players />;
     case 'add-game':
       return <AddGame />;
+    case 'privacy':
+      return <Privacy />;
     case 'edit-game':
       return <EditGame key={route.id} id={route.id} />;
     case 'game':
@@ -72,6 +76,7 @@ export function App() {
   const tab = TAB_OF[route.name];
   return (
     <div className="app">
+      <UpdateBanner />
       {screenFor(route)}
       {tab && <BottomNav active={tab} />}
     </div>

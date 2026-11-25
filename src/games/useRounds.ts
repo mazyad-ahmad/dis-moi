@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { startRecord, updateRecord } from '../data/history';
 import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
+import { useWakeLock } from '../pwa/useWakeLock';
 
 /** Nombre de manches par défaut (docs/FONCTIONNEMENT.md), réglable dans l'espace Parent. */
 export const DEFAULT_ROUNDS = DEFAULT_SETTINGS.rounds;
@@ -45,6 +46,9 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
     },
     [gameId, played, rounds, stars],
   );
+
+  // L'enfant réfléchit, le parent attend : l'écran ne doit pas s'éteindre en pleine partie.
+  useWakeLock(played < rounds);
 
   return {
     round: Math.min(played + 1, rounds),

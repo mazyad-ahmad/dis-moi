@@ -36,6 +36,7 @@ Sur le téléphone Android, ouvrir dans Chrome l'adresse « Network » affichée
 | `npm run e2e`                     | Tests de bout en bout sur un mobile simulé (Playwright) ; la première fois : `npx playwright install chromium` |
 | `npm run lint` / `npm run format` | ESLint / Prettier                                                                                              |
 | `npm run tokens`                  | Régénère `src/styles/tokens.css` depuis les tokens de la maquette                                              |
+| `node scripts/gen-icons.mjs`      | Régénère les icônes PNG de l'appli (`public/icon-*.png`) depuis le logo                                        |
 
 La CI GitHub Actions lance lint, format, types, tests, build et e2e à chaque PR, et publie le build (`dist`) en artefact.
 
@@ -46,6 +47,7 @@ src/
   app/          routeur (hash) et composition des écrans
   components/   composants du design system (Button, Card, ParentBlock, GameHeader, BottomNav…)
   data/         base locale IndexedDB (Dexie) : joueurs, réglages, parties, jeux créés, médias
+  pwa/          service worker (enregistrement, mise à jour), installation, Wake Lock
   games/        jeux : moteur de manches commun, chanson/, lettres/, dessin/,
                 deck/ (format commun des jeux à cartes), catalogue/
   screens/      écrans
@@ -54,6 +56,18 @@ e2e/            tests Playwright
 ```
 
 Toutes les données restent sur l'appareil (IndexedDB), sans compte ni serveur.
+Détail pour les familles : page « Confidentialité » de l'espace Parent (`src/screens/Privacy.tsx`).
+
+## Appli installable et hors ligne
+
+- `public/manifest.webmanifest` : nom, icônes (dont une « maskable » pour Android), plein écran, portrait.
+- Service worker (`scripts/sw.js`, complété au build par `scripts/vite-plugin-sw.ts`) : met en cache tout le build
+  (code, polices, icônes). Sa version change dès qu'un fichier change. Il n'est enregistré que sur le build, pas avec `npm run dev`.
+- Mise à jour : la nouvelle version attend ; un bandeau « Mettre à jour » la propose, jamais de rechargement en pleine partie.
+- Installation : bouton « Installer l'appli » dans l'espace Parent quand Chrome le propose, sinon la marche à suivre.
+- Pendant une partie, l'écran reste allumé (Wake Lock), puis se remet en veille normalement.
+- Les tests e2e vérifient le manifest, le jeu hors ligne, l'absence de requête vers un autre site et un audit
+  d'accessibilité axe (WCAG 2.1 AA) de chaque écran en thème jour et nuit.
 
 ## Maquette
 
