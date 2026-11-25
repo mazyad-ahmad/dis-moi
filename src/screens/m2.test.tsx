@@ -273,6 +273,7 @@ describe('Espace parent', () => {
     await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
     await answer(user, 'Annuler');
     expect(await db.players.count()).toBe(1);
-    expect(screen.getByRole('status')).toHaveTextContent('');
+    const reset = screen.getByRole('region', { name: 'Remise à zéro' });
+    expect(within(reset).getByRole('status')).toHaveTextContent('');
   });
 });

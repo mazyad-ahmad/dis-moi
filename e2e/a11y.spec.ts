@@ -59,7 +59,8 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await page.keyboard.press('Escape');
       await expect(dialog).toBeHidden();
       await expect(opener).toBeFocused();
-      await expect(page.getByRole('status')).toHaveText('');
+      const reset = page.getByRole('region', { name: 'Remise à zéro' });
+      await expect(reset.getByRole('status')).toHaveText('');
     });
   });
 }
