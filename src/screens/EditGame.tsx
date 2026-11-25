@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { href, navigate } from '../app/router';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import {
   IconCamera,
@@ -197,6 +198,7 @@ function ItemForm({
 
 function ItemRow({ game, index, onEdit }: { game: CustomGame; index: number; onEdit: () => void }) {
   const item = game.items[index];
+  const [confirmDialog, confirm] = useConfirm();
   return (
     <li>
       <Card className="item-row">
@@ -218,14 +220,19 @@ function ItemRow({ game, index, onEdit }: { game: CustomGame; index: number; onE
           type="button"
           className="icon-btn icon-btn--plain"
           aria-label={`Supprimer ${item.answer}`}
-          onClick={() => {
-            if (window.confirm(`Supprimer la carte « ${item.answer} » ?`))
-              void removeItem(game.id, index);
+          onClick={async () => {
+            const ok = await confirm({
+              title: `Supprimer la carte « ${item.answer} » ?`,
+              confirmLabel: 'Supprimer la carte',
+              danger: true,
+            });
+            if (ok) await removeItem(game.id, index);
           }}
         >
           <IconTrash size={20} />
         </button>
       </Card>
+      {confirmDialog}
     </li>
   );
 }
@@ -295,6 +302,7 @@ function ExportButton({ game }: { game: CustomGame }) {
 function Editor({ game }: { game: CustomGame }) {
   const [editing, setEditing] = useState<number | null>(null);
   const full = game.items.length >= MAX_ITEMS;
+  const [confirmDialog, confirm] = useConfirm();
 
   return (
     <main className="screen">
@@ -353,13 +361,20 @@ function Editor({ game }: { game: CustomGame }) {
         variant="danger"
         block
         onClick={async () => {
-          if (!window.confirm(`Supprimer le jeu « ${game.name} » et toutes ses cartes ?`)) return;
+          const ok = await confirm({
+            title: `Supprimer le jeu « ${game.name} » ?`,
+            message: 'Toutes ses cartes seront supprimées.',
+            confirmLabel: 'Supprimer le jeu',
+            danger: true,
+          });
+          if (!ok) return;
           await deleteCustomGame(game.id);
           navigate('/ajouter');
         }}
       >
         Supprimer le jeu
       </Button>
+      {confirmDialog}
     </main>
   );
 }

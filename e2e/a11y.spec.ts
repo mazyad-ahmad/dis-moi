@@ -35,5 +35,32 @@ for (const colorScheme of ['light', 'dark'] as const) {
         expect(summary).toEqual([]);
       });
     }
+
+    test('dialogue de confirmation', async ({ page }) => {
+      await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+      await page.goto('./#/parent');
+      const opener = page.getByRole('button', { name: 'Effacer toutes les données' });
+      await opener.click();
+      const dialog = page.getByRole('alertdialog', { name: 'Tout effacer ?' });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Annuler' })).toBeFocused();
+      // Reste de la page inerte : le focus ne sort pas du dialogue.
+      for (const key of ['Tab', 'Tab', 'Tab', 'Shift+Tab', 'Shift+Tab', 'Shift+Tab']) {
+        await page.keyboard.press(key);
+        expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+      }
+
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+      expect(results.violations.map((v) => v.id)).toEqual([]);
+
+      // Échap ferme sans rien effacer et rend le focus au bouton d'origine.
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+      const reset = page.getByRole('region', { name: 'Remise à zéro' });
+      await expect(reset.getByRole('status')).toHaveText('');
+    });
   });
 }
