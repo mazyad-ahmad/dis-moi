@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { IconPlus, IconTrash } from '../components/icons';
 import { PLAYER_COLORS, type Player } from '../data/db';
@@ -21,6 +22,7 @@ function nextColor(p: Player) {
 
 function PlayerRow({ player, onError }: { player: Player; onError: (m: string) => void }) {
   const [name, setName] = useState(player.name);
+  const [confirmDialog, confirm] = useConfirm();
 
   async function commit() {
     if (name === player.name) return;
@@ -56,13 +58,19 @@ function PlayerRow({ player, onError }: { player: Player; onError: (m: string) =
           type="button"
           className="icon-btn icon-btn--plain"
           aria-label={`Retirer ${player.name}`}
-          onClick={() => {
-            if (window.confirm(`Retirer ${player.name} ?`)) removePlayer(player.id);
+          onClick={async () => {
+            const ok = await confirm({
+              title: `Retirer ${player.name} ?`,
+              confirmLabel: 'Retirer',
+              danger: true,
+            });
+            if (ok) await removePlayer(player.id);
           }}
         >
           <IconTrash />
         </button>
       </Card>
+      {confirmDialog}
     </li>
   );
 }

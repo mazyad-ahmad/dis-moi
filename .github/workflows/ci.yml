@@ -27,3 +27,38 @@ jobs:
           name: dist
           path: dist
           retention-days: 14
+
+  # Mise en ligne sur GitHub Pages, une fois les vérifications passées :
+  # main à la racine du site, chaque PR dans pr/<numéro>/ avec son lien en commentaire.
+  deploy:
+    needs: check
+    # Les PR venues d'un fork n'ont pas le droit d'écrire dans le dépôt.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SITE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - if: github.event_name == 'push'
+        run: |
+          scripts/publish-pages.sh main
+          echo "Appli en ligne : $SITE" >> "$GITHUB_STEP_SUMMARY"
+      - if: github.event_name == 'pull_request'
+        env:
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          scripts/publish-pages.sh pr "$PR"
+          body="Prévisualisation : ${SITE}pr/$PR/ (commit ${SHA:0:7}, en ligne d'ici une minute)."
+          gh pr comment "$PR" --edit-last --create-if-none --body "$body"
