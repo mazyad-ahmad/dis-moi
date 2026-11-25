@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Bouton « Run workflow » de l'onglet Actions : relancer la CI (et la publication) à la main.
+  workflow_dispatch:
 
 jobs:
   check:
@@ -33,7 +35,10 @@ jobs:
   deploy:
     needs: check
     # Les PR venues d'un fork n'ont pas le droit d'écrire dans le dépôt.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    # Publication de main (push ou lancement manuel), ou prévisualisation d'une PR du dépôt.
+    if: >-
+      (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -50,7 +55,7 @@ jobs:
         with:
           name: dist
           path: dist
-      - if: github.event_name == 'push'
+      - if: github.event_name != 'pull_request'
         run: |
           scripts/publish-pages.sh main
           echo "Appli en ligne : $SITE" >> "$GITHUB_STEP_SUMMARY"
