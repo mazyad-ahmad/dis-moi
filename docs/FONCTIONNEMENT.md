@@ -326,6 +326,17 @@
 - **Accompagnement** facultatif : bouton « Accompagnement » sous le lecteur (éteint par défaut),
   qui ajoute un bourdon doux sur la tonique de l'air (sa dernière note), dans l'octave grave.
   L'activer ou l'éteindre remet l'extrait au début ; pause et reprise le gardent.
+- **Façons d'écouter** (#47) : sélecteur en haut du jeu, choisi par le parent et gardé d'une
+  manche à l'autre (« L'extrait » par défaut). Chaque façon s'explique en une phrase sous le
+  lecteur :
+  - **L'extrait** : les 10 premières secondes de l'air ;
+  - **Petit à petit** : 3 notes, puis 5, puis 10 (bouton « Encore des notes »), puis l'extrait ;
+  - **Au ralenti** (tempo × 0,7) ou **En accéléré** (tempo × 1,4) : les mêmes notes ;
+  - **Le rythme seul** : toutes les notes sur la tonique de l'air, même rythme ;
+  - **Au hasard** : une de ces façons tirée au sort à chaque manche.
+    Toutes passent par `schedule` et le même lecteur (`src/games/chanson/variants.ts`). L'indice
+    « air ralenti » ralentit encore la façon choisie. Toujours une étoile par manche trouvée. Le
+    Grand Jeu et le Défi du jour jouent l'extrait, sans sélecteur.
 - Chaque partie tire 10 chansons différentes.
 
 ### Jeux du catalogue
@@ -578,7 +589,7 @@ turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
    rappel de la dernière partie, barre de navigation _Jeux · Étoiles · Parent_.
    Cette barre reste collée au bas de l'écran : seul le contenu au-dessus défile, et le
    défilement s'arrête à la fin du contenu, sur toutes les pages (#145).
-2. **Quelle chanson ?** — manche _n_ sur 10, compteur d'étoiles, lecteur d'extrait (10 s),
+2. **Quelle chanson ?** — manche _n_ sur 10, compteur d'étoiles, façon d'écouter (#47), lecteur d'extrait (10 s),
    bloc parent avec titre caché + indice, bouton « Voir la réponse ».
 3. **Quelle lettre, quel chiffre ?** — sélecteur Majuscules / Minuscules / Attaché / Chiffres /
    Nombres / Dés, doigts / Mélange, glyphe en grand

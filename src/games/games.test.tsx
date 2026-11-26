@@ -149,6 +149,50 @@ it('Quelle chanson : indice visible, titre caché, son indisponible signalé', a
   expect(screen.getByRole('button', { name: 'Voir la réponse' })).toBeInTheDocument();
 });
 
+it('Quelle chanson : façons d’écouter expliquées, une étoile par manche (#47)', async () => {
+  const user = userEvent.setup();
+  open('/jeu/chanson');
+  const picker = screen.getByRole('radiogroup', { name: 'Façon d’écouter' });
+  expect(screen.getByRole('radio', { name: 'L’extrait' })).toBeChecked();
+  expect(screen.getByText(/Les 10 premières secondes de l’air/)).toBeInTheDocument();
+
+  // Petit à petit : 3 notes, puis 5, puis 10, puis tout l'extrait.
+  await user.click(screen.getByRole('radio', { name: 'Petit à petit' }));
+  expect(screen.getByText(/3 notes d’abord, puis 5/)).toBeInTheDocument();
+  expect(screen.getByRole('status')).toHaveTextContent('3 premières notes');
+  await user.click(screen.getByRole('button', { name: 'Encore des notes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('5 premières notes');
+  await user.click(screen.getByRole('button', { name: 'Encore des notes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('10 premières notes');
+  await user.click(screen.getByRole('button', { name: 'Encore des notes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('Extrait de 10 secondes');
+  expect(screen.queryByRole('button', { name: 'Encore des notes' })).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole('radio', { name: 'Au ralenti' }));
+  expect(screen.getByText(/plus lentement que d’habitude/)).toBeInTheDocument();
+  await user.click(screen.getByRole('radio', { name: 'En accéléré' }));
+  expect(screen.getByText(/plus vite que d’habitude/)).toBeInTheDocument();
+  await user.click(screen.getByRole('radio', { name: 'Le rythme seul' }));
+  expect(screen.getByText(/même hauteur/)).toBeInTheDocument();
+  expect(screen.getByRole('status')).toHaveTextContent('Rythme de l’extrait');
+
+  // Une étoile par manche, quelle que soit la variante.
+  await user.click(screen.getByRole('button', { name: 'Trouvé' }));
+  expect(screen.getByText('Manche 2 sur 10')).toBeInTheDocument();
+  expect(screen.getByLabelText('1 étoile')).toBeInTheDocument();
+  // Le choix reste d'une manche à l'autre.
+  expect(screen.getByRole('radio', { name: 'Le rythme seul' })).toBeChecked();
+
+  // Au hasard : une variante tirée pour la manche, expliquée aussi.
+  await user.click(screen.getByRole('radio', { name: 'Au hasard' }));
+  expect(picker.parentElement).toHaveTextContent('tirée au sort à chaque manche');
+  expect(document.querySelector('.song-player__variant')).toHaveTextContent(
+    /^(L’extrait|Petit à petit|Au ralenti|En accéléré|Le rythme seul) : /,
+  );
+  await user.click(screen.getByRole('button', { name: 'Trouvé' }));
+  expect(screen.getByLabelText('2 étoiles')).toBeInTheDocument();
+});
+
 describe('Dessine ça', () => {
   afterEach(() => vi.useRealTimers());
 

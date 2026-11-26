@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Timbre } from '../../audio/instruments';
-import { extractLength, parseMelody, schedule, tonic } from './melody';
+import { extractLength, parseMelody, tonic } from './melody';
 import { audioAvailable, MelodyPlayer } from './player';
-import { EXTRACT_SECONDS, SLOW_TEMPO, type Song } from './songs';
+import type { Song } from './songs';
+import { variantSchedule, type Variant } from './variants';
 
 export type PlayState = 'idle' | 'playing' | 'paused' | 'ended' | 'unavailable';
 
@@ -10,17 +11,24 @@ export type PlayState = 'idle' | 'playing' | 'paused' | 'ended' | 'unavailable';
  * Lecture de l'extrait d'une chanson : état, progression, lecture / pause.
  * Ralenti (indice) : les mêmes notes, jouées plus lentement.
  * `timbre` : instrument de l'air ; `drone` : accompagnement (bourdon sur la tonique).
+ * `variant` et `step` : façon d'écouter (#47) et palier de « Petit à petit ».
  */
-export function useMelody(song: Song, slow = false, timbre?: Timbre, drone = false) {
+export function useMelody(
+  song: Song,
+  slow = false,
+  timbre?: Timbre,
+  drone = false,
+  variant: Variant = 'extrait',
+  step = 0,
+) {
   const player = useMemo(() => {
-    const factor = slow ? SLOW_TEMPO : 1;
     const notes = parseMelody(song.melody);
-    const events = schedule(notes, song.bpm * factor, EXTRACT_SECONDS / factor);
+    const events = variantSchedule(notes, song.bpm, variant, step, slow);
     return new MelodyPlayer(events, extractLength(events), {
       timbre,
       drone: (drone && tonic(notes)) || undefined,
     });
-  }, [song, slow, timbre, drone]);
+  }, [song, slow, timbre, drone, variant, step]);
   const [state, setState] = useState<PlayState>('idle');
   const [elapsed, setElapsed] = useState(0);
 

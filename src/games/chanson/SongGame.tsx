@@ -11,7 +11,7 @@ import { ChoiceBoard } from '../choices/ChoiceBoard';
 import { useChoices } from '../choices/useChoices';
 import { songOption } from '../choices/choices';
 import { Replayable } from '../Replayable';
-import { useSavedDraw } from '../session';
+import { useSaved, useSavedDraw } from '../session';
 import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings } from '../../data/settings';
 import { drawForLevel } from '../levels';
@@ -20,6 +20,15 @@ import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
 import { EXTRACT_SECONDS, SONGS, type Song } from './songs';
 import { useMelody } from './useMelody';
+import { VariantPicker } from './VariantPicker';
+import {
+  isVariantChoice,
+  randomVariant,
+  STEPS,
+  VARIANTS,
+  type Variant,
+  type VariantChoice,
+} from './variants';
 
 /** Hauteurs de la forme d'onde décorative (maquette Musique). */
 const BARS = [18, 38, 56, 30, 46, 64, 40, 22, 48, 34, 54, 26, 14];
@@ -30,10 +39,27 @@ interface PlayerProps {
   timbre: Timbre;
   drone: boolean;
   onDrone: (on: boolean) => void;
+  /** Façon d'écouter (#47), affichée en une phrase ; absente hors du jeu « Quelle chanson ? ». */
+  variant?: Variant;
+  step?: number;
+  onMore?: () => void;
 }
 
-function Player({ song, slow, timbre, drone, onDrone }: PlayerProps) {
-  const { state, elapsed, length, toggle } = useMelody(song, slow, timbre, drone);
+/** Ce que joue le lecteur, en quelques mots. */
+function extractLabel(slow: boolean, variant: Variant = 'extrait', step = 0) {
+  if (slow) return 'Extrait ralenti';
+  if (variant === 'petit-a-petit') {
+    const count = STEPS[step];
+    if (count !== null) return `${count} premières notes`;
+  }
+  if (variant === 'ralenti') return 'Extrait au ralenti';
+  if (variant === 'accelere') return 'Extrait en accéléré';
+  if (variant === 'rythme') return 'Rythme de l’extrait';
+  return `Extrait de ${EXTRACT_SECONDS} secondes`;
+}
+
+function Player({ song, slow, timbre, drone, onDrone, variant, step = 0, onMore }: PlayerProps) {
+  const { state, elapsed, length, toggle } = useMelody(song, slow, timbre, drone, variant, step);
   const instrument = INSTRUMENTS[timbre];
   const progress = length ? elapsed / length : 0;
   const playing = state === 'playing';
@@ -67,10 +93,18 @@ function Player({ song, slow, timbre, drone, onDrone }: PlayerProps) {
       <span role="status">
         {state === 'unavailable'
           ? 'Le son n’est pas disponible sur cet appareil.'
-          : slow
-            ? `Extrait ralenti · ${clock(elapsed)}`
-            : `Extrait de ${EXTRACT_SECONDS} secondes · ${clock(elapsed)}`}
+          : `${extractLabel(slow, variant, step)} · ${clock(elapsed)}`}
       </span>
+      {variant && (
+        <p className="song-player__variant">
+          <strong>{VARIANTS[variant].label}</strong> : {VARIANTS[variant].explain}
+        </p>
+      )}
+      {variant === 'petit-a-petit' && step < STEPS.length - 1 && onMore && (
+        <button type="button" className="btn btn--secondary" onClick={onMore}>
+          Encore des notes
+        </button>
+      )}
       <div className="song-player__options">
         <span className="song-player__timbre">
           <span aria-hidden="true">{instrument.emoji}</span> Joué {instrument.label}
@@ -100,7 +134,16 @@ const SLOW_HINT = 'l’air passe au ralenti, fais-le réécouter';
  * escalier (écrits, air ralenti, première lettre).
  * Avec `pool` et « Répondre en montrant » (#123), l'enfant touche la chanson parmi des images.
  */
-export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }) {
+export function SongRound({
+  song,
+  pool,
+  variant: choice,
+}: {
+  song: Song;
+  pool?: readonly Song[];
+  /** Façon d'écouter choisie par le parent (#47) ; absente : l'extrait, sans explication. */
+  variant?: VariantChoice;
+}) {
   const choices = useChoices(pool && songOption(song), pool?.map(songOption));
   const written = writtenHints(song);
   const letter = firstLetterHint(song.title);
@@ -109,17 +152,24 @@ export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }
   // Un instrument tiré au hasard pour la manche, gardé pour l'air ralenti (#46).
   const [timbre] = useState(randomTimbre);
   const [drone, setDrone] = useState(false);
+  // « Au hasard » : une variante tirée pour la manche ; « Petit à petit » : palier en cours.
+  const [drawn] = useState(randomVariant);
+  const [step, setStep] = useState(0);
+  const variant = choice === 'hasard' ? drawn : choice;
   const slow = shown > written.length;
   return (
     <>
       {/* key : le lecteur repart de zéro au ralenti ou quand l'accompagnement change. */}
       <Player
-        key={`${slow ? 'lent' : 'normal'}-${drone ? 'bourdon' : 'seul'}`}
+        key={`${slow ? 'lent' : 'normal'}-${drone ? 'bourdon' : 'seul'}-${variant}-${step}`}
         song={song}
         slow={slow}
         timbre={timbre}
         drone={drone}
         onDrone={setDrone}
+        variant={variant}
+        step={step}
+        onMore={() => setStep(step + 1)}
       />
       {choices && <ChoiceBoard options={choices} answer={song.id} />}
       <ParentBlock
@@ -162,6 +212,12 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
     turns?.order,
   );
   const song = songs[round - 1];
+  const [variant, setVariant] = useSaved<VariantChoice>(
+    'chanson',
+    'variante',
+    () => 'extrait',
+    (v) => (isVariantChoice(v) ? v : undefined),
+  );
   useMarkSeen('chanson', finished ? undefined : song.id);
 
   if (finished)
@@ -178,9 +234,10 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
         player={turns?.playerAt(round)}
         team={team}
       />
+      <VariantPicker value={variant} onChange={setVariant} />
       {/* key : nouvelle manche = lecteur, indices et réponse remis à zéro. */}
       <TurnPlayer.Provider value={turns?.playerAt(round)}>
-        <SongRound key={song.id} song={song} pool={SONGS} />
+        <SongRound key={song.id} song={song} pool={SONGS} variant={variant} />
       </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar onSkip={() => answer(false)} onFound={() => answer(true)} skipLabel="Pas encore" />
