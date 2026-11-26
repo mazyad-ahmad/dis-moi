@@ -53,6 +53,8 @@ export interface DeckItem {
   shadow?: boolean;
   /** L'intrus (#63) : les trois images qui vont ensemble ; l'intrus est `emoji`. */
   others?: string[];
+  /** Remets dans l'ordre (#131) : les étapes de la séquence, dans l'ordre attendu. */
+  steps?: { text: string; emoji?: string }[];
   /** Médias du parent, gardés dans IndexedDB. */
   image?: Blob;
   audio?: Blob;

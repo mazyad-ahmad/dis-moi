@@ -105,10 +105,34 @@ const ITEM_FIELDS = new Set([
   'melody',
   'bpm',
   'others',
+  'steps',
 ]);
 
 /** L'intrus (#63) : trois images qui vont ensemble, plus l'intrus. */
 export const INTRUS_OTHERS = 3;
+
+/** Remets dans l'ordre (#131) : de 3 à 5 étapes par séquence. */
+export const STEPS_MIN = 3;
+export const STEPS_MAX = 5;
+
+/** Problème des étapes d'une séquence (Remets dans l'ordre, #131), ou rien. */
+function stepsProblem(steps: unknown): string | undefined {
+  const expected = `« steps » : ${STEPS_MIN} à ${STEPS_MAX} étapes { "text", "emoji" facultatif } attendues`;
+  if (!Array.isArray(steps) || steps.length < STEPS_MIN || steps.length > STEPS_MAX)
+    return expected;
+  for (const step of steps as unknown[]) {
+    if (typeof step !== 'object' || step === null) return expected;
+    const { text, emoji, ...rest } = step as Record<string, unknown>;
+    if (Object.keys(rest).length) return `étape : champ inconnu « ${Object.keys(rest)[0]} »`;
+    if (!isText(text)) return 'étape : texte (« text ») vide, trop long ou mal espacé';
+    if (emoji !== undefined && !isText(emoji, 16)) return 'étape : emoji invalide';
+  }
+  const list = steps as { text: string; emoji?: string }[];
+  if (new Set(list.map((s) => s.text)).size !== list.length) return 'étapes : texte en double';
+  const emojis = list.flatMap((s) => (s.emoji ? [s.emoji] : []));
+  if (new Set(emojis).size !== emojis.length) return 'étapes : emoji en double';
+  return undefined;
+}
 
 const isText = (v: unknown, max = MAX_TEXT): v is string =>
   typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max;
@@ -204,6 +228,11 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
       return `« others » : ${INTRUS_OTHERS} emoji différents attendus`;
     if (!item.emoji || (others as string[]).includes(item.emoji as string))
       return 'intrus (« emoji ») manquant ou parmi les « others »';
+  }
+  if (item.steps !== undefined) {
+    if (kind !== 'image') return '« steps » est réservé aux packs d’images';
+    const problem = stepsProblem(item.steps);
+    if (problem) return problem;
   }
   return kindRule(kind, item);
 }

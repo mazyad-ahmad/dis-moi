@@ -65,6 +65,7 @@ describe('façons de jouer', () => {
       'tri',
       'devine-mains',
       'suite',
+      'ordre',
     ]);
   });
 

@@ -26,6 +26,8 @@ import { CompteRound } from '../compte/CompteGame';
 import { COMPTE_ID } from '../compte/compte';
 import { SuiteRound } from '../suite/SuiteGame';
 import { SUITE_ID } from '../suite/suite';
+import { OrdreRound } from '../ordre/OrdreGame';
+import { ORDRE_ID } from '../ordre/ordre';
 import { useSaved } from '../session';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
@@ -176,12 +178,14 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   const disparu = card.type === 'deck' && game.id === DISPARU_ID;
   const compte = card.type === 'deck' && game.id === COMPTE_ID;
   const suite = card.type === 'deck' && game.id === SUITE_ID;
+  const ordre = card.type === 'deck' && game.id === ORDRE_ID;
   const later =
     card.type === 'song' ||
     intrus ||
     disparu ||
     compte ||
     suite ||
+    ordre ||
     (card.type === 'deck' && card.kind === 'question');
   return (
     <main className="screen">
@@ -204,12 +208,14 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
         {card.type === 'deck' && disparu && <DisparuRound key={round} item={card.item} />}
         {card.type === 'deck' && compte && <CompteRound key={round} item={card.item} />}
         {card.type === 'deck' && suite && <SuiteRound key={round} item={card.item} />}
+        {card.type === 'deck' && ordre && <OrdreRound key={round} item={card.item} />}
         {card.type === 'deck' &&
           game.id !== TREASURE_ID &&
           !intrus &&
           !disparu &&
           !compte &&
-          !suite && (
+          !suite &&
+          !ordre && (
             <DeckRound
               key={round}
               kind={card.kind}

@@ -79,7 +79,7 @@ it('formate les étoiles et le minuteur', () => {
 });
 
 describe('catalogue', () => {
-  it('a 20 jeux avec assez de cartes et des réponses uniques', () => {
+  it('a 21 jeux avec assez de cartes et des réponses uniques', () => {
     expect(CATALOGUE.map((g) => g.id)).toEqual([
       'animal',
       'couleur',
@@ -101,6 +101,7 @@ describe('catalogue', () => {
       'tri',
       'devine-mains',
       'suite',
+      'ordre',
     ]);
     for (const g of CATALOGUE) {
       expect(g.items.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);
@@ -111,7 +112,7 @@ describe('catalogue', () => {
   });
   it('montre une image pour chaque carte image et un bruit pour chaque cri', () => {
     for (const g of CATALOGUE.filter((c) => c.kind === 'image'))
-      for (const i of g.items) expect(i.color ?? i.emoji).toBeTruthy();
+      for (const i of g.items) expect(i.color ?? i.emoji ?? i.steps).toBeTruthy();
     for (const i of findCatalogueGame('animal')!.items) expect(i.text).toBeTruthy();
     for (const i of findCatalogueGame('couleur')!.items) expect(i.color).toMatch(/^#[0-9a-f]{6}$/);
   });

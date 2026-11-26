@@ -33,6 +33,8 @@ import { CompteRound } from '../compte/CompteGame';
 import { COMPTE_ID, seeded } from '../compte/compte';
 import { SuiteRound } from '../suite/SuiteGame';
 import { SUITE_ID } from '../suite/suite';
+import { OrdreRound } from '../ordre/OrdreGame';
+import { ORDRE_ID } from '../ordre/ordre';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -188,6 +190,8 @@ function DailyRound({ day }: { day: string }) {
         <CompteRound item={card.item} random={seeded(day)} choices={false} />
       ) : source.game === SUITE_ID && card.kind === 'image' ? (
         <SuiteRound item={card.item} random={seeded(day)} choices={false} />
+      ) : source.game === ORDRE_ID && card.kind === 'image' ? (
+        <OrdreRound item={card.item} random={seeded(day)} />
       ) : (
         <CardBody card={card} />
       )}

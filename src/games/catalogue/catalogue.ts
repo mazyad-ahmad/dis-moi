@@ -40,6 +40,7 @@ export const CATALOGUE_PACKS = [
   'tri',
   'devine-mains',
   'suite',
+  'ordre',
 ];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {

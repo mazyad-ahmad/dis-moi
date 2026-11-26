@@ -65,6 +65,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`) ; pour `chat`, un thème obligatoire (`journee`, `imaginer`…)     |
 | `lang`            | facultatif : langue de la carte si elle diffère du pack                                                           |
 | `others`          | L'intrus (`image`) : les trois emoji qui vont ensemble ; l'intrus est `emoji`, la règle cachée `text`             |
+| `steps`           | Remets dans l'ordre (`image`) : 3 à 5 étapes dans l'ordre attendu, `{"text", "emoji"}` (emoji facultatif)         |
 
 Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ inconnu est refusé
 (faute de frappe).
@@ -100,6 +101,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-tri.json`          | Où ça va ?                 | `question` |
 | `catalogue-devine-mains.json` | Devine avec tes mains      | `question` |
 | `catalogue-suite.json`        | La suite logique           | `image`    |
+| `catalogue-ordre.json`        | Remets dans l’ordre        | `image`    |
 
 ## Cartes « Compte avec moi »
 
@@ -117,6 +119,13 @@ syllabe d'avant (« gi-rafe ») ; les lettres, tirets ôtés, redonnent le mot. 
 en plus, c'est la variante « Trouve un mot qui a 3 syllabes. » : le nombre est lu dans `text` et
 `answer` donne des exemples découpés, séparés par des virgules. Règle dans
 `src/games/syllabes/syllabes.ts`.
+
+## Séquences « Remets dans l’ordre »
+
+Une carte de `catalogue-ordre.json` (#131) est une **séquence** : `answer` son nom (« Se laver
+les mains »), `text` la question lue par le parent, `steps` ses étapes dans l'ordre attendu,
+chacune avec son texte et, si possible, son emoji (sans doublon dans la séquence). Petits :
+3 étapes, Moyens : 4, Grands : 5. Règles dans `src/games/ordre/ordre.ts`.
 
 ## Éléments d'histoire
 

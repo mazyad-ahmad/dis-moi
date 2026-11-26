@@ -383,6 +383,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Où ça va ?**                | Un élément (emoji et mot) et deux ou trois familles : l'enfant dit où il va et pourquoi, le parent valide. Voir ci-dessous.                |
 | **Devine avec tes mains**     | Des objets dans un sac : on touche sans regarder, on décrit, on devine. Voir ci-dessous.                                                   |
 | **La suite logique**          | Une suite d'images avec une case vide à la fin : l'enfant dit ou montre ce qui vient ensuite. Voir ci-dessous.                             |
+| **Remets dans l’ordre**       | Des images mélangées (routines, graine, saisons…) : l'enfant dit l'ordre ou les déplace, le parent valide. Voir ci-dessous.                |
 
 ### Les émotions (#58)
 
@@ -685,6 +686,34 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   regénérée, comme dans Compte avec moi.
 - Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
+### Remets dans l’ordre (#131)
+
+- Jeu du catalogue rangé dans « Lire et compter » : 3 à 5 images mélangées, jamais déjà dans
+  le bon ordre. L'enfant dit l'ordre, ou déplace les images ; le parent peut aussi les déplacer
+  sous sa dictée. **Trouvé** / **Pas encore** comme ailleurs : rien n'est jugé par l'appli.
+- **Déplacer une image** : au doigt, toucher l'image puis la place où la mettre (les autres
+  glissent), ou ses flèches ▲ ▼ ; au clavier, flèches haut / bas (ou gauche / droite), Début et
+  Fin sur l'image, qui garde le focus. Chaque déplacement est annoncé (« Mettre son pantalon :
+  place 2. ») ; quand tout est en ordre : « Tout est dans l'ordre ! C'est le parent qui valide. »
+- **Selon le niveau de la carte** : Petits 3 étapes, Moyens 4, Grands 5.
+- 30 séquences (`src/content/catalogue-ordre.json`), 10 par niveau : routines (se laver les
+  mains, se brosser les dents, s'habiller, aller aux toilettes, aller au lit…), une graine qui
+  pousse, les saisons, les jours de la semaine, les moments de la journée, et quelques autres
+  (poussin, papillon, voyage de l'eau, gâteau…). Les suites qui tournent en rond (saisons,
+  jours, eau) disent dans la question par où commencer. Ce qui touche au four est fait par un
+  adulte ; le brossage suit les conseils courants (un petit pois de dentifrice, deux minutes,
+  on crache la mousse).
+- Champ de carte `steps` : les étapes dans l'ordre attendu (voir docs/PACKS.md).
+- **Bloc parent** : comment jouer ; derrière « Voir la réponse », le nom de la séquence, l'ordre
+  attendu et **Montrer le bon ordre**, qui remet les images en place. « Un indice » donne un
+  coup de pouce (« Avant le savon, il faut de l'eau. »). Un autre ordre qui se tient compte
+  aussi : c'est le parent qui valide.
+- Pas de « Répondre en montrant » : remettre les images en ordre est déjà la réponse en
+  montrant. Pas d'Image cachée.
+- Se regarde : proposé au Coucher, pas en Voiture. Se joue aussi dans le Grand Jeu et le Défi
+  du jour (même mélange toute la journée).
+- Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -897,7 +926,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
    Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?,
-   Devine avec tes mains, La suite logique)
+   Devine avec tes mains, La suite logique,
+   Remets dans l’ordre)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).
