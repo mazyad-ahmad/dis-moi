@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { storedSetting } from './storage';
 
 // #42 : façons de jouer, choisies sur l'accueil (Normal par défaut).
 
@@ -11,6 +12,8 @@ test('Voiture : seulement des jeux oraux, gardé au rechargement', async ({ page
   await expect(page.getByRole('link', { name: /Quelle chanson/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Quelle lettre/ })).toHaveCount(0);
   await expect(page.getByRole('link', { name: /Dessine ça/ })).toHaveCount(0);
+  // Attendre que le réglage soit écrit dans IndexedDB avant de recharger.
+  await expect.poll(() => storedSetting(page, 'gameMode')).toBe('voiture');
 
   await page.reload();
   await expect(

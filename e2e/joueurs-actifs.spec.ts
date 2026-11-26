@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { storedSetting } from './storage';
 
 test('qui joue aujourd’hui : seuls les joueurs actifs sont dans la partie', async ({ page }) => {
   await page.goto('./');
@@ -18,6 +19,13 @@ test('qui joue aujourd’hui : seuls les joueurs actifs sont dans la partie', as
   await sami.focus();
   await page.keyboard.press('Enter');
   await expect(sami).toHaveAttribute('aria-pressed', 'false');
+
+  // Attendre que le réglage soit écrit dans IndexedDB avant de recharger.
+  await expect
+    .poll(
+      async () => ((await storedSetting(page, 'absentPlayers')) as unknown[] | undefined)?.length,
+    )
+    .toBe(1);
 
   // Le choix est gardé après un rechargement.
   await page.reload();

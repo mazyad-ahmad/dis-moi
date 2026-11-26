@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { storedSetting } from './storage';
 
 // #40 : niveaux par âge. Le niveau de la partie se choisit sur l'accueil (Tous par défaut).
 
@@ -10,6 +11,8 @@ test('niveau Petits choisi sur l’accueil : les lettres des petits d’abord, g
   await expect(tous).toBeChecked();
   await page.getByText('Petits', { exact: true }).click();
   await expect(page.getByText('3-4 ans')).toBeVisible();
+  // Attendre que le réglage soit écrit dans IndexedDB avant de recharger.
+  await expect.poll(() => storedSetting(page, 'gameLevel')).toBe(1);
 
   await page.reload();
   await expect(page.getByLabel('Petits', { exact: true })).toBeChecked();

@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { storedSetting } from './storage';
 
 // #123 : « Répondre en montrant », choisi sur l'accueil. L'enfant touche la réponse parmi
 // quelques choix ; un mauvais choix ne fait rien, le bon est mis en valeur.
@@ -10,10 +11,14 @@ test('répondre en montrant : choix en grand, rien sur un mauvais choix', async 
   await page.getByText('En montrant', { exact: true }).click();
   await page.getByText('Petits', { exact: true }).click();
   await expect(page.getByText(/parmi 2 choix/)).toBeVisible();
+  // Attendre que les deux réglages soient écrits dans IndexedDB avant de recharger.
+  await expect.poll(() => storedSetting(page, 'showChoices')).toBe(true);
+  await expect.poll(() => storedSetting(page, 'gameLevel')).toBe(1);
 
   // Gardé au rechargement, comme le niveau.
   await page.reload();
   await expect(page.getByLabel('En montrant')).toBeChecked();
+  await expect(page.getByText(/parmi 2 choix/)).toBeVisible();
 
   await page.getByRole('link', { name: /Quelle lettre/ }).click();
   const board = page.getByRole('region', { name: 'Choix de l’enfant' });
