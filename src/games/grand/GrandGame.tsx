@@ -18,6 +18,8 @@ import { Replayable } from '../Replayable';
 import { revealOn } from '../reveal/reveal';
 import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureSeconds, treasureWay } from '../tresor/treasure';
+import { IntrusRound } from '../intrus/IntrusGame';
+import { INTRUS_ID } from '../intrus/intrus';
 import { useSaved } from '../session';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
@@ -164,7 +166,9 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
       />
     );
 
-  const later = card.type === 'song' || (card.type === 'deck' && card.kind === 'question');
+  const intrus = card.type === 'deck' && game.id === INTRUS_ID;
+  const later =
+    card.type === 'song' || intrus || (card.type === 'deck' && card.kind === 'question');
   return (
     <main className="screen">
       <GameHeader {...heading} />
@@ -182,7 +186,8 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
             seconds={treasureSeconds(hunt, mode)}
           />
         )}
-        {card.type === 'deck' && game.id !== TREASURE_ID && (
+        {card.type === 'deck' && intrus && <IntrusRound key={round} item={card.item} />}
+        {card.type === 'deck' && game.id !== TREASURE_ID && !intrus && (
           <DeckRound
             key={round}
             kind={card.kind}

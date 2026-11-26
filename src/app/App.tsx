@@ -23,6 +23,8 @@ import { DeckGame } from '../games/deck/DeckGame';
 import { DailyGame } from '../games/defi/DailyGame';
 import { TreasureGame } from '../games/tresor/TreasureGame';
 import { TREASURE_ID } from '../games/tresor/treasure';
+import { IntrusGame } from '../games/intrus/IntrusGame';
+import { INTRUS_ID } from '../games/intrus/intrus';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -95,6 +97,8 @@ function GameScreen({ id }: { id: string }) {
       <ModeGuard title={catalogue.name} needs={catalogue.needs}>
         {catalogue.id === TREASURE_ID ? (
           <TreasureGame game={catalogue} />
+        ) : catalogue.id === INTRUS_ID ? (
+          <IntrusGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}

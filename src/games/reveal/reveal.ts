@@ -46,13 +46,13 @@ export function canReveal(item: DeckItem): boolean {
 /**
  * Jeux du catalogue où l'option a un sens : type Image, sans mime (l'enfant doit voir ce
  * qu'il mime), avec des cartes à dévoiler (pas les pastilles de couleur) et hors Ombres (#61),
- * qui cache déjà l'image à sa façon.
+ * qui cache déjà l'image à sa façon, et hors L'intrus (#63), qui a son propre écran.
  */
 export function revealsInCatalogue(game: CatalogueGame): boolean {
   return (
     game.kind === 'image' &&
     !game.needs.moves &&
-    !game.items.some((item) => item.shadow) &&
+    !game.items.some((item) => item.shadow || item.others) &&
     game.items.some(canReveal)
   );
 }

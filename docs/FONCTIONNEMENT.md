@@ -311,6 +311,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Ça rime avec…**       | « Trouve un mot qui rime avec _chat_ » : l'enfant cherche, le parent a des exemples. Voir ci-dessous.                                      |
 | **Les contraires**      | « Le contraire de _grand_ ? » : l'enfant répond, le parent a les réponses acceptées. Voir ci-dessous.                                      |
 | **Ombres**              | Une silhouette noire, l'enfant devine ; « Voir la réponse » la montre en couleur. Voir ci-dessous.                                         |
+| **L’intrus**            | Quatre images, une ne va pas avec les autres : l'enfant la montre du doigt, le parent valide. Voir ci-dessous.                             |
 
 ### Les émotions (#58)
 
@@ -407,6 +408,24 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   détourage, est assombrie et floutée, puis montrée nette avec la réponse. Le choix est gardé
   dans le fichier de jeu partagé et la sauvegarde (champ facultatif `shadow`).
 - Dans le Grand Jeu et le Défi du jour, la carte se joue aussi en ombre.
+
+### L’intrus (#63)
+
+- Jeu du catalogue, rangé dans « Lire et compter » (classer, raisonner) : « Laquelle ne va pas
+  avec les autres ? ». Une grille de deux sur deux, quatre emoji ; **la place de l'intrus est
+  tirée au hasard** à chaque manche, les trois autres images mélangées.
+- 40 cartes (`src/content/catalogue-intrus.json`) : Petits (14), des catégories évidentes
+  (trois fruits et une voiture) ; Moyens (13), une couleur, un lieu de vie, un usage ; Grands
+  (13), des règles plus fines (le manchot ne vole pas, l'araignée a huit pattes, « ch » de chat).
+  Champ `others` : les trois images qui vont ensemble ; `emoji` : l'intrus ; `text` : la règle.
+- **Toucher une image ne valide rien** : elle est entourée, sans dire si c'est la bonne
+  (« Pourquoi celle-là ? C'est le parent qui valide »). Le parent garde la main avec
+  **Trouvé** / **Pas encore**. Derrière « Voir la réponse » : l'intrus, sa place (« en bas à
+  droite ») et la règle cachée (« Ce n'est pas un fruit »). Une autre bonne raison donnée par
+  l'enfant compte aussi. « Un indice » donne un coup de pouce sans la règle.
+- Se regarde : proposé au Coucher, pas en Voiture. La grille est toujours là, avec ou sans
+  « Répondre en montrant ». Se joue aussi dans le Grand Jeu et le Défi du jour.
+- Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
 ### Le Grand Jeu (#41)
 
@@ -617,7 +636,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
-   Ça rime avec…, Les contraires, Ombres)
+   Ça rime avec…, Les contraires, Ombres, L’intrus)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

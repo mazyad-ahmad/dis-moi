@@ -21,6 +21,8 @@ import { consigneOf } from '../jacques/consigne';
 import { JacquesCue } from '../jacques/JacquesCue';
 import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureWay } from '../tresor/treasure';
+import { IntrusRound } from '../intrus/IntrusGame';
+import { INTRUS_ID } from '../intrus/intrus';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -163,6 +165,8 @@ function DailyRound({ day }: { day: string }) {
           way={treasureWay('run', getSettings().gameMode)}
           seconds={0}
         />
+      ) : source.game === INTRUS_ID && card.kind === 'image' ? (
+        <IntrusRound item={card.item} />
       ) : (
         <CardBody card={card} />
       )}

@@ -51,6 +51,8 @@ export interface DeckItem {
    * couleur après « Voir la réponse ». Posé d'après le jeu (pack ou jeu créé), jamais enregistré.
    */
   shadow?: boolean;
+  /** L'intrus (#63) : les trois images qui vont ensemble ; l'intrus est `emoji`. */
+  others?: string[];
   /** Médias du parent, gardés dans IndexedDB. */
   image?: Blob;
   audio?: Blob;

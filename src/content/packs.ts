@@ -101,7 +101,11 @@ const ITEM_FIELDS = new Set([
   'lang',
   'melody',
   'bpm',
+  'others',
 ]);
+
+/** L'intrus (#63) : trois images qui vont ensemble, plus l'intrus. */
+export const INTRUS_OTHERS = 3;
 
 const isText = (v: unknown, max = MAX_TEXT): v is string =>
   typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max;
@@ -178,6 +182,20 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     return 'langue (« lang ») : code à deux lettres attendu';
   if (kind !== 'melody' && (item.melody !== undefined || item.bpm !== undefined))
     return '« melody » et « bpm » sont réservés aux packs d’airs';
+  if (item.others !== undefined) {
+    // L'intrus (#63) : trois images qui vont ensemble, l'intrus est l'« emoji ».
+    const others = item.others;
+    if (kind !== 'image') return '« others » est réservé aux packs d’images';
+    if (!(
+      Array.isArray(others) &&
+      others.length === INTRUS_OTHERS &&
+      others.every((e) => isText(e, 16)) &&
+      new Set(others).size === INTRUS_OTHERS
+    ))
+      return `« others » : ${INTRUS_OTHERS} emoji différents attendus`;
+    if (!item.emoji || (others as string[]).includes(item.emoji as string))
+      return 'intrus (« emoji ») manquant ou parmi les « others »';
+  }
   return kindRule(kind, item);
 }
 

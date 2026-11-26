@@ -64,6 +64,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                             |
 | `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`) ; pour `chat`, un thème obligatoire (`journee`, `imaginer`…)     |
 | `lang`            | facultatif : langue de la carte si elle diffère du pack                                                           |
+| `others`          | L'intrus (`image`) : les trois emoji qui vont ensemble ; l'intrus est `emoji`, la règle cachée `text`             |
 
 Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ inconnu est refusé
 (faute de frappe).
@@ -89,6 +90,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-rime.json`         | Ça rime avec…              | `question` |
 | `catalogue-contraire.json`    | Les contraires             | `question` |
 | `catalogue-ombre.json`        | Ombres                     | `image`    |
+| `catalogue-intrus.json`       | L’intrus                   | `image`    |
 
 ## Cartes « vrai ou faux »
 
