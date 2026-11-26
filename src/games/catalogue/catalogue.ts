@@ -29,6 +29,8 @@ export const CATALOGUE_PACKS = [
   'tresor',
   'vrai-faux',
   'jacques',
+  'rime',
+  'contraire',
 ];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {

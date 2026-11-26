@@ -112,7 +112,7 @@
   en douceur : ni confettis ni vibration de fête, la mascotte dort, « C'est l'heure de dormir.
   Bonne nuit ! », pas de bouton « Un autre jeu ».
 - **Voiture** : seulement des cartes orales (Quelle chanson ?, Raconte-moi, Quel animal ?, Devinettes,
-  Vrai ou faux rigolo, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
+  Vrai ou faux rigolo, Ça rime avec…, Les contraires, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
   regarder ni à dessiner.
 - L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
   conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
@@ -284,6 +284,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Chasse au trésor**    | « Trouve quelque chose de rouge » : l'enfant cherche dans la maison, le parent valide l'objet. Voir ci-dessous.                            |
 | **Vrai ou faux rigolo** | Le parent lit une phrase, l'enfant crie « vrai » ou « faux ». Voir ci-dessous.                                                             |
 | **Jacques a dit**       | Le parent lit une consigne ; sans « Jacques a dit », c'est un piège et l'enfant ne bouge pas. Voir ci-dessous.                             |
+| **Ça rime avec…**       | « Trouve un mot qui rime avec _chat_ » : l'enfant cherche, le parent a des exemples. Voir ci-dessous.                                      |
+| **Les contraires**      | « Le contraire de _grand_ ? » : l'enfant répond, le parent a les réponses acceptées. Voir ci-dessous.                                      |
 
 ### Les émotions (#58)
 
@@ -348,6 +350,20 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Fait bouger : écarté au Coucher et en Voiture. Une carte est un piège ou non d'après son thème
   (`piege` ou `jacques-a-dit`, `src/games/jacques/consigne.ts`), aussi dans le Grand Jeu et le
   Défi du jour.
+
+### Ça rime avec… et Les contraires (#59)
+
+- Deux jeux de langage du catalogue, tout à l'oral : le parent lit « Trouve un mot qui rime
+  avec « chat » » ou « Le contraire de « grand » ? », l'enfant répond. Proposés en Voiture et
+  au Coucher.
+- 40 cartes chacun (`src/content/catalogue-rime.json`, `catalogue-contraire.json`), sur les
+  trois niveaux. Chaque réponse liste plusieurs réponses acceptées, séparées par des virgules
+  (« Rat, plat, chocolat, pyjama » ; « Petit, minuscule, tout petit ») ; un même mot n'est
+  accepté que sur une carte.
+- Le bloc parent montre d'emblée un exemple à souffler (« Un petit animal qui aime le
+  fromage. »), puis la première lettre ; « Voir la réponse » montre la liste. Pour les rimes,
+  la liste n'est qu'un exemple : tout mot qui rime compte, le parent juge.
+- En montrant : l'emoji de la première réponse (🐀 Rat…) parmi les réponses d'autres cartes.
 
 ### Le Grand Jeu (#41)
 
@@ -555,7 +571,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
-   Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit)
+   Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
+   Ça rime avec…, Les contraires)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

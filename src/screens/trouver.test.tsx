@@ -31,7 +31,7 @@ it('Ajouter un jeu : groupé par type, avec âge et ce que le jeu fait travaille
     expect(within(catalogue).getByRole('heading', { name: type })).toBeInTheDocument();
   expect(within(catalogue).getByText(/Fait bouger et s’exprimer/)).toBeInTheDocument();
   expect(within(catalogue).getAllByText(/Dès 3 ans/).length).toBeGreaterThan(0);
-  expect(shownGames()).toHaveLength(9);
+  expect(shownGames()).toHaveLength(11);
   // Recherche seulement au-delà de 20 jeux.
   expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
 });
@@ -54,14 +54,23 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Quelle couleur ?',
     'Devinettes',
     'Quelle émotion ?',
+    'Ça rime avec…',
+    'Les contraires',
     'Mime l’émotion',
   ]);
-  expect(status).toHaveTextContent('6 jeux sur 9');
+  expect(status).toHaveTextContent('8 jeux sur 11');
 
   await user.click(within(moments).getByRole('button', { name: 'Pour la voiture' }));
-  expect(shownGames()).toEqual(['Quel animal ?', 'Vrai ou faux rigolo', 'Devinettes']);
+  const oral = [
+    'Quel animal ?',
+    'Vrai ou faux rigolo',
+    'Devinettes',
+    'Ça rime avec…',
+    'Les contraires',
+  ];
+  expect(shownGames()).toEqual(oral);
   await user.click(within(ages).getByRole('button', { name: '7 ans et plus' }));
-  expect(shownGames()).toEqual(['Quel animal ?', 'Vrai ou faux rigolo', 'Devinettes']);
+  expect(shownGames()).toEqual(oral);
 
   // Un geste : toucher de nouveau la pastille choisie la retire.
   await user.click(parler);
@@ -71,12 +80,14 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Quel animal ?',
     'Vrai ou faux rigolo',
     'Devinettes',
+    'Ça rime avec…',
+    'Les contraires',
     'Chasse au trésor',
   ]);
 
   // Ou tout retirer d'un coup.
   await user.click(screen.getByRole('button', { name: 'Retirer les filtres' }));
-  expect(shownGames()).toHaveLength(9);
+  expect(shownGames()).toHaveLength(11);
   expect(status).toHaveTextContent('');
   for (const group of [types, ages, moments])
     expect(within(group).queryAllByRole('button', { pressed: true })).toHaveLength(0);

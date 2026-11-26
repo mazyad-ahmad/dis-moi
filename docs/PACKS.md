@@ -85,6 +85,8 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-tresor.json`       | Chasse au trésor           | `question` |
 | `catalogue-vrai-faux.json`    | Vrai ou faux rigolo        | `question` |
 | `catalogue-jacques.json`      | Jacques a dit              | `question` |
+| `catalogue-rime.json`         | Ça rime avec…              | `question` |
+| `catalogue-contraire.json`    | Les contraires             | `question` |
 
 ## Cartes « vrai ou faux »
 
