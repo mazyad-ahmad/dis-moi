@@ -152,6 +152,16 @@ describe('un pack invalide nomme la carte fautive', () => {
       withItem(getPack('dessin'), 0, { prolonger: 'Demande-lui sa couleur.' }),
       '« prolonger » n’est pas montré pour un mot à dessiner',
     ],
+    [
+      'élément d’histoire sans rôle',
+      withItem(getPack('histoire'), 0, { tags: ['heros', 'lieu'] }),
+      'carte 1 (« un chat ») : rôle (« tags ») : un seul parmi heros, lieu, objet',
+    ],
+    [
+      'élément d’histoire sans image',
+      withItem(getPack('histoire'), 0, { emoji: undefined }),
+      'carte 1 (« un chat ») : image (« emoji ») manquante',
+    ],
     ['type inconnu', { ...animals, kind: 'video' }, 'type (« kind ») inconnu'],
     ['type de jeu inconnu', { ...animals, activities: ['nager'] }, '« activities »'],
     ['type de jeu en double', { ...animals, activities: ['parler', 'parler'] }, '« activities »'],

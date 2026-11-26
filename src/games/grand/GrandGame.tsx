@@ -3,7 +3,8 @@ import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { Mascot } from '../../components/Mascot';
-import { getSettings } from '../../data/settings';
+import { useCustomGames } from '../../data/customGames';
+import { getSettings, useSettings } from '../../data/settings';
 import { TileIcon } from '../../screens/HomeGames';
 import { SongRound } from '../chanson/SongGame';
 import { SONGS } from '../chanson/songs';
@@ -15,6 +16,23 @@ import { glyphPool, glyphTitle } from '../lettres/bank';
 import { GlyphRound } from '../lettres/LettersGame';
 import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
+import { revealOn } from '../reveal/reveal';
+import { TreasureRound } from '../tresor/TreasureGame';
+import { TREASURE_ID, treasureSeconds, treasureWay } from '../tresor/treasure';
+import { IntrusRound } from '../intrus/IntrusGame';
+import { INTRUS_ID } from '../intrus/intrus';
+import { DisparuRound } from '../disparu/DisparuGame';
+import { DISPARU_ID } from '../disparu/disparu';
+import { CompteRound } from '../compte/CompteGame';
+import { COMPTE_ID } from '../compte/compte';
+import { SuiteRound } from '../suite/SuiteGame';
+import { SUITE_ID } from '../suite/suite';
+import { OrdreRound } from '../ordre/OrdreGame';
+import { ORDRE_ID } from '../ordre/ordre';
+import { HeureRound } from '../heure/HeureGame';
+import { HEURE_ID } from '../heure/heure';
+import { MarcheRound } from '../marche/MarcheGame';
+import { MARCHE_ID } from '../marche/marche';
 import { useSaved } from '../session';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
@@ -123,10 +141,16 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   const [seconds] = useState(() =>
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
   );
+  // Chasse au trésor (#60) : partout dans la maison, sauf au Coucher et en Voiture.
+  const [mode] = useState(() => getSettings().gameMode);
+  const hunt = treasureWay('run', mode);
   // Dernière manche déjà annoncée par l'écran-éclair.
   const [announced, setAnnounced] = useState(0);
   const go = useCallback(() => setAnnounced(round), [round]);
   const photo = useFoundPhoto();
+  // Image cachée (#62) : comme dans le jeu d'origine.
+  const { revealCatalogue } = useSettings();
+  const custom = useCustomGames();
 
   if (finished)
     return (
@@ -169,7 +193,23 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
       />
     );
 
-  const later = card.type === 'song' || (card.type === 'deck' && card.kind === 'question');
+  const intrus = card.type === 'deck' && game.id === INTRUS_ID;
+  const disparu = card.type === 'deck' && game.id === DISPARU_ID;
+  const compte = card.type === 'deck' && game.id === COMPTE_ID;
+  const suite = card.type === 'deck' && game.id === SUITE_ID;
+  const ordre = card.type === 'deck' && game.id === ORDRE_ID;
+  const heure = card.type === 'deck' && game.id === HEURE_ID;
+  const marche = card.type === 'deck' && game.id === MARCHE_ID;
+  const later =
+    card.type === 'song' ||
+    intrus ||
+    disparu ||
+    compte ||
+    suite ||
+    ordre ||
+    heure ||
+    marche ||
+    (card.type === 'deck' && card.kind === 'question');
   return (
     <main className="screen">
       <GameHeader {...heading} />
@@ -179,9 +219,38 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
         {card.type === 'glyph' && (
           <GlyphRound key={round} card={card.glyph} pool={glyphPool(card.glyph)} />
         )}
-        {card.type === 'deck' && (
-          <DeckRound key={round} kind={card.kind} item={card.item} pool={deckPool(game)} />
+        {card.type === 'deck' && game.id === TREASURE_ID && (
+          <TreasureRound
+            key={round}
+            item={card.item}
+            way={hunt}
+            seconds={treasureSeconds(hunt, mode)}
+          />
         )}
+        {card.type === 'deck' && intrus && <IntrusRound key={round} item={card.item} />}
+        {card.type === 'deck' && disparu && <DisparuRound key={round} item={card.item} />}
+        {card.type === 'deck' && compte && <CompteRound key={round} item={card.item} />}
+        {card.type === 'deck' && suite && <SuiteRound key={round} item={card.item} />}
+        {card.type === 'deck' && ordre && <OrdreRound key={round} item={card.item} />}
+        {card.type === 'deck' && heure && <HeureRound key={round} item={card.item} />}
+        {card.type === 'deck' && marche && <MarcheRound key={round} item={card.item} />}
+        {card.type === 'deck' &&
+          game.id !== TREASURE_ID &&
+          !intrus &&
+          !disparu &&
+          !compte &&
+          !suite &&
+          !ordre &&
+          !heure &&
+          !marche && (
+            <DeckRound
+              key={round}
+              kind={card.kind}
+              item={card.item}
+              pool={deckPool(game)}
+              reveal={revealOn(game.id, revealCatalogue, custom)}
+            />
+          )}
       </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar

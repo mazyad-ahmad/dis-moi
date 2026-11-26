@@ -1,0 +1,47 @@
+/* ---------- Compte avec moi (#65) ---------- */
+
+.compte-card {
+  min-height: 0;
+}
+.compte-groups {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+/*
+ * Le champ garde ses proportions et occupe la largeur : sur un écran de 320 px, une case fait
+ * au moins 48 px et l'emoji près de 30 px, assez pour compter du doigt.
+ */
+.compte-field {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 20px;
+  background: var(--sky);
+}
+.compte-field text {
+  user-select: none;
+}
+/* Objets enlevés (soustraction) : pâlis et barrés, toujours visibles. */
+.compte-field .is-crossed text {
+  opacity: 0.35;
+}
+.compte-cross {
+  stroke: var(--ink);
+  stroke-width: 8;
+  stroke-linecap: round;
+  fill: none;
+}
+.compte-sign {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 700;
+  color: var(--ink);
+}
+/* Constellation (dé) : trois sur trois, moins large pour ne pas prendre tout l'écran. */
+.compte-field--3 {
+  max-width: 260px;
+}

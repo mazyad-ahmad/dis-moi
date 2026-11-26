@@ -39,6 +39,8 @@ export interface Settings {
   grandExcluded: string[];
   /** Défi du jour sur l'accueil (#43). */
   dailyChallenge: boolean;
+  /** Jeux Image du catalogue joués en « Image cachée » (#62) ; jeux créés : leur champ `reveal`. */
+  revealCatalogue: string[];
   /** Façon de jouer (#42), choisie sur l'accueil : Normal, Express, Coucher ou Voiture. */
   gameMode: GameMode;
   /** « Répondre en montrant » (#123), choisi sur l'accueil : l'enfant touche la réponse parmi des choix. */
@@ -75,6 +77,7 @@ export const DEFAULT_SETTINGS: Settings = {
   absentPlayers: [],
   grandExcluded: [],
   dailyChallenge: true,
+  revealCatalogue: [],
   gameMode: DEFAULT_MODE,
   showChoices: false,
   turnMode: 'team',

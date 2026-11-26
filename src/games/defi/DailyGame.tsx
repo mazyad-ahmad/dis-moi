@@ -16,6 +16,24 @@ import { SongRound } from '../chanson/SongGame';
 import { DeckRound } from '../deck/DeckGame';
 import { useFoundPhoto } from '../deck/useFoundPhoto';
 import { DrawingPad } from '../dessin/DrawingPad';
+import { TreasureRound } from '../tresor/TreasureGame';
+import { TREASURE_ID, treasureWay } from '../tresor/treasure';
+import { IntrusRound } from '../intrus/IntrusGame';
+import { INTRUS_ID } from '../intrus/intrus';
+import { triOf } from '../tri/tri';
+import { TriRound } from '../tri/TriRound';
+import { DisparuRound } from '../disparu/DisparuGame';
+import { DISPARU_ID } from '../disparu/disparu';
+import { CompteRound } from '../compte/CompteGame';
+import { COMPTE_ID, seeded } from '../compte/compte';
+import { SuiteRound } from '../suite/SuiteGame';
+import { SUITE_ID } from '../suite/suite';
+import { OrdreRound } from '../ordre/OrdreGame';
+import { ORDRE_ID } from '../ordre/ordre';
+import { HeureRound } from '../heure/HeureGame';
+import { HEURE_ID } from '../heure/heure';
+import { MarcheRound } from '../marche/MarcheGame';
+import { MARCHE_ID } from '../marche/marche';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -118,7 +136,31 @@ function DailyRound({ day }: { day: string }) {
     <main className="screen">
       <GameHeader category={DAILY_NAME} title={source.name} />
       <p className="muted">Une carte surprise, la même toute la journée.</p>
-      <CardBody card={card} />
+      {source.game === TREASURE_ID && card.kind === 'question' ? (
+        <TreasureRound
+          item={card.item}
+          way={treasureWay('run', getSettings().gameMode)}
+          seconds={0}
+        />
+      ) : card.kind === 'question' && triOf(card.item) ? (
+        <TriRound item={card.item} />
+      ) : source.game === INTRUS_ID && card.kind === 'image' ? (
+        <IntrusRound item={card.item} />
+      ) : source.game === DISPARU_ID && card.kind === 'image' ? (
+        <DisparuRound item={card.item} />
+      ) : source.game === COMPTE_ID && card.kind === 'image' ? (
+        <CompteRound item={card.item} random={seeded(day)} choices={false} />
+      ) : source.game === SUITE_ID && card.kind === 'image' ? (
+        <SuiteRound item={card.item} random={seeded(day)} choices={false} />
+      ) : source.game === ORDRE_ID && card.kind === 'image' ? (
+        <OrdreRound item={card.item} random={seeded(day)} />
+      ) : source.game === HEURE_ID && card.kind === 'image' ? (
+        <HeureRound item={card.item} choices={false} />
+      ) : source.game === MARCHE_ID && card.kind === 'image' ? (
+        <MarcheRound item={card.item} choices={false} />
+      ) : (
+        <CardBody card={card} />
+      )}
       <div className="spacer" />
       <AnswerBar
         onSkip={() => navigate('/')}

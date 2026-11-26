@@ -6,6 +6,10 @@ import type { DeckItem } from '../deck/types';
 import { DRAW_WORDS } from '../dessin/words';
 import { DIGITS, LETTERS, type GlyphCard } from '../lettres/bank';
 import { needsOf, type PlayNeeds } from '../modes';
+import { TETE_ID } from '../tete/tilt';
+import { MAINS_ID } from '../mains/mains';
+import { SITUATION_ID } from '../situation/situation';
+import { NIOUI_ID } from '../nioui/nioui';
 
 /**
  * Défi du jour (#43) : une carte surprise par jour, tirée de tous les jeux intégrés.
@@ -32,6 +36,13 @@ export interface DailySource {
   needs: PlayNeeds;
   cards: DailyCard[];
 }
+
+/**
+ * Jeux du catalogue sans carte surprise : Devine-tête (#67) demande le téléphone sur le front,
+ * Devine avec tes mains (#134) un sac d'objets préparé, Ni oui ni non (#135) une suite de
+ * questions, et Que fais-tu si… ? (#133) n'a pas de bonne réponse.
+ */
+const NOT_DAILY = new Set([TETE_ID, MAINS_ID, SITUATION_ID, NIOUI_ID]);
 
 /** Tous les jeux intégrés, même ceux du catalogue pas encore ajoutés à l'accueil. */
 export const DAILY_SOURCES: DailySource[] = [
@@ -63,7 +74,7 @@ export const DAILY_SOURCES: DailySource[] = [
     needs: needsOf('draw'),
     cards: DRAW_WORDS.map((word) => ({ kind: 'draw', word })),
   },
-  ...CATALOGUE.map((g): DailySource => ({
+  ...CATALOGUE.filter((g) => !NOT_DAILY.has(g.id)).map((g): DailySource => ({
     game: g.id,
     name: g.name,
     category: g.category,

@@ -26,8 +26,11 @@ export interface Rounds {
   rounds: number;
   stars: number;
   finished: boolean;
-  /** Trouvé (+1 étoile) ou Passer / Pas encore (0). */
-  answer: (found: boolean) => void;
+  /**
+   * Trouvé (+1 étoile) ou Passer / Pas encore (0). `gesture` (Devine-tête, #67) : un son
+   * distinct pour chaque réponse, et pas de félicitation parlée en cours de partie.
+   */
+  answer: (found: boolean, gesture?: boolean) => void;
   /** En équipes (#44) : l'équipe de la manche en cours, avec ses étoiles. */
   team?: TeamScore;
   /** En équipes : les étoiles de chaque équipe, dans l'ordre de l'écran des équipes. */
@@ -113,7 +116,7 @@ export function useRounds(
   }, [starsAtStart]);
 
   const answer = useCallback(
-    (found: boolean) => {
+    (found: boolean, gesture = false) => {
       if (played >= rounds) return;
       const progressed = { played: played + 1, stars: stars + (found ? 1 : 0) };
       const foundNow = party ? [...(foundRounds ?? []), found] : undefined;
@@ -126,10 +129,11 @@ export function useRounds(
       };
       const total = others.current === null ? null : others.current + data.stars;
       const finished = data.played >= rounds;
-      const sound = answerSound(found, finished, total, REWARDS);
+      const sound = answerSound(found, finished, total, REWARDS, gesture);
       void playSound(sound);
       // Félicitation parlée (#116), après le son : jamais sur « Passer », toujours en fin de partie.
-      if (found || finished)
+      // Devine-tête : elle couvrirait les autres qui font deviner le mot suivant.
+      if ((found && !gesture) || finished)
         praise({
           stars: finished ? data.stars : undefined,
           afterMs: getSettings().sounds ? soundLength(sound) * 1000 + 150 : 0,

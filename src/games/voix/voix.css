@@ -1,0 +1,36 @@
+/* ---------- Voix rigolotes (#70) ---------- */
+.voix-card {
+  min-height: 0;
+}
+.voix-card__emoji {
+  font-size: 64px;
+  line-height: 1.1;
+}
+.voix-hidden {
+  min-height: 0;
+}
+.voix-record {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+.voix-record p {
+  margin: 0;
+  min-height: 22px;
+  text-align: center;
+}
+/* Quatre voix en grille de deux sur deux, cibles bien plus grandes que 64 px. */
+.voix-effects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.voix-effect {
+  min-height: 104px;
+}
+/* La voix qui joue (ou choisie, sans micro) : mise en avant neutre. */
+.voix-effect[aria-pressed='true'] {
+  border-color: var(--river);
+  box-shadow: 0 0 0 3px var(--river);
+}

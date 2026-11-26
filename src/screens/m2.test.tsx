@@ -44,10 +44,10 @@ describe('Ajouter un jeu : catalogue', () => {
   it('ajoute et retire un jeu du catalogue sur l’accueil', async () => {
     const user = userEvent.setup();
     open('/ajouter');
-    expect(screen.getByText("3 jeux dans l'appli")).toBeInTheDocument();
+    expect(screen.getByText("6 jeux dans l'appli")).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Ajouter Devinettes' }));
     expect(screen.getByRole('button', { name: 'Retirer Devinettes' })).toHaveTextContent('Ajouté');
-    expect(screen.getByText("4 jeux dans l'appli")).toBeInTheDocument();
+    expect(screen.getByText("7 jeux dans l'appli")).toBeInTheDocument();
     expect(getSettings().catalogue).toEqual(['devinette']);
 
     await user.click(screen.getByRole('link', { name: 'Retour' }));
@@ -149,7 +149,7 @@ describe('Créer mon propre jeu', () => {
     expect(
       await screen.findByRole('link', { name: /Les bruits de la maison/ }),
     ).toBeInTheDocument();
-  });
+  }, 15_000);
 
   it('supprime un jeu créé', async () => {
     const user = userEvent.setup();

@@ -1,0 +1,24 @@
+/* ---------- Jacques a dit (#57) ---------- */
+
+.jacques-cue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--forest);
+  background: var(--meadow);
+  color: var(--ink);
+}
+.jacques-cue strong {
+  font: var(--text-h3);
+}
+.jacques-cue--trap {
+  border-color: var(--sun);
+  background: var(--paper);
+}
+.jacques-cue__star {
+  margin: 8px 0 0;
+}

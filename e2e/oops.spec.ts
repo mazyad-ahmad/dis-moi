@@ -2,6 +2,24 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 /** Jeu créé abîmé (nom manquant) écrit directement dans la base : son écran plante au rendu. */
+/** Retire le jeu abîmé : l'accueil relit la liste des jeux créés. */
+async function removeGame(page: import('@playwright/test').Page, id: number) {
+  return page.evaluate(
+    (id) =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('dis-moi');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const tx = open.result.transaction('customGames', 'readwrite');
+          tx.objectStore('customGames').delete(id);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        };
+      }),
+    id,
+  );
+}
+
 async function addBrokenGame(page: import('@playwright/test').Page) {
   return page.evaluate(
     () =>
@@ -41,6 +59,7 @@ test('une erreur au rendu affiche l’écran « Oups », sans requête réseau',
   await page.getByText('Détail technique').click();
   await expect(page.getByText(/TypeError/)).toBeVisible();
 
+  await removeGame(page, id);
   await page.getByRole('button', { name: 'Accueil' }).click();
   await expect(page.getByRole('heading', { name: 'On joue à quoi ?' })).toBeVisible();
 });

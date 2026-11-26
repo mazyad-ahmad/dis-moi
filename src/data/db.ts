@@ -71,6 +71,10 @@ export interface CustomGame {
   activity?: Activity;
   /** Âge facultatif (#137) : niveau visé ; absent : tous les âges. */
   level?: Level;
+  /** Ombres (#61), jeux Image : cartes montrées dans l'ombre, révélées avec la réponse. */
+  shadow?: boolean;
+  /** Image cachée (#62), jeux Image : l'image se dévoile par paliers. */
+  reveal?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -96,19 +100,37 @@ export interface Drawing {
   createdAt: number;
 }
 
+/**
+ * Histoire inventée par l'enfant (#68), enregistrée au micro sur un geste du parent et gardée
+ * dans le « Livre d'histoires ». Les trois images tirées sont recopiées (texte et emoji).
+ */
+export interface Story {
+  id: number;
+  audio: Blob;
+  createdAt: number;
+  /** Héros, lieu et objet de l'histoire, dans cet ordre. */
+  parts: { answer: string; emoji: string }[];
+}
+
 export interface Setting {
   key: string;
   value: unknown;
 }
 
-/** Base locale : rien ne quitte l'appareil. */
-export const db = new Dexie('dis-moi') as Dexie & {
+/**
+ * Base locale : rien ne quitte l'appareil.
+ * Cache des requêtes en direct désactivé : il partage une même lecture entre les écrans, et
+ * une lecture interrompue y laissait l'onglet Étoiles bloqué après une remise à zéro (#143).
+ * Quelques dizaines de lignes : relire la base coûte moins que ce risque.
+ */
+export const db = new Dexie('dis-moi', { cache: 'disabled' }) as Dexie & {
   players: EntityTable<Player, 'id'>;
   settings: EntityTable<Setting, 'key'>;
   games: EntityTable<GameRecord, 'id'>;
   customGames: EntityTable<CustomGame, 'id'>;
   praises: EntityTable<Praise, 'id'>;
   drawings: EntityTable<Drawing, 'id'>;
+  stories: EntityTable<Story, 'id'>;
 };
 
 db.version(1).stores({
@@ -146,7 +168,12 @@ db.version(5)
     );
   });
 
-// Galerie des dessins gardés (#52).
+// Livre d'histoires (#68).
 db.version(6).stores({
+  stories: '++id, createdAt',
+});
+
+// Galerie des dessins gardés (#52).
+db.version(7).stores({
   drawings: '++id, createdAt',
 });

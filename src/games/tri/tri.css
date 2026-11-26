@@ -1,0 +1,48 @@
+/* ---------- Où ça va ? (#130) ---------- */
+
+.tri-card {
+  min-height: 0;
+}
+.tri-card__emoji {
+  align-self: center;
+  font-size: 96px;
+  line-height: 1.1;
+}
+.tri-card__word {
+  align-self: center;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  line-height: 38px;
+}
+/* Familles montrées sans « Répondre en montrant » : à regarder, pas à toucher. */
+.tri-families {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.tri-families--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.tri-family {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 20px;
+  border: 2px solid var(--stone);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.tri-family__emoji {
+  font-size: 48px;
+  line-height: 1.1;
+}

@@ -4,6 +4,8 @@ import { melodySeconds, parseMelody } from '../games/chanson/melody';
 import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
 import { isLevel, LEVELS, type Level } from '../games/levels';
+import { storyPart, STORY_PARTS } from '../games/histoire/parts';
+import { chatTheme, CHAT_THEMES } from '../games/raconte/themes';
 import type { Tint } from '../games/registry';
 
 /**
@@ -12,11 +14,24 @@ import type { Tint } from '../games/registry';
  * quelques champs en plus. Ajouter une carte = ajouter une ligne au fichier. Voir docs/PACKS.md.
  */
 
-/** Types de pack : ceux des jeux à cartes, plus les airs (Quelle chanson ?) et les glyphes. */
-export type PackKind = DeckKind | 'melody' | 'glyph';
-export const PACK_KINDS: PackKind[] = [...DECK_KINDS.map((k) => k.value), 'melody', 'glyph'];
+/**
+ * Types de pack : ceux des jeux à cartes, plus les airs (Quelle chanson ?), les glyphes et les
+ * questions ouvertes, sans bonne réponse (Raconte-moi, #125), et les éléments d'histoire
+ * (Histoire à inventer, #68).
+ */
+export type PackKind = DeckKind | 'melody' | 'glyph' | 'chat' | 'story';
+export const PACK_KINDS: PackKind[] = [
+  ...DECK_KINDS.map((k) => k.value),
+  'melody',
+  'glyph',
+  'chat',
+  'story',
+];
 
-export interface PackItem extends Omit<DeckItem, 'image' | 'audio' | 'soundUrl' | 'photoUrl'> {
+export interface PackItem extends Omit<
+  DeckItem,
+  'image' | 'audio' | 'soundUrl' | 'photoUrl' | 'shadow'
+> {
   /** Identifiant stable dans le pack (minuscules, chiffres et tirets). */
   id: string;
   /** Niveau par âge, obligatoire pour le contenu intégré (#40). */
@@ -52,6 +67,10 @@ export interface Pack {
   tint?: Tint;
   /** Le jeu fait bouger l'enfant (mime…) : pas proposé en mode Coucher (#42). */
   moves?: boolean;
+  /** Le jeu qui fait bouger a une version sans bouger, jouée au Coucher et en Voiture. */
+  still?: boolean;
+  /** Ombres (#61) : les images (emoji) sont montrées en silhouette, révélées avec la réponse. */
+  shadow?: boolean;
   /** Jeux du catalogue (#137) : types du jeu (le premier le range) et ce qu'il fait travailler. */
   activities?: Activity[];
   skill?: string;
@@ -76,6 +95,8 @@ const PACK_FIELDS = new Set([
   'mark',
   'tint',
   'moves',
+  'still',
+  'shadow',
   'activities',
   'skill',
   'items',
@@ -87,6 +108,7 @@ const ITEM_FIELDS = new Set([
   'hint',
   'hints',
   'prolonger',
+  'talk',
   'emoji',
   'color',
   'level',
@@ -98,6 +120,8 @@ const ITEM_FIELDS = new Set([
   'lyrics',
   'sound',
   'photo',
+  'others',
+  'steps',
 ]);
 
 /** Paroles (#117) : vers par couplet et longueur d'un vers, lisibles à bout de bras. */
@@ -137,6 +161,32 @@ export const MEDIA: Record<string, string> = Object.fromEntries(
   ).map(([path, url]) => [path.slice('./media/'.length), url]),
 );
 
+/** L'intrus (#63) : trois images qui vont ensemble, plus l'intrus. */
+export const INTRUS_OTHERS = 3;
+
+/** Remets dans l'ordre (#131) : de 3 à 5 étapes par séquence. */
+export const STEPS_MIN = 3;
+export const STEPS_MAX = 5;
+
+/** Problème des étapes d'une séquence (Remets dans l'ordre, #131), ou rien. */
+function stepsProblem(steps: unknown): string | undefined {
+  const expected = `« steps » : ${STEPS_MIN} à ${STEPS_MAX} étapes { "text", "emoji" facultatif } attendues`;
+  if (!Array.isArray(steps) || steps.length < STEPS_MIN || steps.length > STEPS_MAX)
+    return expected;
+  for (const step of steps as unknown[]) {
+    if (typeof step !== 'object' || step === null) return expected;
+    const { text, emoji, ...rest } = step as Record<string, unknown>;
+    if (Object.keys(rest).length) return `étape : champ inconnu « ${Object.keys(rest)[0]} »`;
+    if (!isText(text)) return 'étape : texte (« text ») vide, trop long ou mal espacé';
+    if (emoji !== undefined && !isText(emoji, 16)) return 'étape : emoji invalide';
+  }
+  const list = steps as { text: string; emoji?: string }[];
+  if (new Set(list.map((s) => s.text)).size !== list.length) return 'étapes : texte en double';
+  const emojis = list.flatMap((s) => (s.emoji ? [s.emoji] : []));
+  if (new Set(emojis).size !== emojis.length) return 'étapes : emoji en double';
+  return undefined;
+}
+
 const isText = (v: unknown, max = MAX_TEXT): v is string =>
   typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max;
 
@@ -157,6 +207,17 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
       return oneTheme(item.tags, DRAW_THEMES)
         ? undefined
         : `thème (« tags ») : un seul parmi ${DRAW_THEMES.join(', ')}`;
+    case 'chat':
+      // La question est dans « answer » ; chaque question a un thème.
+      return chatTheme(item.tags as string[] | undefined)
+        ? undefined
+        : `thème (« tags ») manquant : ${CHAT_THEMES.map((t) => t.value).join(', ')}`;
+    case 'story':
+      // Un héros, un lieu ou un objet (dans « answer »), avec son image.
+      if (!item.emoji) return 'image (« emoji ») manquante';
+      return storyPart(item.tags as string[] | undefined)
+        ? undefined
+        : `rôle (« tags ») : un seul parmi ${STORY_PARTS.map((p) => p.value).join(', ')}`;
     case 'glyph':
       // Une lettre, un chiffre ou un nombre jusqu'à 100 (#48).
       if (typeof item.answer !== 'string' || [...item.answer].length > 3)
@@ -227,7 +288,7 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
   if (typeof item.id !== 'string' || !ID.test(item.id))
     return 'identifiant (« id ») manquant ou invalide (minuscules, chiffres, tirets)';
   if (!isText(item.answer)) return 'réponse (« answer ») vide, trop longue ou mal espacée';
-  for (const field of ['text', 'hint'] as const)
+  for (const field of ['text', 'hint', 'talk'] as const)
     if (item[field] !== undefined && !isText(item[field]))
       return `« ${field} » vide, trop long (${MAX_TEXT} max) ou mal espacé`;
   if (
@@ -266,6 +327,25 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     return '« melody », « bpm », « source » et « lyrics » sont réservés aux packs d’airs';
   const media = mediaProblem(kind, item);
   if (media) return media;
+  if (item.others !== undefined) {
+    // L'intrus (#63) : trois images qui vont ensemble, l'intrus est l'« emoji ».
+    const others = item.others;
+    if (kind !== 'image') return '« others » est réservé aux packs d’images';
+    if (!(
+      Array.isArray(others) &&
+      others.length === INTRUS_OTHERS &&
+      others.every((e) => isText(e, 16)) &&
+      new Set(others).size === INTRUS_OTHERS
+    ))
+      return `« others » : ${INTRUS_OTHERS} emoji différents attendus`;
+    if (!item.emoji || (others as string[]).includes(item.emoji as string))
+      return 'intrus (« emoji ») manquant ou parmi les « others »';
+  }
+  if (item.steps !== undefined) {
+    if (kind !== 'image') return '« steps » est réservé aux packs d’images';
+    const problem = stepsProblem(item.steps);
+    if (problem) return problem;
+  }
   return kindRule(kind, item);
 }
 
@@ -292,6 +372,10 @@ export function validatePack(raw: unknown, file: string): Pack {
   if (pack.tint !== undefined && !TINTS.includes(pack.tint as Tint)) fail('teinte inconnue');
   if (pack.moves !== undefined && typeof pack.moves !== 'boolean')
     fail('« moves » : true ou false attendu');
+  if (pack.still !== undefined && !(pack.still === true && pack.moves === true))
+    fail('« still » : true, seulement pour un jeu qui fait bouger (« moves »)');
+  if (pack.shadow !== undefined && !(pack.shadow === true && pack.kind === 'image'))
+    fail('« shadow » : true, seulement pour un jeu d’images (« image »)');
   if (
     pack.activities !== undefined &&
     !(
@@ -358,6 +442,7 @@ export function deckItems(pack: Pack): DeckItem[] {
     delete copy.photo;
     if (item.sound && MEDIA[item.sound]) copy.soundUrl = MEDIA[item.sound];
     if (item.photo && MEDIA[item.photo]) copy.photoUrl = MEDIA[item.photo];
+    if (pack.shadow) copy.shadow = true;
     return copy;
   });
 }

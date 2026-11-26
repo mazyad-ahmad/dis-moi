@@ -14,6 +14,11 @@ const SCREENS = [
   ['Dessine ça', '/jeu/dessin'],
   ['Devinettes', '/jeu/devinette'],
   ['Défi du jour', '/jeu/defi'],
+  ['Respire comme…', '/respire'],
+  ['Raconte-moi', '/jeu/raconte'],
+  ['Voix rigolotes', '/jeu/voix'],
+  ['Histoire à inventer', '/jeu/histoire'],
+  ['Jacques a dit', '/jeu/jacques'],
 ] as const;
 
 for (const colorScheme of ['light', 'dark'] as const) {

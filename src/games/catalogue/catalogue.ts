@@ -19,7 +19,33 @@ export interface CatalogueGame extends Deck {
  * Contenu écrit pour l'appli, dans `src/content/catalogue-<id>.json`. Sons et photos des
  * animaux (#118) : fichiers libres, crédités dans `src/content/media/credits.json`.
  */
-export const CATALOGUE_PACKS = ['animal', 'couleur', 'mime', 'devinette'];
+export const CATALOGUE_PACKS = [
+  'animal',
+  'couleur',
+  'mime',
+  'devinette',
+  'emotion',
+  'emotion-mime',
+  'tresor',
+  'vrai-faux',
+  'jacques',
+  'rime',
+  'contraire',
+  'ombre',
+  'intrus',
+  'disparu',
+  'compte',
+  'devine-tete',
+  'syllabes',
+  'tri',
+  'devine-mains',
+  'suite',
+  'ordre',
+  'situation',
+  'ni-oui-ni-non',
+  'heure',
+  'marche',
+];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
   const pack = getPack(id);
@@ -32,7 +58,10 @@ export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
     tint: pack.tint!,
     kind: pack.kind as DeckKind,
     items: deckItems(pack),
-    needs: needsOf(pack.kind, pack.moves ? { moves: true } : {}),
+    needs: needsOf(pack.kind, {
+      ...(pack.moves && { moves: true }),
+      ...(pack.still && { still: true }),
+    }),
     activities: pack.activities!,
     levels: levelsOf(pack.items),
     skill: pack.skill!,

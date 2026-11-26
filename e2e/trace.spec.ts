@@ -13,7 +13,9 @@ test('le modèle reste visible sous le trait, les consignes au-dessus du dessin'
   const model = page.getByRole('img', { name: /^Lettre [A-Z] en pointillés/ });
   await expect(model).toBeVisible();
   const canvas = page.getByLabel('Zone de dessin');
-  const area = (await canvas.boundingBox())!;
+  // La police chargée, la mise en page ne bouge plus : les mesures restent justes.
+  await page.evaluate(() => document.fonts.ready);
+  let area = (await canvas.boundingBox())!;
 
   // Consigne et boutons au-dessus du dessin : la main, droite ou gauche, ne les cache pas.
   for (const el of [
@@ -29,6 +31,7 @@ test('le modèle reste visible sous le trait, les consignes au-dessus du dessin'
   await expect(page.getByTestId('trace-demo')).toBeAttached();
 
   // L'enfant trace en travers de la zone : le modèle est toujours là, par-dessus.
+  area = (await canvas.boundingBox())!;
   await page.mouse.move(area.x + 20, area.y + 20);
   await page.mouse.down();
   await page.mouse.move(area.x + area.width - 20, area.y + area.height - 20, { steps: 10 });

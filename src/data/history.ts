@@ -1,5 +1,5 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type GameRecord } from './db';
+import { useLiveRead } from './live';
 import { listActivePlayers, listPlayers } from './players';
 import { requestPersistentStorage } from './storage';
 
@@ -33,7 +33,7 @@ export async function listRecords(): Promise<GameRecord[]> {
 
 /** `undefined` tant que la base n'a pas répondu ; la plus récente en premier. */
 export function useRecords(): GameRecord[] | undefined {
-  return useLiveQuery(listRecords, []);
+  return useLiveRead(listRecords, []);
 }
 
 /**

@@ -1,0 +1,58 @@
+/* ---------- Quelle heure est-il ? (#136) ---------- */
+
+.heure-card {
+  min-height: 0;
+}
+.heure-dial {
+  display: flex;
+  justify-content: center;
+}
+/*
+ * L'horloge prend les couleurs du thème : cadran clair sur fond clair le jour, cadran sombre
+ * aux chiffres clairs la nuit. Petite aiguille courte, épaisse, couleur de l'encre ; grande
+ * aiguille longue, fine, d'une autre couleur : on les distingue même sans voir les couleurs.
+ */
+.heure-clock {
+  width: min(100%, 260px);
+  height: auto;
+  aspect-ratio: 1;
+}
+.heure-clock__face {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 5;
+}
+.heure-clock__tick {
+  stroke: var(--stone);
+  stroke-width: 1.5;
+}
+.heure-clock__tick--hour {
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.heure-clock__number {
+  fill: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 700;
+}
+.heure-clock__hand {
+  stroke-linecap: round;
+}
+.heure-clock__hand--hour {
+  stroke: var(--ink);
+  stroke-width: 10;
+}
+.heure-clock__hand--minute {
+  stroke: var(--river);
+  stroke-width: 5;
+}
+.heure-clock__pin {
+  fill: var(--ink);
+}
+/* Choix « en montrant » : l'heure en chiffres, plus petite que les chiffres seuls. */
+.heure-choices .choice__glyph {
+  font-size: 32px;
+  line-height: 40px;
+  font-variant-numeric: tabular-nums;
+}

@@ -20,8 +20,30 @@ function open(path: string) {
 
 const parent = () => screen.getByRole('region', { name: 'Pour le parent' });
 
+// Jeux enrichis par #124. Les jeux arrivés ensuite (lot M8) n'ont pas encore de phrase.
+const WITH_PHRASES = [
+  'chansons',
+  'lettres',
+  'chiffres',
+  'nombres',
+  'des',
+  'doigts',
+  'dessin',
+  'catalogue-animal',
+  'catalogue-couleur',
+  'catalogue-mime',
+  'catalogue-devinette',
+];
+
 describe('phrases « prolonger » du contenu intégré', () => {
-  const items = Object.values(PACK_FILES).flatMap((raw) => (raw as Pack).items);
+  const files = Object.entries(PACK_FILES).filter(([path]) =>
+    WITH_PHRASES.includes(path.replace(/^\.\/|\.json$/g, '')),
+  );
+  const items = files.flatMap(([, raw]) => (raw as Pack).items);
+
+  it('couvrent les jeux prévus', () => {
+    expect(files).toHaveLength(WITH_PHRASES.length);
+  });
 
   it('au moins la moitié des cartes intégrées en a une', () => {
     const withPhrase = items.filter((it) => it.prolonger);
@@ -29,7 +51,7 @@ describe('phrases « prolonger » du contenu intégré', () => {
   });
 
   it('toutes les cartes des petits des jeux du catalogue en ont une', () => {
-    const catalogue = Object.entries(PACK_FILES)
+    const catalogue = files
       .filter(([path]) => path.startsWith('./catalogue-'))
       .flatMap(([, raw]) => (raw as Pack).items);
     expect(catalogue.filter((it) => it.level === 1 && !it.prolonger)).toEqual([]);

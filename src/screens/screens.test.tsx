@@ -117,7 +117,7 @@ it('niveau de la partie sur l’accueil (Tous par défaut) et niveau de chaque j
   expect(within(group).getByLabelText('Moyens')).not.toBeChecked();
   await user.click(within(group).getByLabelText('Moyens'));
   await waitFor(async () => expect((await db.players.toArray())[0].level).toBe(2));
-  expect(within(group).getByText('5-6 ans')).toBeInTheDocument();
+  expect(await within(group).findByText('5-6 ans')).toBeInTheDocument();
 });
 
 it('applique le thème choisi dans l’espace parent', async () => {

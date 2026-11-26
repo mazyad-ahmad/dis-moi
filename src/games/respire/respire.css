@@ -1,0 +1,116 @@
+/* ---------- Respire comme… (#126) ---------- */
+.respire__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.respire__pick {
+  width: 100%;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 20px;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  font-size: 17px;
+  text-align: left;
+  cursor: pointer;
+}
+.respire__pick-emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+.respire__sound {
+  align-self: center;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.respire__sound[aria-pressed='true'] {
+  background: var(--sky);
+}
+.respire__stage {
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Petite au repos, grande à l'inspiration (3 s), de nouveau petite en soufflant (4 s). */
+.respire__shape {
+  width: 128px;
+  height: 128px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(1);
+  transition: transform 4s ease-in-out;
+}
+.respire__shape--in {
+  transform: scale(1.6);
+  transition-duration: 3s;
+}
+.respire__emoji {
+  font-size: 56px;
+  line-height: 1;
+}
+/* Réduire les animations : la forme reste immobile, le texte guide seul. */
+@media (prefers-reduced-motion: reduce) {
+  .respire__shape,
+  .respire__shape--in {
+    transform: none;
+  }
+}
+.respire__guide {
+  text-align: center;
+}
+.respire__guide p {
+  margin: 0;
+}
+.respire__word {
+  font: var(--text-h2);
+}
+.respire__star {
+  color: var(--sun);
+  display: flex;
+}
+.respire__star svg {
+  fill: currentColor;
+}
+.respire-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.respire-card__icon {
+  flex: none;
+  font-size: 22px;
+  line-height: 1;
+}
+.respire-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+}
+.respire-card a {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 14px 8px;
+  flex: none;
+}
