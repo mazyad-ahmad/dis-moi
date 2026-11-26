@@ -378,6 +378,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **L’intrus**                  | Quatre images, une ne va pas avec les autres : l'enfant la montre du doigt, le parent valide. Voir ci-dessous.                             |
 | **Qu’est-ce qui a disparu ?** | Des objets à regarder, le parent les cache, en retire un (ou en ajoute un), les remontre : l'enfant dit ce qui a changé. Voir ci-dessous.  |
 | **Compte avec moi**           | Des objets à compter, deux groupes à comparer, de petites additions et soustractions en images. Voir ci-dessous.                           |
+| **Devine-tête**               | Le téléphone sur le front, l'enfant ne voit pas le mot : les autres le miment ou le décrivent. Voir ci-dessous.                            |
 
 ### Les émotions (#58)
 
@@ -550,6 +551,34 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   regénérée (autres nombres), comme la grille de L'intrus.
 - Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
+### Devine-tête (#67)
+
+- Jeu du catalogue où les rôles s'inversent : l'enfant tient le téléphone **sur son front**,
+  l'écran tourné vers les autres, et ne voit pas le mot ; les autres le miment ou le décrivent
+  sans le dire. Le mot s'affiche en grand avec son emoji et une idée pour le faire deviner.
+- 45 mots (`src/content/catalogue-devine-tete.json`), 15 par niveau : animaux et objets du
+  quotidien pour les petits, métiers et objets pour les moyens, personnages et lieux pour les
+  grands.
+- Avant la première manche, la règle, puis le choix : **Jouer en penchant la tête** ou **Jouer
+  avec les boutons**. L'inclinaison est expliquée d'abord (lue sur le téléphone seulement, rien
+  d'enregistré ni d'envoyé) ; l'autorisation n'est demandée qu'à l'appui sur ce bouton, et
+  seulement par les téléphones qui en demandent une (iPhone). Refusée ou absente (ordinateur),
+  on joue avec les boutons.
+- Tête **vers le bas : trouvé** (une étoile), **vers le haut : passer**. Un geste ne compte
+  qu'une fois : il faut revenir debout (0,4 s) avant le suivant, et au départ aussi (le
+  téléphone tendu à plat ne valide rien). Les boutons **Trouvé** / **Passer** restent toujours
+  là pour le parent. Calcul pur dans `src/games/tete/tilt.ts`.
+- L'enfant ne voit pas l'écran : **un son distinct pour chaque réponse**, même à la dernière
+  manche : l'arpège de l'étoile (ou de la récompense) pour trouvé, deux notes égales
+  « toc-toc » pour passer. Pas de félicitation parlée en cours de partie (elle couvrirait les
+  autres), seulement à la fin. Sons coupés dans l'espace Parent : l'écran de règle le signale.
+- L'écran passe en paysage quand le navigateur l'accepte (appli installée) ; sinon le mot est
+  tourné d'un quart de tour, du côté où le téléphone est tenu (capteur), et « Retourner le
+  mot » le met à l'endroit pour l'autre côté.
+- On mime : pas au Coucher, et pas en Voiture (il faut regarder l'écran). Ni dans le Grand Jeu
+  ni dans le Défi du jour, qui ne prévoient pas de passer le téléphone sur le front. Chacun son
+  tour et en équipes comme les autres jeux (« À toi, Léa ! » : celle qui a le téléphone).
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -631,7 +660,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   donc aucun droit à gérer, et ils marchent hors ligne.
 - **Trouvé** : un petit arpège montant ; **Passer / Pas encore** : une seule note douce, jamais un
   son d'échec ; **fin du minuteur** de Dessine ça : deux tintements ; **fin de partie** : un arpège
-  complet ; **récompense débloquée** (1, 10, 25… étoiles) : un arpège plus long.
+  complet ; **récompense débloquée** (1, 10, 25… étoiles) : un arpège plus long ; **passer en
+  Devine-tête** : deux notes égales, plus audibles que la note de « Passer ».
 - Un seul contexte audio pour toute l'appli (`src/audio/context.ts`), relancé au réveil du
   téléphone. Un son d'interface ne couvre jamais une mélodie, un son enregistré ou une lecture à
   voix haute en cours : il n'est alors pas joué.
@@ -760,7 +790,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
-   Compte avec moi)
+   Compte avec moi, Devine-tête)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

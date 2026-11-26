@@ -31,6 +31,8 @@ import { IntrusGame } from '../games/intrus/IntrusGame';
 import { INTRUS_ID } from '../games/intrus/intrus';
 import { CompteGame } from '../games/compte/CompteGame';
 import { COMPTE_ID } from '../games/compte/compte';
+import { TeteGame } from '../games/tete/TeteGame';
+import { TETE_ID } from '../games/tete/tilt';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -111,6 +113,8 @@ function GameScreen({ id }: { id: string }) {
           <DisparuGame game={catalogue} />
         ) : catalogue.id === COMPTE_ID ? (
           <CompteGame game={catalogue} />
+        ) : catalogue.id === TETE_ID ? (
+          <TeteGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}

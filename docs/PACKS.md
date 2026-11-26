@@ -108,6 +108,7 @@ jusqu'à 5, 10 ou 20, comparer, additionner, soustraire). Règles dans `src/game
 Un pack `story` (Histoire à inventer, #68) range des héros, des lieux et des objets : `answer` est le
 mot avec son article (« un dragon », « au zoo », « une clé »), `emoji` son image (obligatoire), et
 `tags` donne un seul rôle, `heros`, `lieu` ou `objet`. Règle dans `src/games/histoire/parts.ts`.
+| `catalogue-devine-tete.json` | Devine-tête | `image` |
 
 ## Cartes « vrai ou faux »
 

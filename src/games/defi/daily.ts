@@ -6,6 +6,7 @@ import type { DeckItem } from '../deck/types';
 import { DRAW_WORDS } from '../dessin/words';
 import { DIGITS, LETTERS, type GlyphCard } from '../lettres/bank';
 import { needsOf, type PlayNeeds } from '../modes';
+import { TETE_ID } from '../tete/tilt';
 
 /**
  * Défi du jour (#43) : une carte surprise par jour, tirée de tous les jeux intégrés.
@@ -63,7 +64,8 @@ export const DAILY_SOURCES: DailySource[] = [
     needs: needsOf('draw'),
     cards: DRAW_WORDS.map((word) => ({ kind: 'draw', word })),
   },
-  ...CATALOGUE.map((g): DailySource => ({
+  // Devine-tête (#67) demande le téléphone sur le front : pas une carte surprise.
+  ...CATALOGUE.filter((g) => g.id !== TETE_ID).map((g): DailySource => ({
     game: g.id,
     name: g.name,
     category: g.category,

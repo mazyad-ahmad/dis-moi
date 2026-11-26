@@ -96,6 +96,7 @@ describe('catalogue', () => {
       'intrus',
       'disparu',
       'compte',
+      'devine-tete',
     ]);
     for (const g of CATALOGUE) {
       expect(g.items.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);
