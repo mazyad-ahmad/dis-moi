@@ -1,4 +1,11 @@
-import { useCallback, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { IconStar } from './icons';
 import { prefersReducedMotion } from './motion';
@@ -25,6 +32,16 @@ interface Flight {
 export function useStarFlight(): { launch: (from: Element | null) => void; stars: ReactNode } {
   const [flights, setFlights] = useState<Flight[]>([]);
   const next = useRef(0);
+  const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
+
+  // Écran quitté pendant un vol : plus rien à faire disparaître.
+  useEffect(() => {
+    const pending = timers.current;
+    return () => {
+      pending.forEach(clearTimeout);
+      pending.clear();
+    };
+  }, []);
 
   const launch = useCallback((from: Element | null) => {
     const target = document.querySelector(TARGET);
@@ -42,7 +59,11 @@ export function useStarFlight(): { launch: (from: Element | null) => void; stars
     const id = next.current++;
     setFlights((f) => [...f.slice(1 - MAX_FLIGHTS), { id, style }]);
     // Arrivée : l'étoile disparaît (minuterie plutôt qu'animationend, qui peut ne jamais venir).
-    setTimeout(() => setFlights((f) => f.filter((x) => x.id !== id)), FLIGHT_MS + 50);
+    const timer = setTimeout(() => {
+      timers.current.delete(timer);
+      setFlights((f) => f.filter((x) => x.id !== id));
+    }, FLIGHT_MS + 50);
+    timers.current.add(timer);
   }, []);
 
   const stars = flights.length
