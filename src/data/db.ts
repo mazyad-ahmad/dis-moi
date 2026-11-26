@@ -87,6 +87,20 @@ export interface Praise {
 }
 
 /**
+ * Dessin gardé (#52) : l'image telle qu'elle était à l'écran (PNG), le mot, la date et
+ * l'enfant (ou les enfants présents) de la manche.
+ */
+export interface Drawing {
+  id: number;
+  word: string;
+  /** Image PNG du dessin, sur le fond de la zone de dessin. */
+  image: Blob;
+  /** Enfant de la manche (chacun son tour), sinon les joueurs actifs. */
+  playerIds: number[];
+  createdAt: number;
+}
+
+/**
  * Histoire inventée par l'enfant (#68), enregistrée au micro sur un geste du parent et gardée
  * dans le « Livre d'histoires ». Les trois images tirées sont recopiées (texte et emoji).
  */
@@ -115,6 +129,7 @@ export const db = new Dexie('dis-moi', { cache: 'disabled' }) as Dexie & {
   games: EntityTable<GameRecord, 'id'>;
   customGames: EntityTable<CustomGame, 'id'>;
   praises: EntityTable<Praise, 'id'>;
+  drawings: EntityTable<Drawing, 'id'>;
   stories: EntityTable<Story, 'id'>;
 };
 
@@ -156,4 +171,9 @@ db.version(5)
 // Livre d'histoires (#68).
 db.version(6).stores({
   stories: '++id, createdAt',
+});
+
+// Galerie des dessins gardés (#52).
+db.version(7).stores({
+  drawings: '++id, createdAt',
 });

@@ -4,7 +4,6 @@ import { answerSound, playSound, soundLength } from '../../audio/sounds';
 import { AnswerBar } from '../../components/AnswerBar';
 import { Confetti } from '../../components/Confetti';
 import { GameHeader } from '../../components/GameHeader';
-import { IconTrash } from '../../components/icons';
 import { Mascot } from '../../components/Mascot';
 import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
@@ -14,13 +13,9 @@ import { vibrate } from '../../pwa/haptics';
 import { praise } from '../../voice/praise';
 import { NotFound } from '../../screens/Placeholder';
 import { SongRound } from '../chanson/SongGame';
-import { DeckAnswer, ImageCard, QuestionCard, SoundCard } from '../deck/DeckGame';
-import { DrawingCanvas, type DrawingCanvasHandle } from '../dessin/DrawingCanvas';
-import { hintLadder, writtenHints } from '../hints';
-import { consigneOf } from '../jacques/consigne';
-import { JacquesCue } from '../jacques/JacquesCue';
-import { syllabesOf } from '../syllabes/syllabes';
-import { SyllabesCue } from '../syllabes/SyllabesCue';
+import { DeckRound } from '../deck/DeckGame';
+import { useFoundPhoto } from '../deck/useFoundPhoto';
+import { DrawingPad } from '../dessin/DrawingPad';
 import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureWay } from '../tresor/treasure';
 import { IntrusRound } from '../intrus/IntrusGame';
@@ -51,7 +46,6 @@ import {
 
 /** Mot à dessiner : sans minuteur, l'enfant prend son temps. */
 function DrawCard({ word }: { word: string }) {
-  const canvas = useRef<DrawingCanvasHandle>(null);
   return (
     <>
       <section className="word-card" aria-label="Mot à dessiner">
@@ -61,28 +55,12 @@ function DrawCard({ word }: { word: string }) {
           <ReadAloud text={word} />
         </div>
       </section>
-      <div className="drawing-area">
-        <DrawingCanvas ref={canvas} color="var(--ink)" />
-        <span className="drawing-area__hint muted">L'enfant dessine avec le doigt</span>
-      </div>
-      <div className="pen-bar">
-        <span />
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label="Tout effacer"
-          onClick={() => canvas.current?.clear()}
-        >
-          <IconTrash size={20} />
-        </button>
-      </div>
+      <DrawingPad hint="L'enfant dessine avec le doigt" />
     </>
   );
 }
 
 function CardBody({ card }: { card: DailyCard }) {
-  // Ombres (#61) : l'image passe en couleur avec la réponse.
-  const [revealed, setRevealed] = useState(false);
   switch (card.kind) {
     case 'melody':
       return <SongRound song={card.song} />;
@@ -95,7 +73,7 @@ function CardBody({ card }: { card: DailyCard }) {
             </span>
             <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
           </figure>
-          <ParentBlock>
+          <ParentBlock prolonger={card.card.prolonger}>
             {card.card.hint}
             <ReadAloud text={card.card.hint} />
           </ParentBlock>
@@ -103,36 +81,8 @@ function CardBody({ card }: { card: DailyCard }) {
       );
     case 'draw':
       return <DrawCard word={card.word} />;
-    default: {
-      const { item } = card;
-      const consigne = card.kind === 'question' ? consigneOf(item) : undefined;
-      const syllabes = card.kind === 'question' ? syllabesOf(item) : undefined;
-      return (
-        <div className="deck-round">
-          {card.kind === 'sound' && <SoundCard item={item} />}
-          {card.kind === 'image' && <ImageCard item={item} revealed={revealed} />}
-          {card.kind === 'question' && <QuestionCard item={item} />}
-          {consigne ? (
-            <JacquesCue consigne={consigne} />
-          ) : syllabes ? (
-            <SyllabesCue syllabes={syllabes} hint={item.hint} />
-          ) : (
-            <ParentBlock
-              hidden={<DeckAnswer item={item} />}
-              hints={hintLadder(item)}
-              openHints={writtenHints(item).length ? 1 : 0}
-              onReveal={() => setRevealed(true)}
-            >
-              {card.kind === 'sound' && item.text && (
-                <>
-                  À imiter : <strong>{item.text}</strong>
-                </>
-              )}
-            </ParentBlock>
-          )}
-        </div>
-      );
-    }
+    default:
+      return <DeckRound kind={card.kind} item={card.item} />;
   }
 }
 
@@ -159,8 +109,15 @@ function DailyRound({ day }: { day: string }) {
   const [done, setDone] = useState(false);
   const saving = useRef(false);
   const { source, card } = dailyPick(day);
+  const photo = useFoundPhoto();
 
-  if (done) return <DailyDone day={day} party />;
+  if (done)
+    return (
+      <>
+        <DailyDone day={day} party />
+        {photo.overlay}
+      </>
+    );
 
   const found = async () => {
     if (saving.current) return;
@@ -171,6 +128,7 @@ function DailyRound({ day }: { day: string }) {
     void playSound(sound);
     praise({ afterMs: getSettings().sounds ? soundLength(sound) * 1000 + 150 : 0 });
     vibrate('found');
+    if ('item' in card) photo.show(card.item);
     setDone(true);
   };
 

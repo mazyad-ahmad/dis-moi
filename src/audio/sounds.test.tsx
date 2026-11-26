@@ -96,7 +96,8 @@ describe('mélodie', () => {
     await player.play();
     expect(audioBusy()).toBe(true);
     await playSound('star');
-    expect(played()).toEqual([262, 294]);
+    // Notes du piano (fondamentale et octave), aucun son d'interface.
+    expect(played()).toEqual([262, 524, 294, 588]);
 
     // Pause à 0,6 s : la reprise repart de la note suivante, sur le même contexte.
     contexts[0].currentTime = 0.65;

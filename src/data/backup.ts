@@ -4,10 +4,13 @@ import {
   PLAYER_ANIMALS,
   PLAYER_COLORS,
   type CustomGame,
+  type Drawing,
   type GameRecord,
   type Player,
 } from './db';
 import {
+  blobToDataUrl,
+  dataUrlToBlob,
   decodeGame,
   encodeGame,
   shareFile,
@@ -33,8 +36,8 @@ import {
 import { requestPersistentStorage } from './storage';
 
 /**
- * Sauvegarde complète (#25) : joueurs, parties, réglages et jeux créés avec leurs médias,
- * dans un seul fichier JSON que le parent garde où il veut. Rien ne part sans son geste.
+ * Sauvegarde complète (#25) : joueurs, parties, réglages, jeux créés avec leurs médias et
+ * dessins gardés (#52), dans un seul fichier JSON que le parent garde où il veut. Rien ne part sans son geste.
  */
 export const BACKUP_FORMAT = 'dis-moi/sauvegarde';
 export const BACKUP_VERSION = 1;
@@ -54,6 +57,11 @@ interface BackupGame extends GameFile {
   updatedAt: number;
 }
 
+/** Dessin gardé, image PNG en base64. */
+interface BackupDrawing extends Omit<Drawing, 'image'> {
+  image: string;
+}
+
 interface BackupFile {
   format: typeof BACKUP_FORMAT;
   version: number;
@@ -62,6 +70,8 @@ interface BackupFile {
   games: GameRecord[];
   settings: Partial<Settings>;
   customGames: BackupGame[];
+  /** Absent des sauvegardes d'avant la galerie (#52). */
+  drawings?: BackupDrawing[];
 }
 
 /** Sauvegarde lue et vérifiée, prête à être restaurée. */
@@ -71,16 +81,18 @@ export interface Backup {
   games: GameRecord[];
   settings: Partial<Settings>;
   customGames: CustomGame[];
+  drawings: Drawing[];
 }
 
 /** Réglages gardés sur le téléphone seulement : les équipes de la fête (#44), invités compris. */
 const LOCAL_ONLY = new Set<string>(['teams']);
 
 export async function createBackupFile(now = Date.now()): Promise<File> {
-  const [players, games, customGames] = await Promise.all([
+  const [players, games, customGames, drawings] = await Promise.all([
     db.players.toArray(),
     db.games.toArray(),
     db.customGames.toArray(),
+    db.drawings.toArray(),
   ]);
   const settings: Partial<Settings> = {};
   for (const { key, value } of await db.settings.toArray())
@@ -101,6 +113,9 @@ export async function createBackupFile(now = Date.now()): Promise<File> {
         createdAt: g.createdAt,
         updatedAt: g.updatedAt,
       })),
+    ),
+    drawings: await Promise.all(
+      drawings.map(async (d) => ({ ...d, image: await blobToDataUrl(d.image) })),
     ),
   };
   return new File([JSON.stringify(content)], backupFileName(now), { type: 'application/json' });
@@ -213,6 +228,26 @@ function readCustomGame(raw: unknown): CustomGame {
   };
 }
 
+function readDrawing(raw: unknown): Drawing {
+  if (!isObject(raw) || !isId(raw.id) || typeof raw.word !== 'string') fail();
+  if (!isNumber(raw.createdAt)) fail();
+  if (!Array.isArray(raw.playerIds) || !raw.playerIds.every(isId)) fail();
+  let image: Blob | undefined;
+  try {
+    image = dataUrlToBlob(raw.image, 'image');
+  } catch {
+    fail();
+  }
+  if (!image) fail();
+  return {
+    id: raw.id,
+    word: raw.word,
+    image,
+    playerIds: raw.playerIds,
+    createdAt: raw.createdAt,
+  };
+}
+
 /** Réglages connus et valides ; les autres sont ignorés (sauvegarde d'une version future). */
 function readSettings(raw: unknown): Partial<Settings> {
   if (!isObject(raw)) fail();
@@ -278,12 +313,16 @@ export function parseBackup(text: string): Backup {
   unique(games, (g) => g.id);
   const customGames = (data.customGames as unknown[]).map(readCustomGame);
   unique(customGames, (g) => g.id);
+  if (data.drawings !== undefined && !Array.isArray(data.drawings)) fail();
+  const drawings = ((data.drawings as unknown[] | undefined) ?? []).map(readDrawing);
+  unique(drawings, (d) => d.id);
   return {
     createdAt: data.createdAt,
     players,
     games,
     settings: readSettings(data.settings ?? {}),
     customGames,
+    drawings,
   };
 }
 
@@ -296,7 +335,7 @@ export async function readBackupFile(file: Blob): Promise<Backup> {
 
 export type RestoreMode = 'replace' | 'merge';
 
-const TABLES = [db.players, db.games, db.customGames, db.settings];
+const TABLES = [db.players, db.games, db.customGames, db.settings, db.drawings];
 
 /** Remplace tout par la sauvegarde, à l'identique (mêmes identifiants). */
 async function replaceAll(backup: Backup) {
@@ -305,6 +344,7 @@ async function replaceAll(backup: Backup) {
     await db.players.bulkAdd(backup.players);
     await db.games.bulkAdd(backup.games);
     await db.customGames.bulkAdd(backup.customGames);
+    await db.drawings.bulkAdd(backup.drawings);
     // Les données sont celles de la sauvegarde : elle compte comme la dernière.
     const settings = { ...backup.settings, lastBackupAt: backup.createdAt };
     await db.settings.bulkPut(Object.entries(settings).map(([key, value]) => ({ key, value })));
@@ -314,7 +354,7 @@ async function replaceAll(backup: Backup) {
 /**
  * Ajoute la sauvegarde à ce qui est déjà là, sans doublon : joueurs reconnus par leur prénom,
  * parties par leur jeu et leur heure de début, jeux créés par leur type, leur date de création
- * et leurs réponses.
+ * et leurs réponses, dessins par leur mot et leur date.
  * Les réglages de ce téléphone sont gardés ; les jeux du catalogue ajoutés s'additionnent.
  */
 async function mergeInto(backup: Backup) {
@@ -364,6 +404,16 @@ async function mergeInto(backup: Backup) {
       await db.customGames.add({ ...g, name } as CustomGame);
     }
 
+    const kept = new Set((await db.drawings.toArray()).map((d) => `${d.word}@${d.createdAt}`));
+    await db.drawings.bulkAdd(
+      backup.drawings
+        .filter((d) => !kept.has(`${d.word}@${d.createdAt}`))
+        .map((d) => ({
+          ...withoutId(d),
+          playerIds: d.playerIds.flatMap((id) => (playerId.has(id) ? [playerId.get(id)!] : [])),
+        })) as Drawing[],
+    );
+
     const catalogue = (await db.settings.get('catalogue'))?.value as string[] | undefined;
     const merged = [...new Set([...(catalogue ?? []), ...(backup.settings.catalogue ?? [])])];
     await db.settings.put({ key: 'catalogue', value: merged });
@@ -384,6 +434,7 @@ export function backupSummary(backup: Backup) {
     games: backup.games.length,
     stars: backup.games.reduce((n, g) => n + g.stars, 0),
     customGames: backup.customGames.length,
+    drawings: backup.drawings.length,
   };
 }
 

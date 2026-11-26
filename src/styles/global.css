@@ -7,6 +7,7 @@
      --sun seul n'atteint que 3,4 à 4,2 en thème jour. */
   --sun-text: color-mix(in srgb, var(--sun) 70%, var(--ink));
   --tap: 48px;
+  --font-cursive: 'Playwrite FR Moderne', cursive;
   font: var(--text-body);
   color: var(--ink);
   background: var(--mist);

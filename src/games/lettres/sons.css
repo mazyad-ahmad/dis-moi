@@ -1,0 +1,29 @@
+/* ---------- Le son des lettres (#50) ---------- */
+.letter-sound {
+  margin-top: 10px;
+}
+.letter-sound p {
+  margin: 0 0 6px;
+}
+.letter-sound__words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+.letter-sound__words li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+.letter-sound__emoji {
+  font-size: 26px;
+  line-height: 1;
+}

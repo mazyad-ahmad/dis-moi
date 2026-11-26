@@ -4,7 +4,7 @@ import { App } from '../app/App';
 import { db } from '../data/db';
 import { addPlayer } from '../data/players';
 import { loadSettings } from '../data/settings';
-import { DIGITS, LETTERS } from './lettres/bank';
+import { ALL_GLYPHS, DIGITS, LETTERS } from './lettres/bank';
 
 beforeEach(async () => {
   await Promise.all([db.players.clear(), db.settings.clear(), db.games.clear()]);
@@ -67,6 +67,46 @@ it('Quelle lettre : bascule vers les chiffres', async () => {
   expect(screen.getByText(DIGITS[Number(glyph)].hint)).toBeInTheDocument();
 });
 
+it('Quelle lettre : minuscules, attaché, nombres, dés et doigts, mélange (#48)', async () => {
+  const user = userEvent.setup();
+  open('/jeu/lettres');
+  const glyph = () => screen.getByTestId('glyph');
+  const hintOf = (set: string) =>
+    ALL_GLYPHS.find((c) => c.set === set && c.glyph === glyph().dataset.glyph)!.hint;
+
+  await user.click(screen.getByLabelText('Minuscules'));
+  expect(glyph().textContent).toMatch(/^[a-z]$/);
+  expect(screen.getByText(hintOf('lower'))).toBeInTheDocument();
+
+  await user.click(screen.getByLabelText('Attaché'));
+  expect(glyph()).toHaveClass('glyph-card__glyph--cursive');
+  expect(screen.getByText(hintOf('cursive'))).toBeInTheDocument();
+
+  await user.click(screen.getByLabelText('Nombres'));
+  expect(screen.getByRole('heading', { name: 'Quel nombre ?' })).toBeInTheDocument();
+  expect(Number(glyph().textContent)).toBeGreaterThanOrEqual(10);
+  expect(screen.getByText(hintOf('number'))).toBeInTheDocument();
+
+  await user.click(screen.getByLabelText('Dés, doigts'));
+  expect(screen.getByRole('heading', { name: 'Combien ?' })).toBeInTheDocument();
+  // Un dessin, annoncé « 3 points » ou « 3 doigts » ; la consigne reste pour le parent.
+  expect(glyph()).toHaveAccessibleName(/^\d+ (points?|doigts?)$/);
+  expect(glyph().querySelector('svg')).toBeInTheDocument();
+  const set = /point/.test(glyph().getAttribute('aria-label')!) ? 'dice' : 'fingers';
+  expect(screen.getByText(hintOf(set))).toBeInTheDocument();
+
+  // Mélange : toutes les familles, chacune avec sa consigne.
+  await user.click(screen.getByLabelText('Mélange'));
+  for (let i = 0; i < 5; i++) {
+    const card = ALL_GLYPHS.find(
+      (c) =>
+        c.glyph === glyph().dataset.glyph && screen.queryByText(c.hint, { exact: true }) !== null,
+    );
+    expect(card).toBeDefined();
+    await user.click(screen.getByRole('button', { name: 'Trouvé' }));
+  }
+});
+
 it('garde les étoiles quand on quitte en cours de partie', async () => {
   const user = userEvent.setup();
   open('/jeu/lettres');
@@ -91,10 +131,66 @@ it('Quelle chanson : indice visible, titre caché, son indisponible signalé', a
   await user.click(screen.getByRole('button', { name: 'Écouter l’extrait' }));
   expect(screen.getByRole('status')).toHaveTextContent('Le son n’est pas disponible');
 
+  // Un instrument tiré au hasard, et l'accompagnement que le parent ajoute s'il veut.
+  expect(
+    screen.getByText(/^Joué (à la boîte à musique|à la flûte|au piano|au xylophone)$/),
+  ).toBeInTheDocument();
+  const drone = screen.getByRole('button', { name: 'Accompagnement' });
+  expect(drone).toHaveAttribute('aria-pressed', 'false');
+  await user.click(drone);
+  expect(screen.getByRole('button', { name: 'Accompagnement' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
   await user.click(screen.getByRole('button', { name: 'Pas encore' }));
   expect(screen.getByText('Manche 2 sur 10')).toBeInTheDocument();
   // Nouvelle manche : la réponse est de nouveau cachée.
   expect(screen.getByRole('button', { name: 'Voir la réponse' })).toBeInTheDocument();
+});
+
+it('Quelle chanson : façons d’écouter expliquées, une étoile par manche (#47)', async () => {
+  const user = userEvent.setup();
+  open('/jeu/chanson');
+  const picker = screen.getByRole('radiogroup', { name: 'Façon d’écouter' });
+  expect(screen.getByRole('radio', { name: 'L’extrait' })).toBeChecked();
+  expect(screen.getByText(/Les 10 premières secondes de l’air/)).toBeInTheDocument();
+
+  // Petit à petit : 3 notes, puis 5, puis 10, puis tout l'extrait.
+  await user.click(screen.getByRole('radio', { name: 'Petit à petit' }));
+  expect(screen.getByText(/3 notes d’abord, puis 5/)).toBeInTheDocument();
+  expect(screen.getByRole('status')).toHaveTextContent('3 premières notes');
+  await user.click(screen.getByRole('button', { name: 'Encore des notes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('5 premières notes');
+  await user.click(screen.getByRole('button', { name: 'Encore des notes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('10 premières notes');
+  await user.click(screen.getByRole('button', { name: 'Encore des notes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('Extrait de 10 secondes');
+  expect(screen.queryByRole('button', { name: 'Encore des notes' })).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole('radio', { name: 'Au ralenti' }));
+  expect(screen.getByText(/plus lentement que d’habitude/)).toBeInTheDocument();
+  await user.click(screen.getByRole('radio', { name: 'En accéléré' }));
+  expect(screen.getByText(/plus vite que d’habitude/)).toBeInTheDocument();
+  await user.click(screen.getByRole('radio', { name: 'Le rythme seul' }));
+  expect(screen.getByText(/même hauteur/)).toBeInTheDocument();
+  expect(screen.getByRole('status')).toHaveTextContent('Rythme de l’extrait');
+
+  // Une étoile par manche, quelle que soit la variante.
+  await user.click(screen.getByRole('button', { name: 'Trouvé' }));
+  expect(screen.getByText('Manche 2 sur 10')).toBeInTheDocument();
+  expect(screen.getByLabelText('1 étoile')).toBeInTheDocument();
+  // Le choix reste d'une manche à l'autre.
+  expect(screen.getByRole('radio', { name: 'Le rythme seul' })).toBeChecked();
+
+  // Au hasard : une variante tirée pour la manche, expliquée aussi.
+  await user.click(screen.getByRole('radio', { name: 'Au hasard' }));
+  expect(picker.parentElement).toHaveTextContent('tirée au sort à chaque manche');
+  expect(document.querySelector('.song-player__variant')).toHaveTextContent(
+    /^(L’extrait|Petit à petit|Au ralenti|En accéléré|Le rythme seul) : /,
+  );
+  await user.click(screen.getByRole('button', { name: 'Trouvé' }));
+  expect(screen.getByLabelText('2 étoiles')).toBeInTheDocument();
 });
 
 describe('Dessine ça', () => {
@@ -116,8 +212,9 @@ describe('Dessine ça', () => {
     expect(screen.getByRole('timer')).toHaveTextContent('1:00'); // minuteur relancé
     expect(screen.getByText('Manche 1 sur 10')).toBeInTheDocument();
 
+    await user.click(screen.getByRole('button', { name: 'Couleur : Noir' }));
     await user.click(screen.getByRole('radio', { name: 'Bleu' }));
-    expect(screen.getByRole('radio', { name: 'Bleu' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('button', { name: 'Couleur : Bleu' })).toBeInTheDocument();
 
     act(() => void vi.advanceTimersByTime(61_000));
     expect(screen.getByRole('timer')).toHaveAccessibleName('Temps écoulé');

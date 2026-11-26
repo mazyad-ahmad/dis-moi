@@ -47,7 +47,7 @@ export const GAMES: GameInfo[] = [
     icon: 'letters',
     needs: needsOf('glyph'),
     activities: ['lire-compter'],
-    levels: packLevels('lettres', 'chiffres'),
+    levels: packLevels('lettres', 'chiffres', 'nombres', 'des', 'doigts'),
     skill: 'Prépare à la lecture et au calcul',
   },
   {

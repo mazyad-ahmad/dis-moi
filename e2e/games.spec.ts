@@ -12,6 +12,23 @@ test('Quelle chanson : l’extrait se joue et avance', async ({ page }) => {
   await expect(page.getByText('Manche 2 sur 10')).toBeVisible();
 });
 
+test('Quelle chanson : instrument et accompagnement, pause et reprise', async ({ page }) => {
+  await page.goto('./#/jeu/chanson');
+  await expect(page.getByText(/Joué (à la|au) /)).toBeVisible();
+  await page.getByRole('button', { name: 'Accompagnement' }).click();
+  await expect(page.getByRole('button', { name: 'Accompagnement' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.getByRole('button', { name: 'Écouter l’extrait' }).click();
+  await expect(page.getByRole('status')).toHaveText(/· 0:0[1-9]/, { timeout: 4000 });
+  await page.getByRole('button', { name: 'Pause' }).click();
+  const paused = await page.getByRole('status').textContent();
+  await page.getByRole('button', { name: 'Écouter l’extrait' }).click();
+  await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
+  await expect(page.getByRole('status')).not.toHaveText(paused!, { timeout: 4000 });
+});
+
 test('Dessine ça : on dessine au doigt et on efface', async ({ page }) => {
   await page.goto('./#/jeu/dessin');
   const canvas = page.getByLabel('Zone de dessin');
@@ -32,6 +49,73 @@ test('Dessine ça : on dessine au doigt et on efface', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Tout effacer' }).click();
   expect(await inked()).toBe(0);
+});
+
+test('Dessine ça : annuler trait par trait, net après rotation, outils sur une ligne', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('./#/jeu/dessin');
+  const canvas = page.getByLabel('Zone de dessin');
+  const inked = () =>
+    canvas.evaluate((c: HTMLCanvasElement) => {
+      const d = c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data;
+      let n = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i]) n++;
+      return n;
+    });
+  const line = async (x: number, y: number) => {
+    const box = (await canvas.boundingBox())!;
+    await page.mouse.move(box.x + x, box.y + y);
+    await page.mouse.down();
+    await page.mouse.move(box.x + x + 120, box.y + y + 60, { steps: 10 });
+    await page.mouse.up();
+  };
+
+  // Les cinq outils : une seule ligne, 48 px au moins.
+  const tools = [
+    'Couleur : Noir',
+    'Épaisseur : Moyen',
+    'Gomme',
+    'Annuler le dernier trait',
+    'Tout effacer',
+  ];
+  const boxes = await Promise.all(
+    tools.map(async (name) => (await page.getByRole('button', { name }).boundingBox())!),
+  );
+  for (const b of boxes) {
+    expect(b.width).toBeGreaterThanOrEqual(48);
+    expect(b.height).toBeGreaterThanOrEqual(48);
+    expect(b.y).toBe(boxes[0].y);
+  }
+
+  await line(30, 30);
+  const one = await inked();
+  await line(30, 150);
+  const two = await inked();
+  expect(two).toBeGreaterThan(one);
+
+  // Rotation : le dessin est retracé à la taille réelle de l'écran, pas étiré.
+  await page.setViewportSize({ width: 740, height: 360 });
+  await expect
+    .poll(() =>
+      canvas.evaluate(
+        (c: HTMLCanvasElement) => c.width === Math.round(c.clientWidth * devicePixelRatio),
+      ),
+    )
+    .toBe(true);
+  expect(await inked()).toBeGreaterThan(0);
+  await page.setViewportSize({ width: 360, height: 740 });
+  await expect.poll(inked).toBeGreaterThan(one);
+
+  const undo = page.getByRole('button', { name: 'Annuler le dernier trait' });
+  await undo.click();
+  const left = await inked();
+  expect(left).toBeGreaterThan(0);
+  expect(left).toBeLessThan(two);
+  await undo.click();
+  expect(await inked()).toBe(0);
+  await expect(undo).toBeDisabled();
 });
 
 test('Quelle lettre : partie complète jusqu’au résultat', async ({ page }) => {

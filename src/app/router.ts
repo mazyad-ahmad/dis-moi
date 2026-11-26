@@ -9,6 +9,7 @@ export type Route =
   | { name: 'teams' }
   | { name: 'add-game' }
   | { name: 'privacy' }
+  | { name: 'drawings' }
   | { name: 'breathe' }
   | { name: 'game'; id: string }
   | { name: 'edit-game'; id: number }
@@ -23,6 +24,7 @@ export function parseHash(hash: string): Route {
   if (path === '/equipes') return { name: 'teams' };
   if (path === '/ajouter') return { name: 'add-game' };
   if (path === '/confidentialite') return { name: 'privacy' };
+  if (path === '/dessins') return { name: 'drawings' };
   if (path === '/respire') return { name: 'breathe' };
   const edit = /^\/creer\/(\d+)$/.exec(path);
   if (edit) return { name: 'edit-game', id: Number(edit[1]) };

@@ -14,6 +14,7 @@ import { DrawingGame } from '../dessin/DrawingGame';
 import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
+import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings, useSettings } from '../../data/settings';
 import { cardLevel, drawForLevel } from '../levels';
 import { drawForTurns } from '../turns';
@@ -21,6 +22,8 @@ import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
 import { cardKey } from './cardKey';
 import type { Deck, DeckItem, DeckKind } from './types';
+import { AnswerPhoto, RealSound } from './media';
+import { useFoundPhoto } from './useFoundPhoto';
 import { useObjectUrl } from './useObjectUrl';
 import { VERDICT_OPTIONS, verdictOf, verdictOption } from '../vraifaux/verdict';
 import { consigneOf } from '../jacques/consigne';
@@ -54,17 +57,26 @@ function RecordedSound({ audio }: { audio: Blob }) {
   );
 }
 
-export function SoundCard({ item }: { item: DeckItem }) {
+/**
+ * Carte son. Jeu intégré avec un vrai cri (#118) : le parent imite toujours d'abord, le bouton
+ * « Écouter le cri » vient en plus ; la photo remplace l'oreille une fois la réponse vue.
+ */
+export function SoundCard({ item, revealed = false }: { item: DeckItem; revealed?: boolean }) {
   return (
     <section className="song-player" aria-label="Son">
       {item.audio ? (
         <RecordedSound audio={item.audio} />
       ) : (
         <>
-          <span className="deck-card__ear" aria-hidden="true">
-            <IconEar size={56} />
-          </span>
+          {revealed && item.photoUrl ? (
+            <AnswerPhoto item={item} />
+          ) : (
+            <span className="deck-card__ear" aria-hidden="true">
+              <IconEar size={56} />
+            </span>
+          )}
           <span role="status">Le parent fait le bruit, l’enfant devine</span>
+          {item.soundUrl && <RealSound url={item.soundUrl} />}
         </>
       )}
     </section>
@@ -175,12 +187,13 @@ export function DeckRound({
   // L'enfant verrait la réponse (couleur, photo) : les choix la remplacent, le parent la demande.
   // Une ombre (#61) ne la donne pas : les choix, en couleur, s'ajoutent sous la silhouette.
   const showMe = !!choices && showsAnswer(kind) && !item.shadow;
+  // Photo de la réponse (#118) : seulement après « Voir la réponse ».
   const [revealed, setRevealed] = useState(false);
   // Où ça va ? (#130) : l'élément, ses familles et une réponse parfois discutable.
   if (kind === 'question' && triOf(item)) return <TriRound item={item} />;
   return (
     <div className="deck-round round-in">
-      {kind === 'sound' && <SoundCard item={item} />}
+      {kind === 'sound' && <SoundCard item={item} revealed={revealed} />}
       {kind === 'image' &&
         !showMe &&
         // Une carte en ombre (#61) n'est jamais en Image cachée (#62) : l'ombre l'emporte.
@@ -190,6 +203,7 @@ export function DeckRound({
           <ImageCard item={item} revealed={revealed} />
         ))}
       {kind === 'question' && <QuestionCard item={item} />}
+      {revealed && kind !== 'sound' && <AnswerPhoto item={item} />}
       {choices && (
         <ChoiceBoard options={choices} answer={verdict ?? count?.key ?? deckOption(item).key} />
       )}
@@ -198,7 +212,7 @@ export function DeckRound({
       ) : syllabes ? (
         <SyllabesCue syllabes={syllabes} hint={item.hint} />
       ) : showMe ? (
-        <ParentBlock>
+        <ParentBlock prolonger={item.prolonger}>
           Demande à l’enfant de montrer : <strong>{item.answer}</strong>
           <TalkAbout item={item} />
         </ParentBlock>
@@ -209,6 +223,7 @@ export function DeckRound({
           hints={hintLadder(item)}
           openHints={writtenHints(item).length ? 1 : 0}
           onReveal={() => setRevealed(true)}
+          prolonger={item.prolonger}
         >
           {soundToImitate && (
             <>
@@ -228,14 +243,23 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
   const reveal = deck.reveal ?? revealCatalogue.includes(deck.id);
   // Tirage figé pour la partie, même si le jeu est modifié entre-temps ou la page rafraîchie.
   // Chacun son tour (#38) : chaque carte au niveau de l'enfant de la manche.
+  // Les cartes pas encore vues d'abord (#55).
   const items = useSavedDraw(
     deck.id,
     'draw',
     deck.items,
-    () =>
-      turns
-        ? drawForTurns(deck.items, turns.levels(Math.min(setting, deck.items.length)), cardLevel)
-        : drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel),
+    () => {
+      const seen = seenOf(deck.id, deck.items, cardKey);
+      return turns
+        ? drawForTurns(
+            deck.items,
+            turns.levels(Math.min(setting, deck.items.length)),
+            cardLevel,
+            undefined,
+            seen,
+          )
+        : drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel, undefined, seen);
+    },
     cardKey,
   );
   const { round, rounds, stars, finished, answer, team, teams } = useRounds(
@@ -243,11 +267,20 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
     items.length,
     turns?.order,
   );
+  const item = items[round - 1];
+  // Clés des cartes au lancement (le jeu créé peut changer pendant la partie).
+  const [keys] = useState(() => new Map(deck.items.map((it, i) => [it, cardKey(it, i)])));
+  useMarkSeen(deck.id, finished ? undefined : keys.get(item));
+  const photo = useFoundPhoto();
 
   if (finished)
-    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
+    return (
+      <>
+        <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />
+        {photo.overlay}
+      </>
+    );
 
-  const item = items[round - 1];
   return (
     <main className="screen">
       <GameHeader
@@ -272,9 +305,13 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}
-        onFound={() => answer(true)}
+        onFound={() => {
+          photo.show(item);
+          answer(true);
+        }}
         skipLabel={deck.kind === 'question' ? 'Pas encore' : 'Passer'}
       />
+      {photo.overlay}
     </main>
   );
 }

@@ -1,0 +1,30 @@
+{
+  "format": "dis-moi/jeu",
+  "version": 1,
+  "id": "nombres",
+  "revision": 2,
+  "kind": "glyph",
+  "name": "Quel nombre ?",
+  "lang": "fr",
+  "items": [
+    {"id": "10", "level": 2, "answer": "10", "hint": "Demande de montrer 10 doigts : les deux mains entières", "prolonger": "Comptez ensemble à rebours de dix à zéro, comme une fusée qui décolle."},
+    {"id": "11", "level": 2, "answer": "11", "hint": "Demande quel nombre vient juste après 10", "prolonger": "Demande-lui de montrer onze avec les doigts : il en faut un de plus que dix !"},
+    {"id": "12", "level": 3, "answer": "12", "hint": "Demande combien il y a de mois dans une année", "prolonger": "Demande-lui quel est le mois de son anniversaire."},
+    {"id": "13", "level": 2, "answer": "13", "hint": "Demande de compter jusqu’à 13 en tapant dans les mains", "prolonger": "Demande-lui quel nombre vient juste avant treize."},
+    {"id": "14", "level": 3, "answer": "14", "hint": "Demande combien font les deux mains et encore 4 doigts", "prolonger": "Comptez ensemble les chaussures de la maison : y en a-t-il plus de quatorze ?"},
+    {"id": "15", "level": 2, "answer": "15", "hint": "Demande de sauter 15 fois sur place en comptant ensemble", "prolonger": "Demande-lui de compter quinze petits objets avec toi, en les rangeant."},
+    {"id": "16", "level": 3, "answer": "16", "hint": "Demande quel nombre vient juste avant 17", "prolonger": "Demande-lui quel nombre vient juste après seize."},
+    {"id": "17", "level": 3, "answer": "17", "hint": "Demande de compter de 10 jusqu’à 17 sur les doigts", "prolonger": "Demande-lui de compter de dix-sept à vingt."},
+    {"id": "18", "level": 3, "answer": "18", "hint": "Demande de compter jusqu’à 18 en chuchotant", "prolonger": "Demande-lui quel nombre vient juste après dix-huit."},
+    {"id": "19", "level": 3, "answer": "19", "hint": "Demande quel nombre vient juste avant 20", "prolonger": "Comptez ensemble à rebours, de dix-neuf à dix."},
+    {"id": "20", "level": 2, "answer": "20", "hint": "Demande combien on a de doigts aux mains et aux pieds", "prolonger": "Comptez ensemble les doigts des mains et des pieds de toute la famille."},
+    {"id": "30", "level": 3, "answer": "30", "hint": "Explique que 30, c’est 3 dizaines : trois fois les deux mains", "prolonger": "Demande-lui combien il y a de jours dans un mois, à peu près (trente)."},
+    {"id": "40", "level": 3, "answer": "40", "hint": "Demande de compter de 10 en 10 jusqu’à 40", "prolonger": "Demande-lui combien font quatre fois les deux mains."},
+    {"id": "50", "level": 3, "answer": "50", "hint": "Demande de compter de 10 en 10 jusqu’à 50", "prolonger": "Comptez ensemble de cinq en cinq jusqu’à cinquante."},
+    {"id": "60", "level": 3, "answer": "60", "hint": "Demande combien il y a de minutes dans une heure", "prolonger": "Demande-lui combien il y a de secondes dans une minute (soixante)."},
+    {"id": "70", "level": 3, "answer": "70", "hint": "Demande quel nombre vient après 60 quand on compte de 10 en 10", "prolonger": "Demande-lui quel nombre vient après soixante-neuf."},
+    {"id": "80", "level": 3, "answer": "80", "hint": "Demande de compter de 10 en 10, de 50 jusqu’à 80", "prolonger": "Demande-lui comment on dit quatre fois vingt (quatre-vingts)."},
+    {"id": "90", "level": 3, "answer": "90", "hint": "Demande quel nombre vient juste avant 100 quand on compte de 10 en 10", "prolonger": "Demande-lui quel nombre vient juste après quatre-vingt-dix."},
+    {"id": "100", "level": 3, "answer": "100", "hint": "Demande combien de dizaines il faut pour faire 100", "prolonger": "Demande-lui ce qu’il aimerait avoir cent fois."}
+  ]
+}

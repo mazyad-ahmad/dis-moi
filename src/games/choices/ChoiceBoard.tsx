@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useObjectUrl } from '../deck/useObjectUrl';
+import { GlyphView } from '../lettres/Glyph';
 import type { ChoiceOption } from './choices';
 import './choices.css';
 
@@ -9,7 +10,10 @@ function Photo({ image }: { image: Blob }) {
 }
 
 function Visual({ option }: { option: ChoiceOption }) {
-  if (option.glyph) return <span className="choice__glyph">{option.glyph}</span>;
+  if (option.glyph)
+    return (
+      <GlyphView glyph={option.glyph} set={option.glyphSet ?? 'upper'} className="choice__glyph" />
+    );
   if (option.image) return <Photo image={option.image} />;
   if (option.color) return <span className="choice__swatch" style={{ background: option.color }} />;
   if (option.emoji)
@@ -30,9 +34,12 @@ function Visual({ option }: { option: ChoiceOption }) {
 export function ChoiceBoard({
   options,
   answer,
+  onFound,
 }: {
   options: ChoiceOption[];
   answer: string | readonly string[];
+  /** Appelé quand l'enfant touche la bonne réponse. */
+  onFound?: () => void;
 }) {
   const [found, setFound] = useState<string>();
   const good = (key: string) =>
@@ -49,7 +56,11 @@ export function ChoiceBoard({
               type="button"
               className={`choice${shown ? ' is-right' : ''}`}
               aria-label={o.label}
-              onClick={() => good(o.key) && setFound(o.key)}
+              onClick={() => {
+                if (!good(o.key)) return;
+                setFound(o.key);
+                onFound?.();
+              }}
             >
               <span className="choice__visual" aria-hidden="true">
                 <Visual option={o} />

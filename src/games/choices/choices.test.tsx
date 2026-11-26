@@ -176,6 +176,21 @@ describe('Répondre en montrant, en jeu', () => {
     expect(screen.getByText(/Demande à l’enfant de montrer/)).toHaveTextContent(/le chiffre \d/);
   });
 
+  it('dés et doigts : des dessins de la même famille au choix (#48)', async () => {
+    const user = userEvent.setup();
+    await setSetting('showChoices', true);
+    open('/jeu/lettres');
+    await user.click(screen.getByText('Dés, doigts'));
+    const buttons = within(board()).getAllByRole('button');
+    const names = buttons.map((b) => b.getAttribute('aria-label')!);
+    const unit = /point/.test(names[0]) ? /^\d+ points?$/ : /^\d+ doigts?$/;
+    names.forEach((n) => expect(n).toMatch(unit));
+    buttons.forEach((b) => expect(b.querySelector('svg')).toBeInTheDocument());
+    expect(screen.getByText(/Demande à l’enfant de montrer/)).toHaveTextContent(
+      /(le dé|la main) qui montre \d+/,
+    );
+  });
+
   it('animaux : sans niveau de partie, le niveau du joueur du jour (Grands : 4 images)', async () => {
     await setPlayerLevel(await addPlayer('Léa'), 3);
     await setSetting('showChoices', true);

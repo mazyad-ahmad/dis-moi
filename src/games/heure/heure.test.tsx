@@ -168,7 +168,7 @@ describe('Quelle heure est-il ?', () => {
     expect(parent).toHaveTextContent('La petite aiguille montre les heures');
     await user.click(within(parent).getByRole('button', { name: 'Voir la réponse' }));
     // Moyens : une heure pile.
-    expect(parent).toHaveTextContent(/(heures?|midi), \d{1,2}:00/);
+    expect(parent).toHaveTextContent(/(heures?|midi(?: \(ou minuit\))?), \d{1,2}:00/);
     await user.click(screen.getByRole('button', { name: 'Trouvé' }));
     expect(screen.getByText('Manche 2 sur 10')).toBeInTheDocument();
     expect(screen.getByLabelText('1 étoile')).toBeInTheDocument();

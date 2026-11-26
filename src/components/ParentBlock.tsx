@@ -13,10 +13,15 @@ interface Props {
   hints?: ReactNode[];
   /** Nombre d'indices visibles d'emblée (par défaut : aucun). */
   openHints?: number;
+  /** Appelé quand le parent affiche le contenu masqué. */
+  onReveal?: () => void;
   /** Appelé avec le nombre d'indices visibles après chaque appui. */
   onHint?: (shown: number) => void;
-  /** Appelé quand le parent appuie sur « Voir la réponse » (Ombres, #61 : l'image se révèle). */
-  onReveal?: () => void;
+  /**
+   * Phrase pour prolonger la discussion (#124), montrée après la réponse : une fois le
+   * contenu masqué affiché, ou d'emblée s'il n'y a rien à masquer.
+   */
+  prolonger?: string;
   children?: ReactNode;
 }
 
@@ -29,6 +34,7 @@ export function ParentBlock({
   openHints = 0,
   onHint,
   onReveal,
+  prolonger,
   children,
 }: Props) {
   const [revealed, setRevealed] = useState(false);
@@ -64,6 +70,11 @@ export function ParentBlock({
             <p key={i}>Indice : {hint}</p>
           ))}
         </div>
+      )}
+      {prolonger && (hidden === undefined || revealed) && (
+        <p className="parent-block__prolonger">
+          <strong>Pour prolonger :</strong> {prolonger}
+        </p>
       )}
       {/* Une fois la réponse vue, plus besoin d'indice. */}
       {shown < hints.length && !revealed && (

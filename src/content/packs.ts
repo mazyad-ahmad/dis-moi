@@ -1,6 +1,6 @@
-import { MAX_GAME_NAME, MAX_HINTS, MAX_TEXT } from '../data/customGames';
+import { MAX_GAME_NAME, MAX_HINTS, MAX_PROLONGER, MAX_TEXT } from '../data/customGames';
 import { GAME_FILE_FORMAT, GAME_FILE_VERSION } from '../data/gameFile';
-import { parseMelody } from '../games/chanson/melody';
+import { melodySeconds, parseMelody } from '../games/chanson/melody';
 import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
 import { isLevel, LEVELS, type Level } from '../games/levels';
@@ -28,7 +28,10 @@ export const PACK_KINDS: PackKind[] = [
   'story',
 ];
 
-export interface PackItem extends Omit<DeckItem, 'image' | 'audio' | 'shadow'> {
+export interface PackItem extends Omit<
+  DeckItem,
+  'image' | 'audio' | 'soundUrl' | 'photoUrl' | 'shadow'
+> {
   /** Identifiant stable dans le pack (minuscules, chiffres et tirets). */
   id: string;
   /** Niveau par âge, obligatoire pour le contenu intégré (#40). */
@@ -37,6 +40,14 @@ export interface PackItem extends Omit<DeckItem, 'image' | 'audio' | 'shadow'> {
   melody?: string;
   /** Tempo de l'air, en battements par minute (pack « melody »). */
   bpm?: number;
+  /** Origine et statut de domaine public de l'air (pack « melody », #45), et des paroles. */
+  source?: string;
+  /** Paroles du premier couplet, un vers par ligne (pack « melody », #117). */
+  lyrics?: string[];
+  /** Vrai son de la carte (pack « sound ») : fichier WAV de `src/content/media/`. */
+  sound?: string;
+  /** Photo montrée une fois la réponse donnée : fichier de `src/content/media/`. */
+  photo?: string;
 }
 
 export interface Pack {
@@ -96,6 +107,7 @@ const ITEM_FIELDS = new Set([
   'text',
   'hint',
   'hints',
+  'prolonger',
   'talk',
   'emoji',
   'color',
@@ -104,9 +116,50 @@ const ITEM_FIELDS = new Set([
   'lang',
   'melody',
   'bpm',
+  'source',
+  'lyrics',
+  'sound',
+  'photo',
   'others',
   'steps',
 ]);
+
+/** Paroles (#117) : vers par couplet et longueur d'un vers, lisibles à bout de bras. */
+export const MAX_LYRICS_LINES = 12;
+export const MAX_LYRICS_LINE = 60;
+/** Durée maximale de l'air complet joué par « Chanter ensemble » (#117), en secondes. */
+export const MAX_FULL_SECONDS = 60;
+
+/** Thèmes des airs (#45) : chaque air en a un, dans « tags ». */
+export const MELODY_THEMES = ['comptine', 'noel', 'classique'] as const;
+
+/** Thèmes des mots à dessiner (#54) : chaque mot en a un, dans « tags ». */
+export const DRAW_THEMES = [
+  'animaux',
+  'maison',
+  'nature',
+  'nourriture',
+  'vehicules',
+  'imaginaire',
+] as const;
+
+/** Un seul thème de la liste dans « tags » (les autres mots sont libres). */
+const oneTheme = (tags: unknown, themes: readonly string[]) =>
+  Array.isArray(tags) && tags.filter((t) => themes.includes(t as string)).length === 1;
+
+/**
+ * Sons et photos des jeux intégrés (#118), embarqués au build et mis en cache par le service
+ * worker : nom de fichier → adresse. Source et licence de chacun : `media/credits.json`.
+ */
+export const MEDIA: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>('./media/*.{wav,jpg,webp}', {
+      eager: true,
+      query: '?url',
+      import: 'default',
+    }),
+  ).map(([path, url]) => [path.slice('./media/'.length), url]),
+);
 
 /** L'intrus (#63) : trois images qui vont ensemble, plus l'intrus. */
 export const INTRUS_OTHERS = 3;
@@ -151,7 +204,9 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
         ? undefined
         : 'rien à montrer (« emoji », « color » ou « text »)';
     case 'draw':
-      return undefined;
+      return oneTheme(item.tags, DRAW_THEMES)
+        ? undefined
+        : `thème (« tags ») : un seul parmi ${DRAW_THEMES.join(', ')}`;
     case 'chat':
       // La question est dans « answer » ; chaque question a un thème.
       return chatTheme(item.tags as string[] | undefined)
@@ -164,22 +219,66 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
         ? undefined
         : `rôle (« tags ») : un seul parmi ${STORY_PARTS.map((p) => p.value).join(', ')}`;
     case 'glyph':
-      if (typeof item.answer !== 'string' || [...item.answer].length !== 1)
-        return 'un glyphe est un seul caractère';
+      // Une lettre, un chiffre ou un nombre jusqu'à 100 (#48).
+      if (typeof item.answer !== 'string' || [...item.answer].length > 3)
+        return 'un glyphe fait 1 à 3 caractères';
       return isText(item.hint) ? undefined : 'consigne (« hint ») manquante';
     case 'melody': {
       if (!isText(item.hint)) return 'indice (« hint ») manquant';
       if (typeof item.bpm !== 'number' || item.bpm < 40 || item.bpm > 240)
         return 'tempo (« bpm ») entre 40 et 240 attendu';
       if (typeof item.melody !== 'string') return 'air (« melody ») manquant';
+      if (!isText(item.source))
+        return 'source (« source ») manquante : auteur ou origine, et statut de domaine public';
+      if (!oneTheme(item.tags, MELODY_THEMES))
+        return `thème (« tags ») : un seul parmi ${MELODY_THEMES.join(', ')}`;
+      let seconds: number;
       try {
-        parseMelody(item.melody);
+        seconds = melodySeconds(parseMelody(item.melody), item.bpm);
       } catch (e) {
         return `air illisible : ${(e as Error).message}`;
       }
-      return undefined;
+      if (seconds > MAX_FULL_SECONDS)
+        return `air complet trop long (${Math.round(seconds)} s, ${MAX_FULL_SECONDS} s max)`;
+      return lyricsProblem(item.lyrics, item.source);
     }
   }
+}
+
+/**
+ * Paroles d'un air (#117) : facultatives, une liste de vers, et seulement du domaine public.
+ * La source le dit (« air et paroles traditionnels… »), comme elle le dit déjà pour l'air.
+ */
+function lyricsProblem(lyrics: unknown, source: string): string | undefined {
+  if (lyrics === undefined) return undefined;
+  if (!(
+    Array.isArray(lyrics) &&
+    lyrics.length >= 2 &&
+    lyrics.length <= MAX_LYRICS_LINES &&
+    lyrics.every((line) => isText(line, MAX_LYRICS_LINE))
+  ))
+    return `paroles (« lyrics ») : liste de 2 à ${MAX_LYRICS_LINES} vers de ${MAX_LYRICS_LINE} caractères au plus`;
+  if (!/paroles/i.test(source))
+    return 'paroles (« lyrics ») : la source doit aussi dire d’où viennent les paroles';
+  return undefined;
+}
+
+/** Son et photo d'une carte (#118) : fichiers présents dans `media/`, au bon format. */
+function mediaProblem(kind: PackKind, item: Record<string, unknown>): string | undefined {
+  const file = (value: unknown, ext: RegExp) =>
+    typeof value === 'string' && ext.test(value) && value in MEDIA;
+  if (item.sound !== undefined) {
+    if (kind !== 'sound') return '« sound » est réservé aux packs de sons';
+    if (!file(item.sound, /^[a-z0-9-]+\.wav$/))
+      return `son (« sound ») introuvable dans src/content/media/ (fichier .wav) : ${item.sound}`;
+  }
+  if (item.photo !== undefined) {
+    if (!DECK_KINDS.some((k) => k.value === kind))
+      return '« photo » est réservée aux jeux à cartes';
+    if (!file(item.photo, /^[a-z0-9-]+\.(jpg|webp)$/))
+      return `photo (« photo ») introuvable dans src/content/media/ (.jpg ou .webp) : ${item.photo}`;
+  }
+  return undefined;
 }
 
 /** Problème d'une carte, ou rien. */
@@ -202,6 +301,11 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     )
   )
     return `indices (« hints ») : liste de 1 à ${MAX_HINTS} textes attendue`;
+  if (item.prolonger !== undefined) {
+    if (kind === 'draw') return '« prolonger » n’est pas montré pour un mot à dessiner';
+    if (!isText(item.prolonger, MAX_PROLONGER))
+      return `« prolonger » vide, trop long (${MAX_PROLONGER} max) ou mal espacé`;
+  }
   if (item.emoji !== undefined && !isText(item.emoji, 16)) return 'emoji invalide';
   // Niveaux par âge (#40) : chaque carte intégrée en a un.
   if (!isLevel(item.level))
@@ -213,8 +317,16 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     return 'thèmes (« tags ») : liste de mots en minuscules attendue';
   if (item.lang !== undefined && !(typeof item.lang === 'string' && /^[a-z]{2}$/.test(item.lang)))
     return 'langue (« lang ») : code à deux lettres attendu';
-  if (kind !== 'melody' && (item.melody !== undefined || item.bpm !== undefined))
-    return '« melody » et « bpm » sont réservés aux packs d’airs';
+  if (
+    kind !== 'melody' &&
+    (item.melody !== undefined ||
+      item.bpm !== undefined ||
+      item.source !== undefined ||
+      item.lyrics !== undefined)
+  )
+    return '« melody », « bpm », « source » et « lyrics » sont réservés aux packs d’airs';
+  const media = mediaProblem(kind, item);
+  if (media) return media;
   if (item.others !== undefined) {
     // L'intrus (#63) : trois images qui vont ensemble, l'intrus est l'« emoji ».
     const others = item.others;
@@ -315,12 +427,21 @@ export function getPack(id: string): Pack {
   return pack;
 }
 
-/** Cartes d'un pack, au format des jeux à cartes. */
+/** Cartes d'un pack, au format des jeux à cartes (son et photo : adresses des fichiers). */
 export function deckItems(pack: Pack): DeckItem[] {
   return pack.items.map((item) => {
-    const copy: DeckItem & Partial<Pick<PackItem, 'melody' | 'bpm'>> = { ...item };
+    const copy: DeckItem &
+      Partial<Pick<PackItem, 'melody' | 'bpm' | 'source' | 'lyrics' | 'sound' | 'photo'>> = {
+      ...item,
+    };
     delete copy.melody;
     delete copy.bpm;
+    delete copy.source;
+    delete copy.lyrics;
+    delete copy.sound;
+    delete copy.photo;
+    if (item.sound && MEDIA[item.sound]) copy.soundUrl = MEDIA[item.sound];
+    if (item.photo && MEDIA[item.photo]) copy.photoUrl = MEDIA[item.photo];
     if (pack.shadow) copy.shadow = true;
     return copy;
   });

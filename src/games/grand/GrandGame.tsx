@@ -10,8 +10,9 @@ import { SongRound } from '../chanson/SongGame';
 import { SONGS } from '../chanson/songs';
 import { deckChoicePool } from '../choices/choices';
 import { DeckRound } from '../deck/DeckGame';
+import { useFoundPhoto } from '../deck/useFoundPhoto';
 import { DrawingBoard } from '../dessin/DrawingGame';
-import { glyphPool } from '../lettres/bank';
+import { glyphPool, glyphTitle } from '../lettres/bank';
 import { GlyphRound } from '../lettres/LettersGame';
 import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
@@ -55,7 +56,9 @@ type Heading = Omit<ComponentProps<typeof GameHeader>, 'aside'>;
 
 /** Titre de la manche : « Quel chiffre ? » pour un chiffre tiré dans « Quelle lettre ? ». */
 function titleOf({ game, card }: GrandRound): string {
-  return card.type === 'glyph' && /^\d$/.test(card.glyph.glyph) ? 'Quel chiffre ?' : game.name;
+  return card.type === 'glyph' && card.glyph.set !== 'upper'
+    ? glyphTitle(card.glyph.set)
+    : game.name;
 }
 
 /** Cartes du jeu de la manche où tirer les choix de « Répondre en montrant » (#123). */
@@ -144,12 +147,18 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   // Dernière manche déjà annoncée par l'écran-éclair.
   const [announced, setAnnounced] = useState(0);
   const go = useCallback(() => setAnnounced(round), [round]);
+  const photo = useFoundPhoto();
   // Image cachée (#62) : comme dans le jeu d'origine.
   const { revealCatalogue } = useSettings();
   const custom = useCustomGames();
 
   if (finished)
-    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
+    return (
+      <>
+        <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />
+        {photo.overlay}
+      </>
+    );
 
   const current = planned[round - 1];
   const { game, card } = current;
@@ -163,7 +172,13 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
     team,
   };
 
-  if (announced < round) return <Flash key={round} heading={heading} game={game} onGo={go} />;
+  if (announced < round)
+    return (
+      <>
+        <Flash key={round} heading={heading} game={game} onGo={go} />
+        {photo.overlay}
+      </>
+    );
 
   if (card.type === 'draw')
     return (
@@ -240,9 +255,13 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}
-        onFound={() => answer(true)}
+        onFound={() => {
+          if (card.type === 'deck') photo.show(card.item);
+          answer(true);
+        }}
         skipLabel={later ? 'Pas encore' : 'Passer'}
       />
+      {photo.overlay}
     </main>
   );
 }

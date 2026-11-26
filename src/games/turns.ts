@@ -43,11 +43,13 @@ export function nextForLevel<T>(
   levelOf: (item: T) => Level | undefined,
   used: readonly T[],
   random?: () => number,
+  /** Mémoire des cartes vues (#55) : les moins récemment vues d'abord. */
+  seenAt?: (item: T) => number,
 ): T | undefined {
   const fresh = items.filter((item) => !used.includes(item));
   const last = used[used.length - 1];
   const pool = fresh.length ? fresh : items.length > 1 ? items.filter((i) => i !== last) : items;
-  return orderByLevel(pool, level, levelOf, random)[0];
+  return orderByLevel(pool, level, levelOf, random, seenAt)[0];
 }
 
 /**
@@ -59,12 +61,13 @@ export function drawForTurns<T>(
   levels: readonly (Level | null | undefined)[],
   levelOf: (item: T) => Level | undefined,
   random?: () => number,
+  seenAt?: (item: T) => number,
 ): T[] {
   const out: T[] = [];
   let used: T[] = [];
   for (const level of levels) {
     if (used.length >= items.length) used = used.slice(-1);
-    const card = nextForLevel(items, level, levelOf, used, random);
+    const card = nextForLevel(items, level, levelOf, used, random, seenAt);
     if (card === undefined) break;
     out.push(card);
     used.push(card);

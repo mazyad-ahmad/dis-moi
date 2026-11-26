@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState, type ComponentProps } from 'react';
+import { useEffect, useId, useRef, useState, type ComponentProps, type RefObject } from 'react';
 import { playSound } from '../../audio/sounds';
+import type { Player } from '../../data/db';
+import { DrawingError, keepDrawing, updateDrawingImage } from '../../data/drawings';
+import { listActivePlayers } from '../../data/players';
+import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { ReadAloud } from '../../components/ReadAloud';
-import { IconRefresh, IconTimer, IconTrash } from '../../components/icons';
+import { IconRefresh, IconTimer } from '../../components/icons';
 import { vibrate } from '../../pwa/haptics';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
@@ -15,17 +19,11 @@ import { modeDrawSeconds } from '../modes';
 import { nextForLevel } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { useTurns } from '../useTurns';
-import { DrawingCanvas, type DrawingCanvasHandle } from './DrawingCanvas';
+import { type DrawingCanvasHandle } from './DrawingCanvas';
+import { DrawingPad } from './DrawingPad';
 import { useCountdown } from './useCountdown';
+import { drawHint, restoreVariant, VARIANTS, type Variant } from './variants';
 import { DRAW_LEVELS, DRAW_WORDS } from './words';
-
-const PENS = [
-  { label: 'Noir', color: 'var(--ink)' },
-  { label: 'Vert', color: 'var(--forest)' },
-  { label: 'Bleu', color: 'var(--river)' },
-  { label: 'Or', color: 'var(--sun)' },
-  { label: 'Rouge', color: 'var(--ember)' },
-];
 
 interface DrawingProps {
   gameId?: string;
@@ -47,12 +45,13 @@ function DrawingSession({
 }: DrawingProps & { onReplay: () => void }) {
   const turns = useTurns(gameId);
   // Tirage figé pour la partie (la banque peut venir d'une requête qui se met à jour),
-  // retrouvé après un rafraîchissement.
+  // retrouvé après un rafraîchissement. Les mots pas encore dessinés d'abord (#55).
+  const [seen] = useState(() => seenOf(gameId, bank, (w) => w));
   const words = useSavedDraw(
     gameId,
     'draw',
     bank,
-    () => orderByLevel(bank, getSettings().gameLevel, levelOf),
+    () => orderByLevel(bank, getSettings().gameLevel, levelOf, undefined, seen),
     (w) => w,
   );
   const setting = useRoundSetting();
@@ -74,7 +73,7 @@ function DrawingSession({
   const [shown, setShown] = useSaved<string[]>(
     gameId,
     'shown',
-    () => (turns ? [nextForLevel(words, turns.levelAt(1), levelOf, [])!] : []),
+    () => (turns ? [nextForLevel(words, turns.levelAt(1), levelOf, [], undefined, seen)!] : []),
     (saved) =>
       Array.isArray(saved) && saved.every((w) => words.includes(w as string))
         ? (saved as string[])
@@ -84,6 +83,16 @@ function DrawingSession({
   const [seconds] = useState(() =>
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
   );
+  // Façon de jouer (#53), gardée d'une manche à l'autre et après un rafraîchissement.
+  const [variant, setVariant] = useSaved<Variant>(
+    gameId,
+    'variant',
+    () => 'classique',
+    restoreVariant,
+  );
+
+  const word = turns && shown.length ? shown[shown.length - 1] : words[index % words.length];
+  useMarkSeen(gameId, finished ? undefined : word);
 
   if (finished)
     return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
@@ -91,13 +100,18 @@ function DrawingSession({
   const heading = { round, rounds, stars, category, title, player: turns?.playerAt(round), team };
   if (turns && shown.length) {
     const show = (forRound: number) =>
-      setShown([...shown, nextForLevel(words, turns.levelAt(forRound), levelOf, shown)!]);
+      setShown([
+        ...shown,
+        nextForLevel(words, turns.levelAt(forRound), levelOf, shown, undefined, seen)!,
+      ]);
     return (
       <DrawingBoard
         heading={heading}
-        word={shown[shown.length - 1]}
+        word={word}
         turn={shown.length}
         seconds={seconds}
+        variant={variant}
+        onVariant={setVariant}
         onOtherWord={words.length > 1 ? () => show(round) : undefined}
         onAnswer={(found) => {
           if (round < rounds) show(round + 1);
@@ -110,15 +124,80 @@ function DrawingSession({
   return (
     <DrawingBoard
       heading={heading}
-      word={words[index % words.length]}
+      word={word}
       turn={index}
       seconds={seconds}
+      variant={variant}
+      onVariant={setVariant}
       onOtherWord={() => setIndex(index + 1)}
       onAnswer={(found) => {
         setIndex(index + 1);
         answer(found);
       }}
     />
+  );
+}
+
+/**
+ * « Garder » (#52) : le dessin part dans la galerie, avec le mot, la date et l'enfant.
+ * Si l'enfant continue après, un nouvel appui met à jour le même dessin ; après « Tout
+ * effacer », c'est un nouveau dessin.
+ */
+function KeepButton({
+  word,
+  strokes,
+  player,
+  canvas,
+}: {
+  word: string;
+  strokes: number;
+  player?: Player;
+  canvas: RefObject<DrawingCanvasHandle | null>;
+}) {
+  const [kept, setKept] = useState<{ id: number; strokes: number } | null>(null);
+  const [state, setState] = useState<'idle' | 'busy' | 'full' | 'failed'>('idle');
+  // « Tout effacer » puis un nouveau dessin : c'est un autre dessin, gardé à part.
+  if (!strokes && kept) setKept(null);
+  if (!strokes) return null;
+  const done = kept?.strokes === strokes;
+
+  async function keep() {
+    setState('busy');
+    try {
+      const image = await canvas.current?.snapshot();
+      if (!image) throw new Error('image');
+      if (kept) await updateDrawingImage(kept.id, image);
+      const id =
+        kept?.id ??
+        (await keepDrawing({
+          word,
+          image,
+          playerIds: player ? [player.id] : (await listActivePlayers()).map((p) => p.id),
+        }));
+      setKept({ id, strokes });
+      setState('idle');
+    } catch (e) {
+      setState(e instanceof DrawingError ? 'full' : 'failed');
+    }
+  }
+
+  const label =
+    state === 'full'
+      ? 'Galerie pleine'
+      : state === 'failed'
+        ? 'Pas gardé'
+        : done
+          ? 'Gardé'
+          : 'Garder';
+  return (
+    <button
+      type="button"
+      className="btn btn--secondary keep-btn"
+      disabled={done || state === 'busy' || state === 'full'}
+      onClick={() => void keep()}
+    >
+      {label}
+    </button>
   );
 }
 
@@ -129,17 +208,90 @@ interface BoardProps {
   turn: unknown;
   /** Durée du minuteur, en secondes ; 0 : pas de minuteur (mode Coucher, #42). */
   seconds: number;
+  /** Façon de jouer (#53) ; classique par défaut (Grand Jeu, Défi du jour). */
+  variant?: Variant;
+  /** Choix de la façon de jouer : absent, le sélecteur n'est pas proposé. */
+  onVariant?: (variant: Variant) => void;
   /** « Autre mot » : absent, le bouton n'est pas proposé. */
   onOtherWord?: () => void;
   onAnswer: (found: boolean) => void;
+}
+
+/** Sélecteur des façons de jouer (#53), avec l'explication d'une phrase de la variante choisie. */
+function VariantPicker({ value, onChange }: { value: Variant; onChange: (v: Variant) => void }) {
+  const name = useId();
+  const about = VARIANTS.find((v) => v.value === value)?.about;
+  return (
+    <div className="variant-picker">
+      <div className="segmented segmented--variants" role="radiogroup" aria-label="Façon de jouer">
+        {VARIANTS.map((v) => (
+          <label key={v.value}>
+            <input
+              type="radio"
+              name={name}
+              value={v.value}
+              checked={value === v.value}
+              onChange={() => onChange(v.value)}
+            />
+            {v.label}
+          </label>
+        ))}
+      </div>
+      {about && <p className="variant-picker__about">{about}</p>}
+    </div>
+  );
+}
+
+/**
+ * Le mot de la manche. En Dessin mystère (#53), l'enfant le lit seul puis le cache d'un geste
+ * avant de rendre le téléphone ; le parent le découvre après avoir deviné.
+ */
+function WordShown({ word, mystery }: { word: string; mystery: boolean }) {
+  const [hidden, setHidden] = useState(false);
+  if (!mystery)
+    return (
+      <>
+        <span className="word-card__label">Le parent lit à voix haute</span>
+        <strong className="word-card__word">{word}</strong>
+        <ReadAloud text={word} />
+      </>
+    );
+  return (
+    <>
+      <span className="word-card__label">Mot secret, pour l'enfant</span>
+      {hidden ? (
+        <strong className="word-card__word word-card__word--hidden">Mot caché</strong>
+      ) : (
+        <>
+          <strong className="word-card__word">{word}</strong>
+          <ReadAloud text={word} />
+        </>
+      )}
+      <button
+        type="button"
+        className="btn btn--secondary word-card__hide"
+        onClick={() => setHidden(!hidden)}
+      >
+        {hidden ? 'Voir le mot' : 'Cacher le mot'}
+      </button>
+    </>
+  );
 }
 
 /**
  * Une manche de dessin : mot, minuteur, zone de dessin et boutons.
  * Partagée par « Dessine ça », les mots à dessiner créés et le Grand Jeu (#41).
  */
-export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnswer }: BoardProps) {
-  const [pen, setPen] = useState(PENS[0].color);
+export function DrawingBoard({
+  heading,
+  word,
+  turn,
+  seconds,
+  variant = 'classique',
+  onVariant,
+  onOtherWord,
+  onAnswer,
+}: BoardProps) {
   const canvas = useRef<DrawingCanvasHandle>(null);
   const timed = seconds > 0;
   const left = useCountdown(Math.max(0, seconds), turn);
@@ -180,12 +332,12 @@ export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnsw
         }
       />
 
+      {onVariant && <VariantPicker value={variant} onChange={onVariant} />}
+
       <section className="word-card" aria-label="Mot à dessiner">
-        {/* key : chaque nouveau mot entre en douceur. */}
+        {/* key : chaque nouveau mot entre en douceur (et revient visible en Dessin mystère). */}
         <div key={`${String(turn)}:${word}`} className="round-in">
-          <span className="word-card__label">Le parent lit à voix haute</span>
-          <strong className="word-card__word">{word}</strong>
-          <ReadAloud text={word} />
+          <WordShown word={word} mystery={variant === 'mystere'} />
         </div>
         {onOtherWord && (
           <button
@@ -199,39 +351,26 @@ export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnsw
         )}
       </section>
 
-      <div className="drawing-area">
-        <DrawingCanvas ref={canvas} color={pen} disabled={timeUp} />
-        <span className="drawing-area__hint muted" aria-live="polite">
-          {timeUp ? 'Temps écoulé ! Le parent valide le dessin.' : "L'enfant dessine avec le doigt"}
-        </span>
-      </div>
+      <DrawingPad
+        ref={canvas}
+        disabled={timeUp}
+        corner={(strokes) => (
+          <KeepButton
+            key={`${String(turn)}:${word}`}
+            word={word}
+            strokes={strokes}
+            player={heading.player}
+            canvas={canvas}
+          />
+        )}
+        hint={(strokes) => drawHint(variant, { timeUp, strokes, child: heading.player?.name })}
+      />
 
-      <div className="pen-bar">
-        <div className="pen-bar__colors" role="radiogroup" aria-label="Couleurs">
-          {PENS.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              role="radio"
-              aria-checked={pen === p.color}
-              aria-label={p.label}
-              className="pen"
-              style={{ background: p.color }}
-              onClick={() => setPen(p.color)}
-            />
-          ))}
-        </div>
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label="Tout effacer"
-          onClick={() => canvas.current?.clear()}
-        >
-          <IconTrash size={20} />
-        </button>
-      </div>
-
-      <AnswerBar onSkip={() => next(false)} onFound={() => next(true)} foundLabel="C'est fini" />
+      <AnswerBar
+        onSkip={() => next(false)}
+        onFound={() => next(true)}
+        foundLabel={variant === 'mystere' ? 'Deviné' : "C'est fini"}
+      />
     </main>
   );
 }

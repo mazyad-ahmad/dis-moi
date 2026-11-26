@@ -38,6 +38,8 @@ export interface DeckItem {
   hint?: string;
   /** Indices suivants, donnés un à un si l'enfant sèche (#34). */
   hints?: string[];
+  /** Phrase pour prolonger la discussion après la réponse (#124), pour le parent. */
+  prolonger?: string;
   /**
    * Question pour en parler ensemble, ouverte et bienveillante (Les émotions, #58), montrée
    * au parent avec la réponse.
@@ -46,6 +48,12 @@ export interface DeckItem {
   /** Visuels intégrés (catalogue) : emoji ou couleur montrés en grand. */
   emoji?: string;
   color?: string;
+  /**
+   * Médias des jeux intégrés (#118), embarqués dans l'appli : vrai son à faire écouter
+   * (« Écouter le cri ») et photo montrée une fois la réponse donnée.
+   */
+  soundUrl?: string;
+  photoUrl?: string;
   /**
    * Ombres (#61) : la carte est montrée en silhouette (emoji) ou dans l'ombre (photo), puis en
    * couleur après « Voir la réponse ». Posé d'après le jeu (pack ou jeu créé), jamais enregistré.

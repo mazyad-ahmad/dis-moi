@@ -89,6 +89,7 @@ it('Dessine ça : rien pendant le dessin, double vibration à la fin du minuteur
   act(() => void vi.advanceTimersByTime(30_000));
   fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
   fireEvent.pointerUp(canvas, { pointerId: 1 });
+  await user.click(screen.getByRole('button', { name: 'Couleur : Noir' }));
   await user.click(screen.getByRole('radio', { name: 'Bleu' }));
   await user.click(screen.getByRole('button', { name: 'Autre mot' }));
   act(() => void vi.advanceTimersByTime(59_000));

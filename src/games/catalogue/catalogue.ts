@@ -16,8 +16,8 @@ export interface CatalogueGame extends Deck {
 
 /**
  * Jeux du catalogue (maquette Ajouter), dans l'ordre de l'écran « Ajouter un jeu ».
- * Contenu écrit pour l'appli, dans `src/content/catalogue-<id>.json` :
- * pas d'enregistrement ni d'image téléchargée, donc pas de droits à vérifier.
+ * Contenu écrit pour l'appli, dans `src/content/catalogue-<id>.json`. Sons et photos des
+ * animaux (#118) : fichiers libres, crédités dans `src/content/media/credits.json`.
  */
 export const CATALOGUE_PACKS = [
   'animal',

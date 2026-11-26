@@ -20,6 +20,7 @@ interface FileItem {
   text?: string;
   hint?: string;
   hints?: string[];
+  prolonger?: string;
   emoji?: string;
   color?: string;
   image?: string;
@@ -47,7 +48,7 @@ export type SharedGame = Pick<
   'name' | 'kind' | 'items' | 'activity' | 'level' | 'shadow' | 'reveal'
 >;
 
-async function blobToDataUrl(blob: Blob): Promise<string> {
+export async function blobToDataUrl(blob: Blob): Promise<string> {
   const bytes = new Uint8Array(await blob.arrayBuffer());
   let binary = '';
   const CHUNK = 0x8000;
@@ -57,7 +58,7 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
 }
 
 /** Relit un média du fichier ; refuse tout ce qui n'est pas une image ou un son. */
-function dataUrlToBlob(value: unknown, family: 'image' | 'audio'): Blob | undefined {
+export function dataUrlToBlob(value: unknown, family: 'image' | 'audio'): Blob | undefined {
   if (value === undefined) return undefined;
   // Le type peut porter des paramètres : « audio/webm;codecs=opus » des enregistrements Android.
   const match =
@@ -98,6 +99,7 @@ export async function encodeGame(game: SharedGame): Promise<GameFile> {
     if (it.text) item.text = it.text;
     if (it.hint) item.hint = it.hint;
     if (it.hints?.length) item.hints = it.hints;
+    if (it.prolonger) item.prolonger = it.prolonger;
     if (it.emoji) item.emoji = it.emoji;
     if (it.color) item.color = it.color;
     if (it.image) item.image = await blobToDataUrl(it.image);
@@ -170,6 +172,7 @@ export function decodeGame(data: unknown): SharedGame {
       text: optionalText(e.text),
       hint: optionalText(e.hint),
       hints: optionalTextList(e.hints),
+      prolonger: optionalText(e.prolonger),
       emoji: optionalText(e.emoji),
       color: optionalText(e.color),
       image: kind === 'image' ? dataUrlToBlob(e.image, 'image') : undefined,

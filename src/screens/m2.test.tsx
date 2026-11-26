@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../data/db';
 import { addItem, createCustomGame } from '../data/customGames';
+import { keepDrawing } from '../data/drawings';
 import { addPlayer } from '../data/players';
+import { markSeen, SEEN_KEY, seenAt } from '../data/seen';
 import { getSettings, loadSettings, setSetting } from '../data/settings';
 
 beforeEach(async () => {
@@ -12,6 +14,7 @@ beforeEach(async () => {
     db.settings.clear(),
     db.games.clear(),
     db.customGames.clear(),
+    db.drawings.clear(),
   ]);
   await loadSettings();
 });
@@ -258,11 +261,23 @@ describe('Espace parent', () => {
     expect(await db.games.count()).toBe(0);
     expect(await db.players.count()).toBe(1);
 
+    // Mémoire des cartes vues (#55) : effacée elle aussi.
+    markSeen('devinette', 'soleil');
+    await waitFor(async () => expect(await db.settings.get(SEEN_KEY)).toBeDefined());
+    // Galerie des dessins gardés (#52) : vidée elle aussi.
+    await keepDrawing({
+      word: 'Un chat',
+      image: new Blob(['png'], { type: 'image/png' }),
+      playerIds: [],
+    });
     await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
     await answer(user, 'Tout effacer');
     expect(await screen.findByText('Toutes les données ont été effacées.')).toBeInTheDocument();
+    expect(seenAt('devinette', 'soleil')).toBe(0);
+    expect(await db.settings.get(SEEN_KEY)).toBeUndefined();
     expect(await db.players.count()).toBe(0);
     expect(await db.customGames.count()).toBe(0);
+    expect(await db.drawings.count()).toBe(0);
     expect(getSettings().rounds).toBe(10);
     expect(
       within(screen.getByRole('group', { name: 'Manches par partie' })).getByLabelText('10'),

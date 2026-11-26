@@ -1,0 +1,63 @@
+/* ---------- Vrais cris et photos (#118) ---------- */
+.real-sound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+.real-sound [role='status'] {
+  font-size: 14px;
+}
+
+.answer-photo {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 4 / 3;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 16px;
+  background: var(--paper);
+}
+
+/* Photo après « Trouvé » : par-dessus la manche suivante, un appui la ferme. */
+.found-photo {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  border: 0;
+  padding: var(--space-2);
+  background: rgba(31, 42, 36, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  animation: found-photo-in 200ms ease-out;
+}
+.found-photo__card {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 24px;
+  padding: var(--space-2);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  width: min(100%, 352px);
+}
+.found-photo__name {
+  font: var(--text-h2);
+}
+@keyframes found-photo-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .found-photo {
+    animation: none;
+  }
+}

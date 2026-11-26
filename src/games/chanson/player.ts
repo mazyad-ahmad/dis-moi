@@ -1,16 +1,23 @@
-import {
-  audioOutput,
-  FADE_IN,
-  registerAudioSource,
-  runningAudioContext,
-} from '../../audio/context';
+import { audioOutput, registerAudioSource, runningAudioContext } from '../../audio/context';
+import { playDrone, playNote, type Timbre } from '../../audio/instruments';
 import type { NoteEvent } from './melody';
 
 export { audioAvailable } from '../../audio/context';
 
+/** Niveau commun de la mélodie, avant la sortie de l'appli. */
+export const MELODY_GAIN = 0.3;
+
+export interface MelodyOptions {
+  /** Instrument qui joue l'air (#46). */
+  timbre?: Timbre;
+  /** Accompagnement facultatif : fréquence de la tonique tenue en bourdon. */
+  drone?: number;
+}
+
 /**
- * Joue une suite de notes avec un son doux (onde triangle + enveloppe), sur le contexte audio
- * partagé. Pause / reprise : la position est gardée, la lecture reprend à la note suivante.
+ * Joue une suite de notes avec un instrument doux (voir `audio/instruments.ts`), sur le contexte
+ * audio partagé, avec un bourdon facultatif. Pause / reprise : la position est gardée, la
+ * lecture reprend à la note suivante.
  * Pendant la lecture, aucun son d'interface ne vient la couvrir.
  */
 export class MelodyPlayer {
@@ -26,7 +33,12 @@ export class MelodyPlayer {
   constructor(
     private readonly events: NoteEvent[],
     readonly length: number,
+    private readonly options: MelodyOptions = {},
   ) {}
+
+  get timbre(): Timbre {
+    return this.options.timbre ?? 'piano';
+  }
 
   /** Secondes écoulées depuis le début de l'extrait. */
   get elapsed(): number {
@@ -46,7 +58,7 @@ export class MelodyPlayer {
     if (!ctx || !out) throw new Error('Audio indisponible');
     this.ctx = ctx;
     const bus = ctx.createGain();
-    bus.gain.value = 0.3;
+    bus.gain.value = MELODY_GAIN;
     bus.connect(out);
     this.bus = bus;
     const from = this.offset;
@@ -54,21 +66,10 @@ export class MelodyPlayer {
     for (const e of this.events) {
       // Reprise après une pause : on repart de la note suivante.
       if (e.start < from - 0.001) continue;
-      const t = this.origin + e.start;
-      const end = t + e.duration;
-      const osc = ctx.createOscillator();
-      const env = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.value = e.freq;
-      env.gain.setValueAtTime(0, t);
-      env.gain.linearRampToValueAtTime(1, t + FADE_IN);
-      env.gain.exponentialRampToValueAtTime(0.5, t + Math.min(0.2, e.duration * 0.6));
-      env.gain.setValueAtTime(0.5, Math.max(t + 0.02, end - 0.06));
-      env.gain.linearRampToValueAtTime(0.0001, end);
-      osc.connect(env).connect(bus);
-      osc.start(t);
-      osc.stop(end + 0.02);
+      playNote(ctx, bus, this.timbre, e.freq, this.origin + e.start, e.duration);
     }
+    if (this.options.drone)
+      playDrone(ctx, bus, this.options.drone, this.origin + from, this.origin + this.length);
     this.playing = true;
     this.release ??= registerAudioSource(() => this.playing && !this.ended);
   }

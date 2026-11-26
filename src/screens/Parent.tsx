@@ -185,7 +185,15 @@ function LinkRow({ path, title, detail }: { path: string; title: string; detail:
 }
 
 async function eraseEverything() {
-  const tables = [db.players, db.games, db.customGames, db.settings, db.praises, db.stories];
+  const tables = [
+    db.players,
+    db.games,
+    db.customGames,
+    db.settings,
+    db.praises,
+    db.drawings,
+    db.stories,
+  ];
   await db.transaction('rw', tables, async () => {
     await Promise.all(tables.map((t) => t.clear()));
   });
@@ -254,6 +262,7 @@ export function Parent() {
       <Card>
         <LinkRow path="/joueurs" title="Joueurs" detail="Prénoms des enfants" />
         <LinkRow path="/ajouter" title="Jeux" detail="Catalogue et jeux créés" />
+        <LinkRow path="/dessins" title="Dessins gardés" detail="Galerie, partage et nettoyage" />
       </Card>
 
       <Choice
@@ -381,7 +390,7 @@ export function Parent() {
             const ok = await confirm({
               title: 'Tout effacer ?',
               message:
-                'Joueurs, étoiles, jeux créés, félicitations et histoires enregistrées et réglages seront supprimés de ce téléphone.',
+                'Joueurs, étoiles, jeux créés, dessins gardés, félicitations et histoires enregistrées et réglages seront supprimés de ce téléphone.',
               confirmLabel: 'Tout effacer',
               danger: true,
             });

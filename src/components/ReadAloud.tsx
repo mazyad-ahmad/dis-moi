@@ -5,11 +5,12 @@ import { IconPause, IconSpeaker } from './icons';
 
 /**
  * Bouton « Lire » (#35) : lit une question, un mot ou une consigne avec la voix du téléphone.
- * Absent sans voix française locale, ou si le parent l'a désactivé.
+ * Absent sans voix française locale, ou si le parent l'a désactivé. `label` nomme le bouton
+ * (« Écouter les mots » pour le son des lettres, #50).
  * La lecture s'arrête quand le texte change (nouvelle manche, autre mot) ou quand le bouton
  * disparaît (fin de partie, sortie du jeu).
  */
-export function ReadAloud({ text }: { text: string }) {
+export function ReadAloud({ text, label = 'Lire' }: { text: string; label?: string }) {
   const voice = useFrenchVoice();
   const { readAloud } = useSettings();
   const [speaking, setSpeaking] = useState(false);
@@ -46,10 +47,10 @@ export function ReadAloud({ text }: { text: string }) {
       type="button"
       className="read-aloud"
       onClick={toggle}
-      aria-label={speaking ? 'Arrêter la lecture' : 'Lire'}
+      aria-label={speaking ? 'Arrêter la lecture' : label}
     >
       {speaking ? <IconPause size={18} /> : <IconSpeaker size={20} />}
-      {speaking ? 'Arrêter' : 'Lire'}
+      {speaking ? 'Arrêter' : label}
     </button>
   );
 }

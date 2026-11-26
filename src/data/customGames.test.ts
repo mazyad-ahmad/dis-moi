@@ -7,6 +7,7 @@ import {
   deleteCustomGame,
   listCustomGames,
   MAX_ITEMS,
+  MAX_PROLONGER,
   parseCustomRouteId,
   removeItem,
   renameCustomGame,
@@ -36,12 +37,26 @@ describe('cleanItem', () => {
 
   it('nettoie les espaces et retire ce qui ne sert pas au type', () => {
     expect(
-      cleanItem('draw', { answer: '  un   chat ', text: 'x', hint: 'y', image, audio }),
+      cleanItem('draw', {
+        answer: '  un   chat ',
+        text: 'x',
+        hint: 'y',
+        prolonger: 'z',
+        image,
+        audio,
+      }),
     ).toEqual({ answer: 'un chat' });
     expect(cleanItem('question', { text: ' Qui ? ', answer: 'Moi', hint: '  ' })).toEqual({
       text: 'Qui ?',
       answer: 'Moi',
     });
+    // Phrase « prolonger » (#124) : espaces nettoyés, longueur bornée.
+    expect(
+      cleanItem('question', { text: 'Qui ?', answer: 'Moi', prolonger: ' Et  toi ? ' }).prolonger,
+    ).toBe('Et toi ?');
+    expect(
+      cleanItem('question', { text: 'Qui ?', answer: 'Moi', prolonger: 'x'.repeat(300) }).prolonger,
+    ).toHaveLength(MAX_PROLONGER);
   });
 });
 

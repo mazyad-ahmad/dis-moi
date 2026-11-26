@@ -51,21 +51,32 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `shadow`                           | facultatif, jeux `image` : `true` pour montrer les emoji en silhouette, révélés avec la réponse (Ombres)                                                            |
 | `activities`, `skill`              | jeux du catalogue : types (`ecouter`, `parler`, `lire-compter`, `dessiner`, `bouger`, `calme` ; le premier range le jeu) et ce qu'il fait travailler, en une phrase |
 
-| Champ d'une carte | Rôle                                                                                                              |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `id`              | identifiant stable dans le pack (minuscules, chiffres, tirets), unique                                            |
-| `answer`          | réponse (unique dans le pack) ; pour `glyph`, le caractère ; pour `melody`, le titre ; pour `chat`, la question   |
-| `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)                                           |
-| `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)                                          |
-| `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                    |
-| `talk`            | facultatif : question pour en parler ensemble, ouverte et bienveillante, montrée au parent avec la réponse        |
-| `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules |
-| `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                        |
-| `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                             |
-| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`) ; pour `chat`, un thème obligatoire (`journee`, `imaginer`…)     |
-| `lang`            | facultatif : langue de la carte si elle diffère du pack                                                           |
-| `others`          | L'intrus (`image`) : les trois emoji qui vont ensemble ; l'intrus est `emoji`, la règle cachée `text`             |
-| `steps`           | Remets dans l'ordre (`image`) : 3 à 5 étapes dans l'ordre attendu, `{"text", "emoji"}` (emoji facultatif)         |
+| Champ d'une carte | Rôle                                                                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`              | identifiant stable dans le pack (minuscules, chiffres, tirets), unique                                                                           |
+| `answer`          | réponse (unique dans le pack) ; pour `glyph`, la lettre ou le nombre (3 caractères au plus) ; pour `melody`, le titre ; pour `chat`, la question |
+| `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)                                                                          |
+| `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)                                                                         |
+| `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                                                   |
+| `prolonger`       | facultatif : phrase pour prolonger la discussion, montrée au parent après la réponse (100 caractères, pas `draw`)                                |
+| `talk`            | facultatif : question pour en parler ensemble, ouverte et bienveillante, montrée au parent avec la réponse                                       |
+| `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules                                |
+| `melody`, `bpm`   | air noté en entier (une minute au plus) et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                        |
+| `source`          | `melody` seulement, obligatoire : auteur ou origine de l'air et son statut (« …, domaine public »)                                               |
+| `lyrics`          | facultatif (`melody`) : premier couplet du domaine public, 2 à 12 vers de 60 caractères ; `source` cite les paroles                              |
+| `sound`           | facultatif (`sound` seulement) : vrai son, fichier WAV de `src/content/media/` (`"vache.wav"`)                                                   |
+| `photo`           | facultatif (jeux à cartes) : photo montrée après la réponse, `.webp` ou `.jpg` de `src/content/media/`                                           |
+| `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                                                            |
+| `tags`            | thèmes en minuscules (`["ferme"]`) ; obligatoire : un thème de `MELODY_THEMES` (`melody`), de `DRAW_THEMES` (`draw`), un thème pour `chat`       |
+| `lang`            | facultatif : langue de la carte si elle diffère du pack                                                                                          |
+| `others`          | L'intrus (`image`) : les trois emoji qui vont ensemble ; l'intrus est `emoji`, la règle cachée `text`                                            |
+| `steps`           | Remets dans l'ordre (`image`) : 3 à 5 étapes dans l'ordre attendu, `{"text", "emoji"}` (emoji facultatif)                                        |
+
+Sons et photos (#118) : fichiers libres (CC0 ou domaine public de préférence), légers (son WAV mono
+16 kHz au niveau commun, photo 480 × 360), rangés dans `src/content/media/` avec leur source, leur
+auteur et leur licence dans `src/content/media/credits.json` ; les tests refusent un fichier sans
+crédit et un total au-delà de 3 Mo. Ils sont embarqués au build et ne vont pas dans un fichier de jeu
+partagé : un pack importé garde ses cartes, sans son ni photo.
 
 Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ inconnu est refusé
 (faute de frappe).
@@ -77,6 +88,9 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `chansons.json`                | Quelle chanson ?           | `melody`   |
 | `lettres.json`                 | Quelle lettre ?            | `glyph`    |
 | `chiffres.json`                | Quelle lettre ? (chiffres) | `glyph`    |
+| `nombres.json`                 | Quelle lettre ? (nombres)  | `glyph`    |
+| `des.json`                     | Quelle lettre ? (dés)      | `glyph`    |
+| `doigts.json`                  | Quelle lettre ? (doigts)   | `glyph`    |
 | `dessin.json`                  | Dessine ça                 | `draw`     |
 | `raconte.json`                 | Raconte-moi                | `chat`     |
 | `voix.json`                    | Voix rigolotes             | `image`    |

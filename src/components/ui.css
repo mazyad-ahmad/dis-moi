@@ -192,6 +192,10 @@
 .parent-block__hints p {
   margin: 0;
 }
+.parent-block__prolonger {
+  margin: 0;
+  color: var(--ink);
+}
 
 /* ---------- En-têtes ---------- */
 .game-header {
@@ -621,6 +625,17 @@
   font-size: 15px;
   text-align: center;
 }
+.song-player__options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 16px;
+}
+.song-player__timbre {
+  font-size: 15px;
+  font-weight: 600;
+}
 
 /* ---------- Quelle lettre, quel chiffre ? ---------- */
 .glyph-card {
@@ -643,6 +658,65 @@
 }
 .glyph-card figcaption {
   font-size: 14px;
+}
+/* Écriture attachée, nombres longs, constellations (#48). La police cursive a de grandes
+   boucles : plus petite, avec de la place au-dessus et au-dessous. */
+.glyph-card__glyph--cursive {
+  font-family: var(--font-cursive);
+  font-size: 128px;
+  line-height: 230px;
+  font-weight: 400;
+}
+.glyph-card__glyph--len2 {
+  font-size: 150px;
+}
+.glyph-card__glyph--len3 {
+  font-size: 110px;
+}
+.glyph-card__glyph--shape {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+.constellation {
+  display: block;
+  height: 200px;
+  width: auto;
+  max-width: 100%;
+}
+.constellation__face {
+  fill: var(--paper);
+  stroke: currentColor;
+  stroke-width: 4;
+}
+.constellation__dot {
+  fill: currentColor;
+}
+.hand {
+  fill: color-mix(in srgb, currentColor 14%, var(--paper));
+  stroke: currentColor;
+  stroke-width: 3;
+}
+
+/* Sélecteur de Quelle lettre ? : 3 colonnes, « Mélange » sur toute la largeur. */
+.segmented--glyphs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-radius: 24px;
+}
+.segmented--glyphs label {
+  border-radius: 20px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+.segmented--glyphs label:last-child {
+  grid-column: 1 / -1;
+}
+.segmented--glyphs .is-cursive {
+  font-family: var(--font-cursive);
+  font-weight: 400;
+  font-size: 13px;
 }
 
 /* ---------- Dessine ça ---------- */
@@ -708,6 +782,18 @@
   touch-action: none;
   cursor: crosshair;
 }
+/* « Garder » le dessin (#52) : dans le coin, au-dessus du dessin, dès le premier trait. */
+.keep-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 0 16px;
+  font: var(--text-label);
+}
+.keep-btn:disabled {
+  opacity: 0.8;
+  cursor: default;
+}
 .drawing-area__hint {
   position: absolute;
   left: 16px;
@@ -715,19 +801,109 @@
   font-size: 13px;
   pointer-events: none;
 }
+/* Façons de jouer (#53) : quatre choix sur une ligne (320 px compris), puis leur explication. */
+.variant-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.segmented--variants {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-radius: 24px;
+}
+.segmented--variants label {
+  border-radius: 20px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+.variant-picker__about {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+/* Dessin mystère : le mot se cache d'un geste avant de rendre le téléphone. */
+.word-card__word--hidden {
+  font-style: italic;
+}
+.word-card__hide {
+  width: fit-content;
+  margin-top: 8px;
+  padding: 0 16px;
+  font: var(--text-label);
+}
+/* Outils de dessin (#51) : une seule ligne de boutons de 48 px, même sur un écran de 320 px
+   (5 × 48 px + 4 × 8 px = 272 px, la largeur utile). Couleurs et épaisseurs s'ouvrent
+   au-dessus de la ligne, sur le dessin. */
+:root {
+  --pen-rose: #a8386c;
+  --pen-violet: #6a4ca6;
+  --pen-brown: #7a5233;
+}
+:root[data-theme='night'] {
+  --pen-rose: #f0a3c6;
+  --pen-violet: #bba6ee;
+  --pen-brown: #d6a77a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --pen-rose: #f0a3c6;
+    --pen-violet: #bba6ee;
+    --pen-brown: #d6a77a;
+  }
+}
 .pen-bar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
-.pen-bar__colors {
+.pen-tool {
+  width: var(--tap);
+  height: var(--tap);
+}
+.pen-tool:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pen-tool[aria-pressed='true'],
+.pen-tool[aria-checked='true'] {
+  background: var(--sky);
+  border-color: var(--river);
+  box-shadow: 0 0 0 2px var(--river);
+}
+.pen-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--hairline);
+}
+.pen-dot {
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+.pen-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 2;
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  padding: 8px;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+.pen-panel--colors {
+  display: grid;
+  grid-template-columns: repeat(4, var(--tap));
 }
 .pen {
-  width: 44px;
-  height: 44px;
+  width: var(--tap);
+  height: var(--tap);
   border-radius: var(--radius-full);
   border: 3px solid transparent;
   outline-offset: 0;
@@ -1463,4 +1639,55 @@ a.pill {
   font-weight: 600;
   padding: 14px 8px;
   flex: none;
+}
+
+/* ---------- Dessins gardés (#52, Drawings.tsx) ---------- */
+.gallery {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-2);
+}
+.gallery__item {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+.gallery__item img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.gallery__word {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.gallery__meta {
+  font-size: 13px;
+}
+.gallery__cleanup p {
+  margin-top: 0;
+}
+/* Le dessin en grand : le dialogue prend presque tout l'écran. */
+.dialog:has(.gallery__full) {
+  width: min(100% - 16px, 720px);
+}
+.gallery__full {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
 }

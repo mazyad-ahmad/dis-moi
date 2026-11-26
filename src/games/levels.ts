@@ -49,22 +49,31 @@ function distance(card: Level | undefined, wanted: Level): number {
   return Math.abs(card - wanted) * 2 + (card > wanted ? 1 : 0);
 }
 
+/** Cartes à deux niveaux du niveau voulu : jamais servies avant les autres, même déjà vues. */
+const FAR = 4;
+
 /**
  * Mélange les cartes en mettant d'abord celles du niveau voulu, puis les niveaux voisins :
  * un tirage ne manque jamais de cartes. Sans niveau (`null`), simple mélange.
+ * Avec `seenAt` (mémoire des cartes vues, #55) : les cartes jamais vues d'abord, puis les plus
+ * anciennes, avant le niveau ; une carte à deux niveaux d'écart reste en dernier.
  */
 export function orderByLevel<T>(
   items: readonly T[],
   level: Level | null | undefined,
   levelOf: (item: T) => Level | undefined,
   random?: () => number,
+  seenAt?: (item: T) => number,
 ): T[] {
   const mixed = shuffle(items, random);
-  if (!level) return mixed;
-  // Tri stable : le mélange est gardé à l'intérieur de chaque niveau.
+  if (!level && !seenAt) return mixed;
+  // Tri stable : le mélange est gardé à égalité.
   return mixed
-    .map((item) => ({ item, d: distance(levelOf(item), level) }))
-    .sort((a, b) => a.d - b.d)
+    .map((item) => {
+      const d = level ? distance(levelOf(item), level) : 0;
+      return { item, d, far: d >= FAR ? 1 : 0, seen: seenAt?.(item) ?? 0 };
+    })
+    .sort((a, b) => a.far - b.far || a.seen - b.seen || a.d - b.d)
     .map(({ item }) => item);
 }
 
@@ -75,8 +84,9 @@ export function drawForLevel<T>(
   level: Level | null | undefined,
   levelOf: (item: T) => Level | undefined,
   random?: () => number,
+  seenAt?: (item: T) => number,
 ): T[] {
-  return orderByLevel(items, level, levelOf, random).slice(0, count);
+  return orderByLevel(items, level, levelOf, random, seenAt).slice(0, count);
 }
 
 /**

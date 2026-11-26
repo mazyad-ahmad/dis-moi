@@ -83,13 +83,24 @@ export function Privacy() {
       </Card>
 
       <Card>
+        <h2 className="h3">Dessins gardés</h2>
+        <p>
+          Un dessin n’est gardé que si le parent touche « Garder ». Il reste sur ce téléphone, avec
+          le mot, la date et le prénom de l’enfant. « Partager », dans la galerie, envoie l’image
+          seulement là où le parent choisit (message, e-mail…). « Effacer toutes les données » vide
+          aussi la galerie.
+        </p>
+      </Card>
+
+      <Card>
         <h2 className="h3">Sauvegarde</h2>
         <p>
           « Sauvegarder tout », dans l’espace Parent, crée un fichier avec les prénoms des joueurs,
-          les parties et les étoiles, les réglages et les jeux créés (photos et sons compris). Comme
-          pour un jeu partagé, il ne part que si le parent choisit où le mettre (Drive, e-mail,
-          téléchargements…) ; il n’est pas chiffré, il faut donc le garder dans un endroit sûr. «
-          Restaurer une sauvegarde » relit ce fichier sur le téléphone, sans rien envoyer.
+          les parties et les étoiles, les réglages, les jeux créés (photos et sons compris) et les
+          dessins gardés. Comme pour un jeu partagé, il ne part que si le parent choisit où le
+          mettre (Drive, e-mail, téléchargements…) ; il n’est pas chiffré, il faut donc le garder
+          dans un endroit sûr. « Restaurer une sauvegarde » relit ce fichier sur le téléphone, sans
+          rien envoyer.
         </p>
       </Card>
 

@@ -49,6 +49,58 @@ describe('un pack invalide nomme la carte fautive', () => {
       'carte 1 (« Frère Jacques ») : air illisible',
     ],
     [
+      'source d’un air manquante',
+      withItem(songs, 2, { source: undefined }),
+      'carte 3 (« Ah ! vous dirai-je, maman ») : source (« source ») manquante',
+    ],
+    [
+      'thème d’un air manquant',
+      withItem(songs, 0, { tags: ['ferme'] }),
+      'carte 1 (« Frère Jacques ») : thème (« tags ») : un seul parmi comptine, noel, classique',
+    ],
+    [
+      'thème d’un mot à dessiner manquant',
+      withItem(getPack('dessin'), 0, { tags: undefined }),
+      'carte 1 (« Un ver de terre ») : thème (« tags ») : un seul parmi animaux, maison, nature',
+    ],
+    [
+      'deux thèmes pour un mot à dessiner',
+      withItem(getPack('dessin'), 0, { tags: ['animaux', 'nature'] }),
+      'carte 1 (« Un ver de terre ») : thème (« tags ») : un seul parmi',
+    ],
+    [
+      'source hors d’un pack d’airs',
+      withItem(animals, 0, { source: 'Traditionnel' }),
+      'carte 1 (« La vache ») : « melody », « bpm », « source » et « lyrics »',
+    ],
+    [
+      'paroles hors d’un pack d’airs',
+      withItem(animals, 0, { lyrics: ['Meuh, meuh', 'La vache'] }),
+      'carte 1 (« La vache ») : « melody », « bpm », « source » et « lyrics »',
+    ],
+    [
+      'paroles pas en liste',
+      withItem(songs, 0, { lyrics: 'Frère Jacques, dormez-vous ?' }),
+      'carte 1 (« Frère Jacques ») : paroles (« lyrics ») : liste de 2 à 12 vers',
+    ],
+    [
+      'vers trop long',
+      withItem(songs, 0, { lyrics: ['Frère Jacques', 'la '.repeat(30).trim()] }),
+      'carte 1 (« Frère Jacques ») : paroles (« lyrics ») : liste de 2 à 12 vers de 60 caractères',
+    ],
+    [
+      'paroles sans leur source',
+      withItem(songs, 1, {
+        source: 'Air traditionnel français (XVIIIe siècle), domaine public',
+      }),
+      'carte 2 (« Au clair de la lune ») : paroles (« lyrics ») : la source doit aussi dire',
+    ],
+    [
+      'air complet trop long',
+      withItem(songs, 5, { melody: 'C4:8 '.repeat(30).trim() }),
+      'carte 6 (« Douce nuit ») : air complet trop long',
+    ],
+    [
       'bruit manquant',
       withItem(animals, 2, { text: undefined }),
       'carte 3 (« Le chien ») : bruit à imiter',
@@ -79,6 +131,26 @@ describe('un pack invalide nomme la carte fautive', () => {
       'couleur invalide',
       withItem(getPack('couleur'), 0, { color: 'red' }),
       'carte 1 (« Rouge ») : couleur invalide',
+    ],
+    [
+      'glyphe trop long',
+      withItem(getPack('nombres'), 0, { answer: '1000' }),
+      'carte 1 (« 1000 ») : un glyphe fait 1 à 3 caractères',
+    ],
+    [
+      'phrase « prolonger » trop longue',
+      withItem(animals, 0, { prolonger: 'Demande-lui '.repeat(10).trim() }),
+      'carte 1 (« La vache ») : « prolonger » vide, trop long (100 max) ou mal espacé',
+    ],
+    [
+      'phrase « prolonger » vide',
+      withItem(animals, 1, { prolonger: '' }),
+      'carte 2 (« Le chat ») : « prolonger » vide',
+    ],
+    [
+      'phrase « prolonger » pour un mot à dessiner',
+      withItem(getPack('dessin'), 0, { prolonger: 'Demande-lui sa couleur.' }),
+      '« prolonger » n’est pas montré pour un mot à dessiner',
     ],
     [
       'élément d’histoire sans rôle',
