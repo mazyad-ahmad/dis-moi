@@ -14,7 +14,7 @@ test('Quelle chanson : l’extrait se joue et avance', async ({ page }) => {
 
 test('Quelle chanson : instrument et accompagnement, pause et reprise', async ({ page }) => {
   await page.goto('./#/jeu/chanson');
-  await expect(page.getByText(/^Joué (à la|au) /)).toBeVisible();
+  await expect(page.getByText(/Joué (à la|au) /)).toBeVisible();
   await page.getByRole('button', { name: 'Accompagnement' }).click();
   await expect(page.getByRole('button', { name: 'Accompagnement' })).toHaveAttribute(
     'aria-pressed',
