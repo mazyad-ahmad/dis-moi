@@ -34,6 +34,7 @@ describe('façons de jouer', () => {
       'contraire',
       'syllabes',
       'tri',
+      'devine-mains',
     ]);
     for (const g of ALL.filter((g) => suitsMode(g.needs, 'voiture')))
       expect(g.needs!.looks).toBe(false);
@@ -62,6 +63,7 @@ describe('façons de jouer', () => {
       'compte',
       'syllabes',
       'tri',
+      'devine-mains',
     ]);
   });
 

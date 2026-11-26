@@ -10,6 +10,7 @@ import { cardLevel, orderByLevel, type Level } from '../levels';
 import type { GameInfo } from '../registry';
 import { shuffle } from '../shuffle';
 import { TETE_ID } from '../tete/tilt';
+import { MAINS_ID } from '../mains/mains';
 import { nextForLevel } from '../turns';
 
 /**
@@ -77,8 +78,10 @@ function cardsOf(game: GameInfo, custom: CustomGame[]): GrandCard[] {
   const base = BASE_CARDS[game.id];
   if (base) return base();
   const catalogue = findCatalogueGame(game.id);
-  // Devine-tête (#67) se joue avec le téléphone sur le front : pas une manche parmi d'autres.
-  if (catalogue) return catalogue.id === TETE_ID ? [] : deckCards(catalogue);
+  // Devine-tête (#67) se joue avec le téléphone sur le front, Devine avec tes mains (#134) avec
+  // un sac d'objets préparé : pas des manches parmi d'autres.
+  if (catalogue)
+    return catalogue.id === TETE_ID || catalogue.id === MAINS_ID ? [] : deckCards(catalogue);
   const created = custom.find((g) => customRouteId(g.id) === game.id);
   return created ? deckCards(customDeck(created)) : [];
 }

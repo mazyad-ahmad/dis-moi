@@ -381,6 +381,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Devine-tête**               | Le téléphone sur le front, l'enfant ne voit pas le mot : les autres le miment ou le décrivent. Voir ci-dessous.                            |
 | **Tape les syllabes**         | Le parent dit un mot, l'enfant tape dans ses mains à chaque syllabe (« cho-co-lat » = 3). Voir ci-dessous.                                 |
 | **Où ça va ?**                | Un élément (emoji et mot) et deux ou trois familles : l'enfant dit où il va et pourquoi, le parent valide. Voir ci-dessous.                |
+| **Devine avec tes mains**     | Des objets dans un sac : on touche sans regarder, on décrit, on devine. Voir ci-dessous.                                                   |
 
 ### Les émotions (#58)
 
@@ -627,6 +628,28 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   à toucher. Se joue aussi dans le Grand Jeu et le Défi du jour.
 - Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
+### Devine avec tes mains (#134)
+
+- Jeu du catalogue où l'appli ne fait que guider : le jeu se passe avec de **vrais objets**
+  glissés dans un sac ou une chaussette. Reconnaître au toucher, trouver les mots pour décrire.
+- Au lancement, à chaque partie : un **rappel de sécurité** (« Avant 4 ans, rien de plus petit
+  que 4 cm », rien qui coupe ou qui pique, rien de chaud, pas de pile), puis **qui devine**
+  (l'enfant, ou le parent pendant que l'enfant prépare le sac en cachette), puis la **liste des
+  objets** à rassembler, que « Une autre liste » remplace.
+- Une liste = autant d'objets que de manches, 6 au plus (3 en Express), tirés au niveau de la
+  partie ou de chaque enfant en « Chacun son tour ». 27 objets
+  (`src/content/catalogue-devine-mains.json`), au moins 6 par niveau : des objets très
+  différents pour les petits (peluche, balle de tennis, cuillère en bois), des formes plus
+  proches pour les grands (citron, pomme de terre, kiwi). **Toutes les listes respectent le
+  rappel, pour tous les âges** (relues une à une, et un test refuse les pièges connus : billes,
+  pièces, piles, ciseaux…).
+- Chaque manche, trois consignes courtes, lisibles d'un coup d'œil : « Touche sans regarder. »,
+  « Dis comment c'est. », « Devine ! ». « Pour le parent » : deux questions pour aider à décrire
+  (« C'est doux ou ça gratte ? »), différentes à chaque manche. On sort l'objet ensemble pour
+  vérifier ; le parent valide avec **Trouvé** / **Pas encore**.
+- Se joue à l'oral : au Coucher et en Voiture aussi. Ni dans le Grand Jeu ni dans le Défi du
+  jour, qui ne prévoient pas de sac préparé. Images : emoji, aucun fichier, aucun droit tiers.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -838,7 +861,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
-   Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?)
+   Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?,
+   Devine avec tes mains)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

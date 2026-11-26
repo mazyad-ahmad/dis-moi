@@ -98,6 +98,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-devine-tete.json`  | Devine-tête                | `image`    |
 | `catalogue-syllabes.json`     | Tape les syllabes          | `question` |
 | `catalogue-tri.json`          | Où ça va ?                 | `question` |
+| `catalogue-devine-mains.json` | Devine avec tes mains      | `question` |
 
 ## Cartes « Compte avec moi »
 
@@ -146,3 +147,12 @@ dit (#57) : le texte est la consigne que le parent lit (« Jacques a dit : … �
 piège), et l'écran dit d'emblée au parent si c'est un piège, sans réponse à dévoiler ni indice ni
 choix à montrer. La réponse, un nom court du geste (« Toucher son nez »), reste unique dans le pack
 mais n'est pas affichée. Règle dans `src/games/jacques/consigne.ts`.
+
+## Objets « Devine avec tes mains »
+
+Les cartes de `catalogue-devine-mains.json` (#134) sont des **objets du quotidien** à glisser
+dans un sac : `answer` le nom avec l'article, `emoji` son image, `text` de quoi le décrire au
+toucher (« Ronde, un peu poilue, elle rebondit. »). Chaque objet ajouté doit respecter le rappel
+de sécurité, pour tous les âges : **4 cm au moins** (plus gros qu'une balle de ping-pong), rien de
+coupant ni de pointu, rien de chaud, rien à pile, rien de fragile, pas de ficelle. Au moins
+6 objets par niveau, pour qu'une liste ne change pas de niveau. Règles dans `src/games/mains/mains.ts`.

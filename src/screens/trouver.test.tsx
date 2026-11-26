@@ -31,7 +31,7 @@ it('Ajouter un jeu : groupé par type, avec âge et ce que le jeu fait travaille
     expect(within(catalogue).getByRole('heading', { name: type })).toBeInTheDocument();
   expect(within(catalogue).getByText(/Fait bouger et s’exprimer/)).toBeInTheDocument();
   expect(within(catalogue).getAllByText(/Dès 3 ans/).length).toBeGreaterThan(0);
-  expect(shownGames()).toHaveLength(18);
+  expect(shownGames()).toHaveLength(19);
   // Recherche seulement au-delà de 20 jeux.
   expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
 });
@@ -59,9 +59,10 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Ombres',
     'Devine-tête',
     'Où ça va ?',
+    'Devine avec tes mains',
     'Mime l’émotion',
   ]);
-  expect(status).toHaveTextContent('11 jeux sur 18');
+  expect(status).toHaveTextContent('12 jeux sur 19');
 
   await user.click(within(moments).getByRole('button', { name: 'Pour la voiture' }));
   const oral = [
@@ -71,6 +72,7 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Ça rime avec…',
     'Les contraires',
     'Où ça va ?',
+    'Devine avec tes mains',
   ];
   expect(shownGames()).toEqual(oral);
   await user.click(within(ages).getByRole('button', { name: '7 ans et plus' }));
@@ -87,13 +89,14 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Ça rime avec…',
     'Les contraires',
     'Où ça va ?',
+    'Devine avec tes mains',
     'Tape les syllabes',
     'Chasse au trésor',
   ]);
 
   // Ou tout retirer d'un coup.
   await user.click(screen.getByRole('button', { name: 'Retirer les filtres' }));
-  expect(shownGames()).toHaveLength(18);
+  expect(shownGames()).toHaveLength(19);
   expect(status).toHaveTextContent('');
   for (const group of [types, ages, moments])
     expect(within(group).queryAllByRole('button', { pressed: true })).toHaveLength(0);

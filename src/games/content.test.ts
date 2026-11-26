@@ -99,6 +99,7 @@ describe('catalogue', () => {
       'devine-tete',
       'syllabes',
       'tri',
+      'devine-mains',
     ]);
     for (const g of CATALOGUE) {
       expect(g.items.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);

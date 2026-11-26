@@ -33,6 +33,8 @@ import { CompteGame } from '../games/compte/CompteGame';
 import { COMPTE_ID } from '../games/compte/compte';
 import { TeteGame } from '../games/tete/TeteGame';
 import { TETE_ID } from '../games/tete/tilt';
+import { MainsGame } from '../games/mains/MainsGame';
+import { MAINS_ID } from '../games/mains/mains';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -115,6 +117,8 @@ function GameScreen({ id }: { id: string }) {
           <CompteGame game={catalogue} />
         ) : catalogue.id === TETE_ID ? (
           <TeteGame game={catalogue} />
+        ) : catalogue.id === MAINS_ID ? (
+          <MainsGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}
