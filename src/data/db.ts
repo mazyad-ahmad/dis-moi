@@ -73,6 +73,8 @@ export interface CustomGame {
   level?: Level;
   /** Ombres (#61), jeux Image : cartes montrées dans l'ombre, révélées avec la réponse. */
   shadow?: boolean;
+  /** Image cachée (#62), jeux Image : l'image se dévoile par paliers. */
+  reveal?: boolean;
   createdAt: number;
   updatedAt: number;
 }

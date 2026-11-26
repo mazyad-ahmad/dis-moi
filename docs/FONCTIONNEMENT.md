@@ -169,6 +169,30 @@
 - Chaque choix est un bouton d'au moins 64 px, nommé pour le lecteur d'écran (« La vache »,
   « Lettre A », « Rouge »). Images : emoji dessinés par la police du téléphone, aucun fichier.
 
+## Image cachée (#62)
+
+- Une image montrée d'un coup se devine en une seconde : en **Image cachée**, elle démarre
+  méconnaissable et se précise par **5 paliers**. Le parent avance d'un palier à la fois avec
+  « **Préciser l’image** » (« Palier 2 sur 5 », puis « Image nette »). **Trouvé** se donne à
+  n'importe quel palier : l'étoile est la même, rien ne presse.
+- Photo : réduite à 6, 12, 24 puis 48 carrés de large dans une toute petite toile, agrandie
+  sans lissage (pixels bien visibles), puis la photo elle-même, nette. Un palier ne redessine
+  que quelques centaines de pixels : fluide même avec une photo de 1280 px sur un petit
+  téléphone. Emoji du catalogue : flou de 28, 16, 9, 4 px, puis net.
+- Rien d'animé entre deux paliers : rien à couper avec « réduire les animations ». Le texte
+  d'une carte (qui pourrait donner la réponse) n'apparaît qu'avec l'image nette.
+- Option des jeux de type **Image** : proposée à la création d'un jeu Image (« Montrer
+  l’image : D’un coup / Image cachée », d'un coup par défaut), gardée avec le jeu (champ
+  facultatif `reveal`, aussi dans le fichier de jeu partagé et la sauvegarde). Dans l'espace
+  Parent, section **Image cachée** : l'activer ou la couper pour chaque jeu Image créé et pour
+  les jeux Image du catalogue qui s'y prêtent (aujourd'hui Quelle émotion ? ; ni les couleurs,
+  ni les mimes, que l'enfant doit voir), réglage `revealCatalogue`.
+- Pas avec les Ombres (#61), qui cachent déjà l'image : une carte en ombre n'est jamais en
+  Image cachée, le jeu Ombres et les jeux créés joués en ombres ne sont pas proposés.
+- Aussi dans le Grand Jeu (comme dans le jeu d'origine). Pas dans le Défi du jour (une seule
+  carte surprise). En montrant, les choix remplacent l'image comme avant.
+- Module `src/games/reveal/` (paliers : fonctions pures de `reveal.ts`).
+
 ## Raconte-moi (#125)
 
 - Un jeu pour **se parler**, sans bonne réponse : « Qu’est-ce qui t’a fait rire aujourd’hui ? »,
@@ -418,6 +442,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
     est plein, un message le dit ; « Ajouter la carte » attend la fin de la préparation.
   - Question : le texte de la question ;
   - Mot à dessiner : le mot, joué comme « Dessine ça ».
+- Jeu Image : option **Image cachée** (#62), l'image se dévoile par paliers.
 - Une partie compte autant de manches que réglé, ou moins si le jeu a moins de cartes.
 - Les cartes se modifient et se suppriment ; le jeu entier aussi. Photos et sons restent dans le
   téléphone (IndexedDB).
@@ -533,7 +558,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **jeux du Grand Jeu**, **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **défi du jour**, **vibrations**, remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **jeux du Grand Jeu**, **Image cachée**, **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **défi du jour**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :

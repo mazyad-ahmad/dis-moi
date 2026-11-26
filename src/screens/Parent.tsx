@@ -7,6 +7,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { BackupSection } from './BackupSection';
 import { GrandSection } from './GrandSection';
 import { PraiseSection } from './PraiseSection';
+import { RevealSection } from './RevealSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
@@ -277,6 +278,8 @@ export function Parent() {
       />
 
       <GrandSection />
+
+      <RevealSection />
 
       <ReadAloudSetting />
 

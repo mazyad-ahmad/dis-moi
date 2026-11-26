@@ -55,16 +55,17 @@ export function cleanItem(kind: DeckKind, raw: DeckItem): DeckItem {
   return item;
 }
 
-/** Type et âge choisis à la création (#137), tous deux facultatifs. */
+/** Type, âge (#137) et Image cachée (#62) choisis à la création, tous facultatifs. */
 export interface CustomGameProfile {
   activity?: Activity;
   level?: Level | null;
+  reveal?: boolean;
 }
 
 export async function createCustomGame(
   rawName: string,
   kind: DeckKind,
-  { activity, level }: CustomGameProfile = {},
+  { activity, level, reveal }: CustomGameProfile = {},
 ): Promise<number> {
   const name = cleanGameName(rawName);
   const now = Date.now();
@@ -76,6 +77,7 @@ export async function createCustomGame(
     items,
     ...(activity && { activity }),
     ...(level && { level }),
+    ...(reveal && kind === 'image' && { reveal: true }),
     createdAt: now,
     updatedAt: now,
   } as CustomGame);
@@ -97,6 +99,14 @@ export function renameCustomGame(id: number, rawName: string) {
 /** Ombres (#61) : jouer un jeu Image en silhouettes (emoji) ou photos dans l'ombre. */
 export function setCustomGameShadow(id: number, shadow: boolean) {
   return mutate(id, () => ({ shadow: shadow || undefined }));
+}
+
+/** Active ou coupe l'Image cachée (#62) d'un jeu Image. */
+export function setCustomReveal(id: number, reveal: boolean) {
+  return mutate(id, (g) => {
+    if (g.kind !== 'image') throw new CustomGameError('Seulement pour un jeu Image.');
+    return { reveal };
+  });
 }
 
 export function addItem(id: number, raw: DeckItem) {
@@ -158,5 +168,6 @@ export function customDeck(game: CustomGame): Deck {
       game.shadow && game.kind === 'image'
         ? game.items.map((item) => ({ ...item, shadow: true }))
         : game.items,
+    reveal: game.kind === 'image' && !!game.reveal,
   };
 }

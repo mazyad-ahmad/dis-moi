@@ -36,13 +36,15 @@ export interface GameFile {
   level?: Level;
   /** Ombres (#61), jeux Image : facultatif. */
   shadow?: boolean;
+  /** Image cachée (#62), facultative. */
+  reveal?: boolean;
   items: FileItem[];
 }
 
 /** Ce qu'un fichier de jeu (ou une sauvegarde) garde d'un jeu créé. */
 export type SharedGame = Pick<
   CustomGame,
-  'name' | 'kind' | 'items' | 'activity' | 'level' | 'shadow'
+  'name' | 'kind' | 'items' | 'activity' | 'level' | 'shadow' | 'reveal'
 >;
 
 async function blobToDataUrl(blob: Blob): Promise<string> {
@@ -110,6 +112,7 @@ export async function encodeGame(game: SharedGame): Promise<GameFile> {
     ...(game.activity && { activity: game.activity }),
     ...(game.level && { level: game.level }),
     ...(game.shadow && { shadow: true }),
+    ...(game.reveal && game.kind === 'image' && { reveal: true }),
     items,
   };
 }
@@ -182,6 +185,8 @@ export function decodeGame(data: unknown): SharedGame {
     ...(isLevel(raw.level) && { level: raw.level }),
     // Ombres (#61) : seulement pour un jeu Image.
     ...(raw.shadow === true && kind === 'image' && { shadow: true }),
+    // Image cachée (#62) : seulement pour un jeu Image.
+    ...(raw.reveal === true && kind === 'image' && { reveal: true }),
   };
 }
 

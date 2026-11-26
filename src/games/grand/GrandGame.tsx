@@ -3,7 +3,8 @@ import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { Mascot } from '../../components/Mascot';
-import { getSettings } from '../../data/settings';
+import { useCustomGames } from '../../data/customGames';
+import { getSettings, useSettings } from '../../data/settings';
 import { TileIcon } from '../../screens/HomeGames';
 import { SongRound } from '../chanson/SongGame';
 import { SONGS } from '../chanson/songs';
@@ -14,6 +15,7 @@ import { glyphPool } from '../lettres/bank';
 import { GlyphRound } from '../lettres/LettersGame';
 import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
+import { revealOn } from '../reveal/reveal';
 import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureSeconds, treasureWay } from '../tresor/treasure';
 import { useSaved } from '../session';
@@ -128,6 +130,9 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   // Dernière manche déjà annoncée par l'écran-éclair.
   const [announced, setAnnounced] = useState(0);
   const go = useCallback(() => setAnnounced(round), [round]);
+  // Image cachée (#62) : comme dans le jeu d'origine.
+  const { revealCatalogue } = useSettings();
+  const custom = useCustomGames();
 
   if (finished)
     return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
@@ -178,7 +183,13 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
           />
         )}
         {card.type === 'deck' && game.id !== TREASURE_ID && (
-          <DeckRound key={round} kind={card.kind} item={card.item} pool={deckPool(game)} />
+          <DeckRound
+            key={round}
+            kind={card.kind}
+            item={card.item}
+            pool={deckPool(game)}
+            reveal={revealOn(game.id, revealCatalogue, custom)}
+          />
         )}
       </TurnPlayer.Provider>
       <div className="spacer" />

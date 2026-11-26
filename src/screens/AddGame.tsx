@@ -29,6 +29,7 @@ import { CATALOGUE, type CatalogueGame } from '../games/catalogue/catalogue';
 import { DECK_KINDS, kindLabel, type DeckKind } from '../games/deck/types';
 import { LEVELS, type Level } from '../games/levels';
 import { GAMES } from '../games/registry';
+import { REVEAL_NAME } from '../games/reveal/reveal';
 import { toggleCatalogueGame } from '../games/useGames';
 
 function CreateForm() {
@@ -38,12 +39,18 @@ function CreateForm() {
   const [chosenActivity, setActivity] = useState<Activity | null>(null);
   const activity = chosenActivity ?? KIND_ACTIVITY[kind];
   const [level, setLevel] = useState<Level | null>(null);
+  // Image cachée (#62) : proposée pour un jeu Image, coupée par défaut.
+  const [reveal, setReveal] = useState(false);
   const [error, setError] = useState('');
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     try {
-      const id = await createCustomGame(name, kind, { activity, level });
+      const id = await createCustomGame(name, kind, {
+        activity,
+        level,
+        reveal: kind === 'image' && reveal,
+      });
       navigate(`/creer/${id}`);
     } catch (err) {
       setError(err instanceof CustomGameError ? err.message : 'Impossible de créer le jeu.');
@@ -115,6 +122,7 @@ function CreateForm() {
           </label>
         ))}
       </div>
+      {kind === 'image' && <RevealChoice on={reveal} onChange={setReveal} />}
       {error && (
         <p className="error" role="alert">
           {error}
@@ -124,6 +132,42 @@ function CreateForm() {
         Ajouter les questions
       </Button>
     </form>
+  );
+}
+
+/** Image cachée (#62) à la création d'un jeu Image : l'image montrée d'un coup ou peu à peu. */
+function RevealChoice({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <>
+      <span className="field-label" id="create-reveal">
+        Montrer l’image
+      </span>
+      <span className="muted" id="create-reveal-desc">
+        {REVEAL_NAME} : l’image démarre floue et se précise à chaque appui du parent.
+      </span>
+      <div
+        className="chips"
+        role="radiogroup"
+        aria-labelledby="create-reveal"
+        aria-describedby="create-reveal-desc"
+      >
+        {[
+          { value: false, label: 'D’un coup' },
+          { value: true, label: REVEAL_NAME },
+        ].map((c) => (
+          <label key={String(c.value)} className="chip">
+            <input
+              type="radio"
+              name="reveal"
+              value={String(c.value)}
+              checked={on === c.value}
+              onChange={() => onChange(c.value)}
+            />
+            {c.label}
+          </label>
+        ))}
+      </div>
+    </>
   );
 }
 

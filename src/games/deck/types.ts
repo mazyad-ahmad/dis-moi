@@ -66,4 +66,6 @@ export interface Deck {
   /** Marque de la tuile (2-3 caractères). */
   mark: string;
   items: DeckItem[];
+  /** Image cachée (#62) d'un jeu créé ; absente : réglage du catalogue (`revealCatalogue`). */
+  reveal?: boolean;
 }
