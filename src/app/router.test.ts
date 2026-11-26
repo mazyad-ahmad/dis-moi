@@ -7,6 +7,7 @@ describe('parseHash', () => {
     ['#/etoiles', { name: 'stars' }],
     ['#/parent/', { name: 'parent' }],
     ['#/joueurs', { name: 'players' }],
+    ['#/equipes', { name: 'teams' }],
     ['#/ajouter', { name: 'add-game' }],
     ['#/jeu/chanson', { name: 'game', id: 'chanson' }],
     ['#/jeu/perso-3', { name: 'game', id: 'perso-3' }],

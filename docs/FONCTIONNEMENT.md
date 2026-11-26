@@ -33,6 +33,22 @@
    là où elle en était : même carte, même manche, mêmes étoiles.
 6. Pas d'échec ni de compte à rebours punitif : le jeu reste un moment partagé.
 
+## Joueurs et avatars
+
+- Un joueur, c'est un **prénom** et un **avatar** : un animal (12 au choix : renard, ours, lapin,
+  chat, chien, lion, panda, grenouille, tortue, hibou, pingouin, koala) sur une couleur (6 au
+  choix : vert, bleu, orange, rose, violet, rouge). Un enfant qui ne lit pas encore reconnaît son
+  animal. 6 joueurs maximum.
+- À l'ajout, l'avatar proposé est le premier animal et la première couleur que personne n'a ; le
+  parent peut le choisir avant d'ajouter le prénom, puis le changer en touchant l'animal.
+- L'avatar apparaît dans la gestion des joueurs, sur l'accueil et dans l'historique des parties.
+  Son nom accessible est « prénom, animal » (« Léa, renard »).
+- Les animaux sont des emoji, dessinés par la police du téléphone : aucun fichier ajouté. Les
+  couleurs ont un cercle contrasté (3:1 au moins sur le fond, en jour et en nuit, vérifié par
+  `src/components/avatar.test.ts`).
+- Les joueurs enregistrés avant les avatars en reçoivent un à la mise à jour (animaux dans l'ordre
+  d'ajout, couleur gardée) ; une sauvegarde plus ancienne aussi, à la restauration.
+
 ## Étoiles (proposition)
 
 - Les étoiles sont **communes** à la famille (« gagnées ensemble »), pas un classement entre enfants.
@@ -46,6 +62,84 @@
   qui rebondit ; chaque nouvelle manche entre en douceur ; des confettis tombent sur l'écran de fin.
   Elles ne retardent jamais la manche suivante (on peut enchaîner vite) et sont toutes coupées
   quand le téléphone demande de « réduire les animations ».
+
+## Défi du jour (#43)
+
+- Une **carte surprise par jour** sur l'accueil, tirée de tous les jeux intégrés (chansons,
+  lettres, chiffres, mots à dessiner et les jeux du catalogue, même pas encore ajoutés).
+- Le tirage ne dépend que de la **date du téléphone** : la même carte toute la journée, une
+  nouvelle à minuit (heure du téléphone), sans réseau (`src/games/defi/daily.ts`).
+- Une seule carte, sans minuteur : **Trouvé** (ou « C'est fini » pour un dessin) rapporte une
+  **étoile bonus** gagnée ensemble, enregistrée comme une partie « Défi du jour », puis un mot
+  gentil. **Pas encore** ramène à l'accueil sans rien enregistrer : le défi reste là toute la journée.
+- Réussi, l'accueil dit « À demain pour une nouvelle surprise ». Aucune série, aucune
+  notification, rien sur les jours sans défi.
+- Masqué pendant la fin de séance, et depuis l'espace Parent (réglage **Défi du jour** :
+  affiché par défaut).
+
+## Façons de jouer (#42)
+
+- Sur l'accueil, **Façon de jouer** : **Normal** (par défaut), **Express**, **Coucher** ou
+  **Voiture**, avec une phrase qui dit ce que le mode change. Le choix est gardé d'une partie à
+  l'autre (réglage `gameMode`, comme le niveau) et s'applique à la partie suivante.
+- **Express** : 3 manches (ou moins si le réglage de l'espace Parent est plus court).
+- **Coucher** : thème nuit imposé, volume doux imposé, pas de minuteur dans les dessins, pas de
+  jeu qui fait bouger (Mime ça ; plus tard la chasse au trésor). Fin en douceur : ni confettis
+  ni vibration de fête, la mascotte dort, « C'est l'heure de dormir. Bonne nuit ! », pas de
+  bouton « Un autre jeu ».
+- **Voiture** : seulement des cartes orales (Quelle chanson ?, Quel animal ?, Devinettes, jeux
+  créés « Son » et « Question ») ; rien à regarder ni à dessiner.
+- L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
+  conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
+- Règle commune (`src/games/modes.ts`, fonction pure `suitsMode`) : chaque jeu déclare ce qu'il
+  demande à l'enfant (`needs` : regarder l'écran, bouger), d'après son type de cartes et, pour un
+  pack, le champ `moves`. Un jeu qui ne déclare rien n'est proposé ni au Coucher ni en Voiture.
+- Le mode est noté dans la partie enregistrée (champ `mode`) et rappelé dans l'historique
+  (« · Voiture »).
+
+## Trouver le bon jeu (#137)
+
+- Chaque jeu déclare un ou plusieurs **types** : Écouter, Parler, Lire et compter, Dessiner,
+  Bouger, Se calmer (le premier range le jeu), une **tranche d'âge** déduite des niveaux de ses
+  cartes (« Dès 3 ans », « 3-4 ans », « 3 à 6 ans ») et **ce qu'il fait travailler** en une
+  phrase. Jeux de base dans `src/games/registry.ts`, jeux du catalogue dans leur pack (champs
+  `activities` et `skill`), vérifiés par les tests. Règles communes, fonctions pures :
+  `src/games/activities.ts`.
+- **Ajouter un jeu** : le catalogue est groupé par type ; chaque jeu dit son âge et ce qu'il fait
+  travailler. Filtres **Type**, **Âge** et **Moment** (« Pour le coucher », « Pour la voiture » :
+  les jeux qui conviennent aux façons de jouer Coucher et Voiture, même règle `suitsMode`). Ils
+  se cumulent ; toucher de nouveau la pastille choisie la retire, « Retirer les filtres » les
+  retire tous. Pastilles « appuyée / non appuyée » dans des groupes nommés, nombre de jeux
+  annoncé au lecteur d'écran. Une **recherche** (sans accents ni majuscules) apparaît au-delà de
+  20 jeux du catalogue.
+- **Accueil** : aucun jeu n'est caché. En haut, les jeux qui conviennent aux joueurs du jour (le
+  niveau de la partie s'il est choisi, sinon les niveaux des joueurs actifs) ; les autres
+  viennent ensuite sous « Pour d'autres âges ». Jusqu'à 6 jeux, une seule grille comme avant ; à
+  partir de 7, un groupe par type. Sans joueur ni niveau renseigné, l'ordre ne change pas.
+- **Jeux créés** : à la création, « Ce que fait l'enfant » (proposé d'après la forme des cartes :
+  Son → Écouter, Image et Question → Parler, Mot à dessiner → Dessiner) et un **âge facultatif**
+  (Tous âges par défaut). Gardés dans le fichier de jeu partagé et la sauvegarde (champs
+  facultatifs `activity` et `level`, ignorés s'ils sont inconnus).
+
+## Répondre en montrant (#123)
+
+- Pour un enfant qui ne parle pas encore bien, timide ou qui joue dans une autre langue : sur
+  l'accueil, **L'enfant répond** « À voix haute » (par défaut) ou « **En montrant** » (réglage
+  `showChoices`, pour les parties suivantes).
+- La carte propose alors des **choix en grand** : la bonne réponse et des cartes voisines du même
+  jeu (du même niveau d'abord). **Petits : 2 choix, Moyens : 3, Grands : 4** ; le niveau est celui
+  de la partie, sinon celui du plus jeune des joueurs du jour qui en a un, sinon 3 choix.
+- Toucher la bonne réponse la met en valeur (contour, coche, « Oui, c'est ça : … ! ») ; un autre
+  choix ne fait **rien** : ni son, ni message, on peut réessayer. Le parent valide toujours avec
+  **Trouvé** / **Passer**.
+- Animaux, chansons, devinettes et jeux créés de type Son ou Question : les choix s'ajoutent sous
+  la carte (emoji et nom ; une chanson a son emoji ; sans image, le texte de la réponse).
+- Couleurs, lettres et chiffres, jeux créés de type Image : l'enfant verrait la réponse, donc les
+  choix (pastilles, glyphes, photos) **remplacent** l'image et le parent demande « Montre-moi… ».
+- Pas de choix dans les jeux de dessin ni dans Mime ça, ni dans le Défi du jour. Ils marchent
+  aussi dans le Grand Jeu.
+- Chaque choix est un bouton d'au moins 64 px, nommé pour le lecteur d'écran (« La vache »,
+  « Lettre A », « Rouge »). Images : emoji dessinés par la police du téléphone, aucun fichier.
 
 ## Mascotte (proposition)
 
@@ -61,9 +155,51 @@
 ## Plusieurs enfants (proposition)
 
 - Les prénoms sont enregistrés une fois (6 maximum, 20 caractères, pas de doublon).
+- **Qui joue aujourd'hui ?** (#37) : sur l'accueil, chaque prénom est une pastille à appuyer
+  pour l'activer ou la désactiver (bouton « appuyé / non appuyé », utilisable au clavier). Un
+  nouveau joueur est actif. Le choix est gardé d'une partie à l'autre (réglage local
+  `absentPlayers`, hors sauvegarde) ; seuls les joueurs actifs sont enregistrés avec la partie.
+  Sans joueur enregistré, rien ne change. Pour les autres modes : `useActivePlayers()` /
+  `listActivePlayers()` de `src/data/players.ts`.
 - Par défaut, on joue **en équipe**.
-- Option ultérieure : **tour par tour**, le prénom de l'enfant dont c'est le tour s'affiche
-  en haut de la manche.
+- **Chacun son tour** (#38) : dès deux joueurs actifs, l'accueil propose « En équipe » ou
+  « Chacun son tour » (réglage `turnMode`, gardé d'une partie à l'autre et dans la sauvegarde).
+  Au lancement, l'ordre de passage est tiré au sort, puis on suit la rotation : avec 3 joueurs
+  et 10 manches, 4-3-3. En haut de chaque manche, l'avatar, le prénom et la couleur de l'enfant
+  s'affichent en grand (« À toi, Léa ! »). Marche dans tous les jeux à manches, Grand Jeu compris
+  (pas le défi du jour, une seule carte). « Autre mot » garde le même enfant.
+- Les étoiles restent **communes** ; la partie note seulement qui a joué chaque manche
+  (`turns` de la partie, sur l'appareil). Aucun score par enfant, aucun classement nulle part.
+- Avec un seul joueur actif (ou aucun), « Chacun son tour » se joue comme en équipe.
+- La rotation est une fonction pure (`src/games/turns.ts` : `startOrder`, `turnAt`, `rotation`),
+  réutilisée pour les équipes.
+
+## Jouer en équipes (#44)
+
+- Pour un anniversaire ou une réunion de cousins : lien **Jouer en équipes** sur l'accueil
+  (écran `#/equipes`, derrière le verrou parent s'il est activé).
+- **2 ou 3 équipes**, chacune avec un nom (proposés : Les Renards, Les Grenouilles, Les Dauphins ;
+  20 caractères) et une couleur parmi les 6 des avatars, différente pour chaque équipe.
+- Les joueurs du jour sont placés d'office ; les autres enfants de la famille s'ajoutent d'un
+  appui, et les **invités** par leur prénom seul : ils ne sont **pas** ajoutés aux joueurs de la
+  famille. **12 enfants** au plus, toutes équipes confondues. Un nouvel enfant rejoint l'équipe la
+  moins nombreuse ; toucher un prénom le fait passer dans l'équipe suivante, la croix le retire.
+  Changer le nombre d'équipes ou « Mélanger les équipes » répartit tout le monde au hasard, à un
+  près. « C'est parti ! » demande au moins un enfant par équipe.
+- Les équipes (invités compris) restent sur le téléphone, d'une partie à l'autre, jusqu'à
+  **Arrêter** (accueil ou écran des équipes). Elles ne vont pas dans la sauvegarde.
+- En partie, les équipes jouent **à tour de rôle** (même rotation que « Chacun son tour », ordre
+  tiré au sort au lancement, qui remplace le tour par tour individuel) : en haut de la manche,
+  « À vous, Les Renards ! » sur la couleur de l'équipe, avec ses étoiles. Le compteur en haut
+  reste le **total commun**. Tous les jeux à manches, Grand Jeu compris (pas le défi du jour).
+  Les cartes suivent le niveau de la partie.
+- Fin de partie : le total commun en grand (« 7 étoiles gagnées ensemble ! »), puis « Bravo à
+  toutes les équipes ! » : chaque équipe fêtée, dans l'ordre de l'écran des équipes (jamais par
+  score), avec ses étoiles si elle en a. Ni gagnant ni perdant.
+- La partie enregistrée garde le **total commun** (il rejoint les étoiles de la famille), les
+  enfants de la famille présents (pas les invités) et, pour chaque équipe, son nom, sa couleur,
+  ses étoiles et son nombre d'enfants (`teams` de la partie). L'historique note « En équipes :
+  Les Renards, Les Dauphins ». Module `src/games/teams.ts` (fonctions pures).
 
 ## Jeux
 
@@ -94,6 +230,25 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Quelle couleur ?** | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
 | **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
 | **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
+
+### Le Grand Jeu (#41)
+
+- Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
+- Chaque manche tire un jeu parmi ceux de l'accueil (de base, catalogue ajoutés, jeux créés qui
+  ont au moins une carte), puis une carte de ce jeu. Les jeux passent chacun leur tour dans un
+  ordre mélangé : **jamais deux manches de suite dans le même jeu** ; dans un jeu, pas de carte
+  répétée tant qu'il en reste.
+- Un **écran-éclair** annonce le jeu de la manche (« Maintenant : Mime ça ! ») ; il passe tout seul
+  après 2 s, ou d'un appui sur « C'est parti ! ».
+- Chaque manche se joue comme dans son jeu : indices, réponse cachée, et **minuteur** pour les
+  manches de dessin (« Autre mot » pris dans le même jeu).
+- Nombre de manches : le réglage de l'espace Parent. La partie est enregistrée sous l'identifiant
+  `grand-jeu` (« Le Grand Jeu » dans l'historique) et reprend après un rafraîchissement.
+- **Niveau de la partie** (#40) : dans chaque jeu, les cartes du niveau choisi sur l'accueil
+  passent d'abord, puis les niveaux voisins, comme dans les autres jeux.
+- **Jeux inclus** : choisis dans l'espace Parent (« Le Grand Jeu », boutons Inclus / Inclure),
+  mémorisés (réglage `grandExcluded` : les jeux retirés ; un jeu ajouté ensuite est inclus
+  d'office). Au moins deux jeux restent inclus.
 
 ### Créer mon propre jeu
 
@@ -147,7 +302,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   après un rafraîchissement, elle reprend et continue le même enregistrement, sans doublon.
   Elle est effacée en fin de partie, quand on quitte le jeu et à la fermeture de l'onglet.
   Dans « Dessine ça », le mot est gardé ; le minuteur et le dessin repartent à zéro.
-- Données gardées : jeu, date, manches jouées, étoiles, joueurs présents (sur l'appareil uniquement).
+- Données gardées : jeu, date, manches jouées, étoiles, joueurs actifs au lancement (sur l'appareil uniquement).
 
 ## Sons d'interface
 
@@ -208,13 +363,23 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 ## Public visé (proposition)
 
-- **3 à 7 ans**. Niveaux de difficulté reportés après la v1.
+- **3 à 7 ans**, en trois **niveaux par âge** (#40) : **Petits** (3-4 ans), **Moyens** (5-6 ans),
+  **Grands** (7 ans et plus). Module `src/games/levels.ts`.
+- Chaque carte du contenu intégré a un niveau (champ `level` des packs, vérifié par les tests) ;
+  les cartes des jeux créés par le parent n'en ont pas et conviennent à tous.
+- Chaque joueur peut avoir un niveau (écran Joueurs, facultatif). En équipe, le **niveau de la
+  partie** se choisit sur l'accueil : **Tous** (par défaut, toutes les cartes comme avant),
+  Petits, Moyens ou Grands. Il s'applique à la partie suivante.
+- Un tirage ne manque jamais de cartes : les cartes du niveau choisi passent d'abord, puis celles
+  du niveau voisin (le plus facile d'abord à égale distance), puis les autres.
+- Chacun son tour : chaque carte est tirée au niveau de l'enfant dont c'est le tour (repli sur le
+  niveau voisin comme ci-dessus) ; un enfant sans niveau suit le niveau de la partie.
 - Interface en **français uniquement** pour la v1.
 
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **jeux du Grand Jeu**, **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **défi du jour**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :
@@ -261,7 +426,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 ## Écrans
 
-1. **Accueil** — titre « On joue à quoi ? », joueurs (prénoms, modifiables), grille des jeux,
+1. **Accueil** — titre « On joue à quoi ? », joueurs (pastilles « Qui joue ? » avec avatar et prénom, modifiables), grille des jeux,
    rappel de la dernière partie, barre de navigation _Jeux · Étoiles · Parent_.
    Cette barre reste collée au bas de l'écran : seul le contenu au-dessus défile, et le
    défilement s'arrête à la fin du contenu, sur toutes les pages (#145).
@@ -272,8 +437,9 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes)
-   avec bouton Ajouter / Ajouté, et formulaire « Créer mon propre jeu »
-   (nom, type : Son / Image / Mot à dessiner / Question, puis ajout des questions).
+   groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
+   « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
+   l'enfant, âge facultatif, puis ajout des questions).
 
 ## Principes produit
 

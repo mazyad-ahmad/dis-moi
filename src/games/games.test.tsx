@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../data/db';
 import { addPlayer } from '../data/players';
-import { DIGITS } from './lettres/bank';
+import { loadSettings } from '../data/settings';
+import { DIGITS, LETTERS } from './lettres/bank';
 
 beforeEach(async () => {
   await Promise.all([db.players.clear(), db.settings.clear(), db.games.clear()]);
@@ -37,6 +38,23 @@ it('Quelle lettre : 10 manches, étoiles, résultat et enregistrement', async ()
 
   await user.click(screen.getByRole('button', { name: 'Rejouer' }));
   expect(screen.getByText('Manche 1 sur 10')).toBeInTheDocument();
+});
+
+it('Quelle lettre : au niveau Petits, les lettres des petits d’abord, puis le niveau voisin', async () => {
+  const user = userEvent.setup();
+  await db.settings.put({ key: 'gameLevel', value: 1 });
+  await loadSettings();
+  open('/jeu/lettres');
+  const levelOf = (glyph: string) => LETTERS.find((c) => c.glyph === glyph)!.level;
+  const levels: number[] = [];
+  for (let i = 1; i <= 10; i++) {
+    levels.push(levelOf(screen.getByTestId('glyph').textContent!));
+    await user.click(screen.getByRole('button', { name: 'Trouvé' }));
+  }
+  // 5 lettres pour les petits, puis des lettres des moyens : jamais de manque.
+  expect(levels).toEqual([1, 1, 1, 1, 1, 2, 2, 2, 2, 2]);
+  await db.settings.clear();
+  await loadSettings();
 });
 
 it('Quelle lettre : bascule vers les chiffres', async () => {

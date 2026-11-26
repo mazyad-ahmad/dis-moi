@@ -1,28 +1,32 @@
 import { useState, type FormEvent } from 'react';
+import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { LevelChoice } from '../components/LevelChoice';
 import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { IconPlus, IconTrash } from '../components/icons';
-import { PLAYER_COLORS, type Player } from '../data/db';
+import type { Player } from '../data/db';
 import {
   addPlayer,
+  avatarLabel,
+  freeAvatar,
   MAX_NAME_LENGTH,
   MAX_PLAYERS,
   PlayerError,
   removePlayer,
   renamePlayer,
-  setPlayerColor,
+  setPlayerAvatar,
+  setPlayerLevel,
   usePlayers,
+  type Avatar as AvatarValue,
 } from '../data/players';
-
-function nextColor(p: Player) {
-  return PLAYER_COLORS[(PLAYER_COLORS.indexOf(p.color) + 1) % PLAYER_COLORS.length];
-}
+import { AvatarPicker } from './AvatarPicker';
 
 function PlayerRow({ player, onError }: { player: Player; onError: (m: string) => void }) {
   const [name, setName] = useState(player.name);
   const [confirmDialog, confirm] = useConfirm();
+  const [picking, setPicking] = useState(false);
 
   async function commit() {
     if (name === player.name) return;
@@ -39,11 +43,11 @@ function PlayerRow({ player, onError }: { player: Player; onError: (m: string) =
       <Card className="player-row">
         <button
           type="button"
-          className={`avatar avatar--${player.color}`}
-          aria-label={`Changer la couleur de ${player.name}`}
-          onClick={() => setPlayerColor(player.id, nextColor(player))}
+          className="avatar-btn"
+          aria-label={`Changer l’avatar de ${avatarLabel(player)}`}
+          onClick={() => setPicking(true)}
         >
-          {player.name.charAt(0).toLocaleUpperCase('fr')}
+          <Avatar player={player} />
         </button>
         <input
           className="field"
@@ -70,7 +74,22 @@ function PlayerRow({ player, onError }: { player: Player; onError: (m: string) =
           <IconTrash />
         </button>
       </Card>
+      <LevelChoice
+        legend={`Niveau de ${player.name}`}
+        hideLegend
+        name={`niveau-${player.id}`}
+        value={player.level}
+        onChange={(level) => setPlayerLevel(player.id, level)}
+      />
       {confirmDialog}
+      {picking && (
+        <AvatarPicker
+          name={player.name}
+          value={player}
+          onChange={(avatar) => setPlayerAvatar(player.id, avatar)}
+          onClose={() => setPicking(false)}
+        />
+      )}
     </li>
   );
 }
@@ -79,14 +98,20 @@ export function Players() {
   const players = usePlayers();
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
+  // Avatar du prochain joueur : choisi par le parent, sinon le premier libre.
+  const [draftAvatar, setDraftAvatar] = useState<AvatarValue | null>(null);
+  const [picking, setPicking] = useState(false);
+  const nextAvatar = draftAvatar ?? freeAvatar(players ?? []);
+  const draftName = draft.trim() || 'Nouveau joueur';
   const full = (players?.length ?? 0) >= MAX_PLAYERS;
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
     try {
-      await addPlayer(draft);
+      await addPlayer(draft, nextAvatar);
       setDraft('');
+      setDraftAvatar(null);
     } catch (err) {
       setError(err instanceof PlayerError ? err.message : "Impossible d'ajouter ce prénom.");
     }
@@ -96,8 +121,8 @@ export function Players() {
     <main className="screen">
       <ScreenHeader title="Joueurs" back="/" />
       <p className="lead">
-        Seul le prénom est enregistré, uniquement sur ce téléphone. Touche la pastille pour changer
-        la couleur.
+        Seuls le prénom, l’avatar et le niveau sont enregistrés, uniquement sur ce téléphone. Touche
+        l’animal pour le changer, ou changer sa couleur.
       </p>
 
       {players && players.length > 0 && (
@@ -110,6 +135,14 @@ export function Players() {
 
       {!full ? (
         <form className="add-player" onSubmit={onSubmit}>
+          <button
+            type="button"
+            className="avatar-btn"
+            aria-label={`Choisir l’avatar du nouveau joueur : ${nextAvatar.animal}`}
+            onClick={() => setPicking(true)}
+          >
+            <Avatar player={{ name: draftName, ...nextAvatar }} />
+          </button>
           <label htmlFor="new-player" className="sr-only">
             Prénom
           </label>
@@ -135,6 +168,15 @@ export function Players() {
         <p className="error" role="alert">
           {error}
         </p>
+      )}
+
+      {picking && !full && (
+        <AvatarPicker
+          name={draftName}
+          value={nextAvatar}
+          onChange={setDraftAvatar}
+          onClose={() => setPicking(false)}
+        />
       )}
     </main>
   );

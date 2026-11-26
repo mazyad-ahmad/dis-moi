@@ -200,6 +200,7 @@ describe('Étoiles et historique', () => {
     expect(screen.getByLabelText('10 étoiles : à gagner')).toBeInTheDocument();
     expect(screen.getByText('Encore 7 étoiles pour « 10 étoiles ».')).toBeInTheDocument();
     expect(screen.getByText('aujourd’hui · Léa')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Léa, renard' })).toBeInTheDocument();
   });
 
   it('nomme « Jeu supprimé » une partie d’un jeu créé puis supprimé', async () => {

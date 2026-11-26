@@ -1,3 +1,4 @@
+import type { Level } from '../levels';
 import type { Tint } from '../registry';
 
 /**
@@ -20,8 +21,8 @@ export function kindLabel(kind: DeckKind): string {
 export interface DeckItem {
   /** Identifiant stable de la carte dans son pack (contenu intégré, src/content/). */
   id?: string;
-  /** Âge à partir duquel la carte convient (niveaux par âge). */
-  level?: number;
+  /** Niveau par âge (#40) : 1 Petits, 2 Moyens, 3 Grands. Sans niveau : convient à tous. */
+  level?: Level;
   /** Thèmes de la carte (« ferme », « noel »…). */
   tags?: string[];
   /** Langue de la carte, si elle diffère de celle du pack (code à deux lettres). */

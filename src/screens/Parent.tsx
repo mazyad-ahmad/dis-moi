@@ -5,6 +5,7 @@ import { Card } from '../components/Card';
 import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { BackupSection } from './BackupSection';
+import { GrandSection } from './GrandSection';
 import { PraiseSection } from './PraiseSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
@@ -113,6 +114,11 @@ const SOUND_CHOICES = [
 const LOCK_CHOICES = [
   { value: 'off', label: 'Désactivé' },
   { value: 'on', label: 'Activé' },
+] as const;
+
+const DAILY_CHOICES = [
+  { value: 'on', label: 'Affiché' },
+  { value: 'off', label: 'Masqué' },
 ] as const;
 
 const VIBRATION_CHOICES = [
@@ -270,6 +276,8 @@ export function Parent() {
         onChange={(v) => void setSetting('drawSeconds', v)}
       />
 
+      <GrandSection />
+
       <ReadAloudSetting />
 
       <VibrationSetting />
@@ -285,6 +293,16 @@ export function Parent() {
       />
 
       <PraiseSection />
+
+      <Choice
+        legend="Défi du jour"
+        name="daily-challenge"
+        value={settings.dailyChallenge ? 'on' : 'off'}
+        options={DAILY_CHOICES}
+        onChange={(v) => void setSetting('dailyChallenge', v === 'on')}
+        className="segmented--2"
+        hint="Une carte surprise par jour sur l’accueil, une étoile bonus si elle est trouvée. Aucune série, aucune notification."
+      />
 
       <Choice
         legend="Volume de l’appli"

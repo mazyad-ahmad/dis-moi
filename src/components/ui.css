@@ -268,6 +268,11 @@
 }
 .players-card {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.players-card__head {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -289,6 +294,56 @@
   font-weight: 600;
   padding: 10px 4px;
   flex: none;
+}
+/* Pastilles « Qui joue ? » (#37) : appuyée = le joueur joue aujourd'hui. */
+.player-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.player-toggle {
+  min-height: 48px;
+  padding: 0 16px 0 10px;
+  border-radius: var(--radius-full);
+  border: 2px dashed var(--ink-muted);
+  background: var(--paper);
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.player-toggle__mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+}
+.player-toggle[aria-pressed='true'] {
+  border: 2px solid var(--forest);
+  color: var(--ink);
+  font-weight: 700;
+}
+.player-toggle--meadow[aria-pressed='true'] {
+  background: var(--meadow);
+}
+.player-toggle--sky[aria-pressed='true'] {
+  background: var(--sky);
+}
+.player-toggle--dawn[aria-pressed='true'] {
+  background: var(--dawn);
+}
+.player-toggle:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
 }
 .game-grid {
   display: grid;
@@ -372,27 +427,6 @@
   align-items: center;
   gap: 12px;
   padding: 8px 8px 8px 12px;
-}
-.avatar {
-  width: 40px;
-  height: 40px;
-  flex: none;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  border: 0;
-  cursor: pointer;
-}
-.avatar--meadow {
-  background: var(--meadow);
-}
-.avatar--sky {
-  background: var(--sky);
-}
-.avatar--dawn {
-  background: var(--dawn);
 }
 .field {
   flex: 1;
@@ -838,6 +872,80 @@ a.pill {
 .chip:has(input:focus-visible) {
   outline: 3px solid var(--river);
   outline-offset: 2px;
+}
+
+/* ---------- Trouver le bon jeu (#137) ---------- */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.filter-group__label {
+  font: var(--text-label);
+  letter-spacing: 0.02em;
+}
+.filter-chip {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--hairline);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filter-chip[aria-pressed='true'] {
+  background: var(--river);
+  border-color: var(--river);
+  color: var(--on-river);
+  font-weight: 700;
+}
+.filter-chip:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+}
+.filters__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+.filters__status p {
+  margin: 0;
+}
+.catalogue__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.catalogue__type {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.home-games {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.home-games__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.home-games__group h2 {
+  margin: 4px 0 0;
+}
+.home-games > .game-grid:empty {
+  display: none;
 }
 
 /* ---------- Éditeur de jeu ---------- */
@@ -1288,4 +1396,42 @@ a.pill {
 }
 .word-card .read-aloud {
   margin-top: 6px;
+}
+
+/* ---------- Niveaux par âge (#40) ---------- */
+.segmented--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.level-choice {
+  gap: 4px;
+}
+.level-choice__ages {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ---------- Défi du jour (#43) ---------- */
+.daily-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.daily-card__icon {
+  color: var(--sun);
+  flex: none;
+  display: flex;
+}
+.daily-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+}
+.daily-card a {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 14px 8px;
+  flex: none;
 }

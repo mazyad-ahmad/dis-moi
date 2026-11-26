@@ -1,34 +1,62 @@
 import { href } from '../app/router';
+import { Avatar } from '../components/Avatar';
 import { Card } from '../components/Card';
+import { LevelChoice } from '../components/LevelChoice';
+import { ModeChoice } from '../components/ModeChoice';
 import { Logo } from '../components/Logo';
 import { Mascot } from '../components/Mascot';
 import { useNightTheme } from '../components/useNightTheme';
-import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
-import { usePlayers } from '../data/players';
+import { IconPerson } from '../components/icons';
+import { activePlayers, setPlayerActive, usePlayers } from '../data/players';
+import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
-import type { GameInfo } from '../games/registry';
-import { useHomeGames } from '../games/useGames';
+import { AnswerModeChoice } from '../games/choices/AnswerModeChoice';
+import { teamsReady } from '../games/teams';
+import { MIN_TURN_PLAYERS, type TurnMode } from '../games/turns';
+import { usePlayableGames } from '../games/useGames';
+import { DailyCard } from './DailyCard';
+import { HomeGames } from './HomeGames';
 import { LastGame } from './LastGame';
 import { SeanceOverCard } from './SeanceOver';
+import { TeamsLine } from './TeamsLine';
 
-const ICON_COLOR = { music: 'var(--forest)', letters: 'var(--river)', pencil: 'var(--sun)' };
+const TURN_CHOICES: { value: TurnMode; label: string }[] = [
+  { value: 'team', label: 'En équipe' },
+  { value: 'turns', label: 'Chacun son tour' },
+];
 
-function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
+/** Tour par tour (#38) : proposé dès deux joueurs actifs ; avec un seul, on joue en équipe. */
+function TurnChoice({ value }: { value: TurnMode }) {
   return (
-    <span className="game-tile__icon" style={icon && { color: ICON_COLOR[icon] }}>
-      {icon === 'music' && <IconMusic size={26} />}
-      {icon === 'letters' && 'A1'}
-      {icon === 'pencil' && <IconPencil size={26} />}
-      {!icon && mark}
-    </span>
+    <fieldset className="setting turn-choice">
+      <legend className="sr-only">Comment on joue ?</legend>
+      <div className="segmented segmented--2">
+        {TURN_CHOICES.map((c) => (
+          <label key={c.value}>
+            <input
+              type="radio"
+              name="facon-de-jouer"
+              value={c.value}
+              checked={value === c.value}
+              onChange={() => void setSetting('turnMode', c.value)}
+            />
+            {c.label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 
 export function Home() {
   const players = usePlayers();
-  const games = useHomeGames();
+  const { absentPlayers } = useSettings();
+  // Seuls les jeux qui conviennent à la façon de jouer (#42) sont proposés.
+  const games = usePlayableGames();
   const { over } = useSeance();
   const night = useNightTheme();
+  const { gameLevel, gameMode, turnMode, teams } = useSettings();
+  const playing = players ? activePlayers(players, absentPlayers).length : 0;
 
   return (
     <main className="screen">
@@ -51,43 +79,69 @@ export function Home() {
       </div>
 
       <Card className="players-card">
-        <span className="players-card__names">
-          <span className="eyebrow">Joueurs</span>
-          {players === undefined ? (
-            <strong>&nbsp;</strong>
-          ) : players.length ? (
-            <strong>{players.map((p) => p.name).join(' · ')}</strong>
-          ) : (
-            <span className="muted">Ajoute le prénom des enfants</span>
-          )}
-        </span>
-        <a href={href('/joueurs')}>{players?.length ? 'Modifier' : 'Ajouter'}</a>
+        <div className="players-card__head">
+          <span className="players-card__names">
+            <span className="eyebrow" id="players-label">
+              {players?.length ? 'Qui joue ?' : 'Joueurs'}
+            </span>
+            {players === undefined ? (
+              <strong>&nbsp;</strong>
+            ) : (
+              !players.length && <span className="muted">Ajoute le prénom des enfants</span>
+            )}
+          </span>
+          <a href={href('/joueurs')}>{players?.length ? 'Modifier' : 'Ajouter'}</a>
+        </div>
+        {!!players?.length && (
+          <div className="player-toggles" role="group" aria-labelledby="players-label">
+            {players.map((p) => {
+              const on = !absentPlayers.includes(p.id);
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`player-toggle player-toggle--${p.color}`}
+                  aria-pressed={on}
+                  onClick={() => void setPlayerActive(p.id, !on)}
+                >
+                  <span aria-hidden="true">
+                    <Avatar player={p} size="sm" />
+                  </span>
+                  <span className="player-toggle__mark" aria-hidden="true">
+                    {on ? '✓' : ''}
+                  </span>
+                  <span>{p.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+        {/* En équipes (#44), les équipes jouent à tour de rôle à la place du tour par tour. */}
+        {playing >= MIN_TURN_PLAYERS && !teamsReady(teams) && <TurnChoice value={turnMode} />}
+        {!over && <TeamsLine />}
       </Card>
 
-      {over ? (
-        <SeanceOverCard />
-      ) : (
-        <div className="game-grid">
-          {games.map((g) => (
-            <a key={g.id} href={href(`/jeu/${g.id}`)} className={`game-tile game-tile--${g.tint}`}>
-              <TileIcon game={g} />
-              <span>
-                <span className="game-tile__name">{g.name}</span>
-                <span className="game-tile__category">{g.category}</span>
-              </span>
-            </a>
-          ))}
-          <a href={href('/ajouter')} className="game-tile game-tile--add">
-            <span className="game-tile__icon">
-              <IconPlus />
-            </span>
-            <span>
-              <span className="game-tile__name">Ajouter un jeu</span>
-              <span className="game-tile__category">Catalogue ou créer</span>
-            </span>
-          </a>
-        </div>
+      {!over && <DailyCard />}
+
+      {/* Niveaux par âge (#40) : le niveau de la partie se règle au lancement. */}
+      {!over && (
+        <LevelChoice
+          legend="Niveau de la partie"
+          name="niveau-partie"
+          value={gameLevel}
+          allLabel="Tous"
+          onChange={(level) => void setSetting('gameLevel', level)}
+        />
       )}
+      {/* Répondre en montrant (#123), réglé lui aussi au lancement. */}
+      {!over && <AnswerModeChoice />}
+
+      {/* Façons de jouer (#42) : Normal par défaut, choisie au lancement. */}
+      {!over && (
+        <ModeChoice value={gameMode} onChange={(mode) => void setSetting('gameMode', mode)} />
+      )}
+
+      {over ? <SeanceOverCard /> : <HomeGames games={games} />}
 
       <div className="spacer" />
 

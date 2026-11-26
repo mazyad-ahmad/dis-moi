@@ -1,7 +1,25 @@
 import { CustomGameError } from './customGames';
-import { db, PLAYER_COLORS, type CustomGame, type GameRecord, type Player } from './db';
-import { decodeGame, encodeGame, shareFile, uniqueGameName, type GameFile } from './gameFile';
-import { cleanName, MAX_PLAYERS, PlayerError } from './players';
+import {
+  db,
+  PLAYER_ANIMALS,
+  PLAYER_COLORS,
+  type CustomGame,
+  type GameRecord,
+  type Player,
+} from './db';
+import {
+  decodeGame,
+  encodeGame,
+  shareFile,
+  uniqueGameName,
+  type GameFile,
+  type SharedGame,
+} from './gameFile';
+import { isLevel } from '../games/levels';
+import { isGameMode } from '../games/modes';
+import type { TeamScore } from '../games/teams';
+import { TURN_MODES } from '../games/turns';
+import { cleanName, isAnimal, isPlayerColor, MAX_PLAYERS, PlayerError } from './players';
 import {
   DEFAULT_SETTINGS,
   DRAW_SECONDS_CHOICES,
@@ -55,6 +73,9 @@ export interface Backup {
   customGames: CustomGame[];
 }
 
+/** Réglages gardés sur le téléphone seulement : les équipes de la fête (#44), invités compris. */
+const LOCAL_ONLY = new Set<string>(['teams']);
+
 export async function createBackupFile(now = Date.now()): Promise<File> {
   const [players, games, customGames] = await Promise.all([
     db.players.toArray(),
@@ -63,7 +84,8 @@ export async function createBackupFile(now = Date.now()): Promise<File> {
   ]);
   const settings: Partial<Settings> = {};
   for (const { key, value } of await db.settings.toArray())
-    if (key in DEFAULT_SETTINGS) (settings as Record<string, unknown>)[key] = value;
+    if (key in DEFAULT_SETTINGS && !LOCAL_ONLY.has(key))
+      (settings as Record<string, unknown>)[key] = value;
 
   const content: BackupFile = {
     format: BACKUP_FORMAT,
@@ -112,7 +134,7 @@ function fail(message = INVALID): never {
   throw new BackupError(message);
 }
 
-function readPlayer(raw: unknown): Player {
+function readPlayer(raw: unknown, index: number): Player {
   if (!isObject(raw) || !isId(raw.id) || typeof raw.name !== 'string') fail();
   let name: string;
   try {
@@ -120,10 +142,34 @@ function readPlayer(raw: unknown): Player {
   } catch {
     fail();
   }
-  const color = PLAYER_COLORS.includes(raw.color as Player['color'])
-    ? (raw.color as Player['color'])
-    : PLAYER_COLORS[0];
-  return { id: raw.id, name, color, createdAt: isNumber(raw.createdAt) ? raw.createdAt : 0 };
+  const color = isPlayerColor(raw.color) ? raw.color : PLAYER_COLORS[0];
+  // Sauvegarde d'avant les avatars (#39) : un animal par joueur, comme à la migration.
+  const animal = isAnimal(raw.animal)
+    ? raw.animal
+    : PLAYER_ANIMALS[index % PLAYER_ANIMALS.length].id;
+  return {
+    id: raw.id,
+    name,
+    color,
+    animal,
+    createdAt: isNumber(raw.createdAt) ? raw.createdAt : 0,
+    // Niveau par âge (#40) : facultatif, ignoré s'il est inconnu.
+    ...(isLevel(raw.level) && { level: raw.level }),
+  };
+}
+
+function isTeamScores(v: unknown): v is TeamScore[] {
+  return (
+    Array.isArray(v) &&
+    v.every(
+      (t) =>
+        isObject(t) &&
+        typeof t.name === 'string' &&
+        isPlayerColor(t.color) &&
+        Number.isInteger(t.stars) &&
+        Number.isInteger(t.children),
+    )
+  );
 }
 
 function readRecord(raw: unknown): GameRecord {
@@ -140,12 +186,18 @@ function readRecord(raw: unknown): GameRecord {
     rounds: rounds as number,
     stars: stars as number,
     playerIds: raw.playerIds,
+    // Façon de jouer (#42) : facultative, ignorée si elle est inconnue.
+    ...(isGameMode(raw.mode) && { mode: raw.mode }),
+    // Tour par tour (#38) : facultatif, ignoré s'il est illisible.
+    ...(Array.isArray(raw.turns) && raw.turns.every(isId) && { turns: raw.turns }),
+    // En équipes (#44) : facultatif, ignoré s'il est illisible.
+    ...(isTeamScores(raw.teams) && { teams: raw.teams }),
   };
 }
 
 function readCustomGame(raw: unknown): CustomGame {
   if (!isObject(raw) || !isId(raw.id)) fail();
-  let game: Pick<CustomGame, 'name' | 'kind' | 'items'>;
+  let game: SharedGame;
   try {
     game = decodeGame(raw);
   } catch (e) {
@@ -178,8 +230,16 @@ function readSettings(raw: unknown): Partial<Settings> {
     out.readAloud = raw.readAloud as Settings['readAloud'];
   if (typeof raw.sounds === 'boolean') out.sounds = raw.sounds;
   if (typeof raw.praise === 'boolean') out.praise = raw.praise;
+  if (typeof raw.dailyChallenge === 'boolean') out.dailyChallenge = raw.dailyChallenge;
+  if (typeof raw.showChoices === 'boolean') out.showChoices = raw.showChoices;
   if ((VOLUME_CHOICES as readonly unknown[]).includes(raw.volume))
     out.volume = raw.volume as Settings['volume'];
+  if (raw.gameLevel === null || isLevel(raw.gameLevel)) out.gameLevel = raw.gameLevel;
+  if (isGameMode(raw.gameMode)) out.gameMode = raw.gameMode;
+  if ((TURN_MODES as readonly unknown[]).includes(raw.turnMode))
+    out.turnMode = raw.turnMode as Settings['turnMode'];
+  if (Array.isArray(raw.grandExcluded) && raw.grandExcluded.every((c) => typeof c === 'string'))
+    out.grandExcluded = raw.grandExcluded;
   return out;
 }
 
@@ -209,7 +269,7 @@ export function parseBackup(text: string): Backup {
   if (!isNumber(data.createdAt)) fail();
   if (![data.players, data.games, data.customGames].every(Array.isArray)) fail();
 
-  const players = (data.players as unknown[]).map(readPlayer);
+  const players = (data.players as unknown[]).map((p, i) => readPlayer(p, i));
   if (players.length > MAX_PLAYERS) fail();
   unique(players, (p) => p.id);
   const games = (data.games as unknown[]).map(readRecord);
@@ -269,7 +329,9 @@ async function mergeInto(backup: Backup) {
       const id = await db.players.add({
         name: p.name,
         color: p.color,
+        animal: p.animal,
         createdAt: p.createdAt,
+        ...(p.level && { level: p.level }),
       } as Player);
       byName.set(key(p.name), id);
     }
@@ -281,6 +343,9 @@ async function mergeInto(backup: Backup) {
       .map((g) => ({
         ...withoutId(g),
         playerIds: g.playerIds.flatMap((id) => (playerId.has(id) ? [playerId.get(id)!] : [])),
+        ...(g.turns && {
+          turns: g.turns.flatMap((id) => (playerId.has(id) ? [playerId.get(id)!] : [])),
+        }),
       }));
     await db.games.bulkAdd(games as GameRecord[]);
 

@@ -1,4 +1,5 @@
 import { getPack } from '../../content/packs';
+import type { Level } from '../levels';
 
 /**
  * Comptines et airs traditionnels du domaine public.
@@ -14,6 +15,10 @@ export interface Song {
   hints?: string[];
   bpm: number;
   melody: string;
+  /** Niveau par âge (#40). */
+  level: Level;
+  /** Image de la chanson (emoji), montrée parmi les choix de « Répondre en montrant » (#123). */
+  emoji?: string;
 }
 
 export const EXTRACT_SECONDS = 10;
@@ -28,4 +33,6 @@ export const SONGS: Song[] = getPack('chansons').items.map((item) => ({
   ...(item.hints && { hints: item.hints }),
   bpm: item.bpm!,
   melody: item.melody!,
+  level: item.level,
+  ...(item.emoji && { emoji: item.emoji }),
 }));

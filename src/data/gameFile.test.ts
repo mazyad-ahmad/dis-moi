@@ -160,3 +160,12 @@ it('garde les visuels intégrés (emoji, couleur) des cartes image, et refuse un
     { answer: 'Bleu', text: 'Bleu' },
   ]);
 });
+
+it('garde le type et l’âge choisis à la création, et ignore des valeurs inconnues (#137)', async () => {
+  const file = await gameToFile({ ...game('question', []), activity: 'calme', level: 2 });
+  expect(JSON.parse(await file.text())).toMatchObject({ activity: 'calme', level: 2 });
+  expect(parseGameFile(await file.text())).toMatchObject({ activity: 'calme', level: 2 });
+  const old = parseGameFile(JSON.stringify({ ...base, items: [], activity: 'nager', level: 9 }));
+  expect(old).not.toHaveProperty('activity');
+  expect(old).not.toHaveProperty('level');
+});

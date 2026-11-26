@@ -1,7 +1,9 @@
 import { MAX_GAME_NAME, MAX_HINTS, MAX_TEXT } from '../data/customGames';
 import { GAME_FILE_FORMAT, GAME_FILE_VERSION } from '../data/gameFile';
 import { parseMelody } from '../games/chanson/melody';
+import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
+import { isLevel, LEVELS, type Level } from '../games/levels';
 import type { Tint } from '../games/registry';
 
 /**
@@ -17,6 +19,8 @@ export const PACK_KINDS: PackKind[] = [...DECK_KINDS.map((k) => k.value), 'melod
 export interface PackItem extends Omit<DeckItem, 'image' | 'audio'> {
   /** Identifiant stable dans le pack (minuscules, chiffres et tirets). */
   id: string;
+  /** Niveau par âge, obligatoire pour le contenu intégré (#40). */
+  level: Level;
   /** Air noté (pack « melody ») : voir games/chanson/melody.ts. */
   melody?: string;
   /** Tempo de l'air, en battements par minute (pack « melody »). */
@@ -38,6 +42,11 @@ export interface Pack {
   desc?: string;
   mark?: string;
   tint?: Tint;
+  /** Le jeu fait bouger l'enfant (mime…) : pas proposé en mode Coucher (#42). */
+  moves?: boolean;
+  /** Jeux du catalogue (#137) : types du jeu (le premier le range) et ce qu'il fait travailler. */
+  activities?: Activity[];
+  skill?: string;
   items: PackItem[];
 }
 
@@ -58,6 +67,9 @@ const PACK_FIELDS = new Set([
   'desc',
   'mark',
   'tint',
+  'moves',
+  'activities',
+  'skill',
   'items',
 ]);
 const ITEM_FIELDS = new Set([
@@ -74,9 +86,6 @@ const ITEM_FIELDS = new Set([
   'melody',
   'bpm',
 ]);
-/** Âges couverts par l'appli : une carte peut dire à partir de quel âge elle convient. */
-export const MIN_LEVEL = 2;
-export const MAX_LEVEL = 10;
 
 const isText = (v: unknown, max = MAX_TEXT): v is string =>
   typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max;
@@ -136,12 +145,9 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
   )
     return `indices (« hints ») : liste de 1 à ${MAX_HINTS} textes attendue`;
   if (item.emoji !== undefined && !isText(item.emoji, 16)) return 'emoji invalide';
-  const level = item.level as number;
-  if (
-    item.level !== undefined &&
-    !(Number.isInteger(level) && level >= MIN_LEVEL && level <= MAX_LEVEL)
-  )
-    return `âge (« level ») entier de ${MIN_LEVEL} à ${MAX_LEVEL} attendu`;
+  // Niveaux par âge (#40) : chaque carte intégrée en a un.
+  if (!isLevel(item.level))
+    return `niveau (« level ») manquant : ${LEVELS.map((l) => `${l.value} (${l.name}, ${l.ages})`).join(', ')}`;
   if (
     item.tags !== undefined &&
     !(Array.isArray(item.tags) && item.tags.every((t) => typeof t === 'string' && ID.test(t)))
@@ -175,7 +181,19 @@ export function validatePack(raw: unknown, file: string): Pack {
   if (!isText(pack.name, MAX_GAME_NAME)) fail(`nom vide ou trop long (${MAX_GAME_NAME} max)`);
   if (pack.lang !== 'fr') fail('langue (« lang ») : seul « fr » existe pour l’instant');
   if (pack.tint !== undefined && !TINTS.includes(pack.tint as Tint)) fail('teinte inconnue');
-  for (const field of ['category', 'desc', 'mark'] as const)
+  if (pack.moves !== undefined && typeof pack.moves !== 'boolean')
+    fail('« moves » : true ou false attendu');
+  if (
+    pack.activities !== undefined &&
+    !(
+      Array.isArray(pack.activities) &&
+      pack.activities.length > 0 &&
+      pack.activities.every(isActivity) &&
+      new Set(pack.activities).size === pack.activities.length
+    )
+  )
+    fail('« activities » : liste de types connus, sans doublon, attendue');
+  for (const field of ['category', 'desc', 'mark', 'skill'] as const)
     if (pack[field] !== undefined && !isText(pack[field])) fail(`« ${field} » vide ou trop long`);
   if (!Array.isArray(pack.items) || pack.items.length === 0) fail('aucune carte');
 

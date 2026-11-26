@@ -1,4 +1,6 @@
+import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
+import { isLevel, type Level } from '../games/levels';
 import { cleanGameName, cleanItem, CustomGameError, MAX_GAME_NAME, MAX_ITEMS } from './customGames';
 import { db, type CustomGame } from './db';
 import { requestPersistentStorage } from './storage';
@@ -29,8 +31,14 @@ export interface GameFile {
   version: number;
   name: string;
   kind: DeckKind;
+  /** Type et âge choisis à la création (#137), facultatifs : un fichier plus ancien n'en a pas. */
+  activity?: Activity;
+  level?: Level;
   items: FileItem[];
 }
+
+/** Ce qu'un fichier de jeu (ou une sauvegarde) garde d'un jeu créé. */
+export type SharedGame = Pick<CustomGame, 'name' | 'kind' | 'items' | 'activity' | 'level'>;
 
 async function blobToDataUrl(blob: Blob): Promise<string> {
   const bytes = new Uint8Array(await blob.arrayBuffer());
@@ -76,9 +84,7 @@ function optionalTextList(value: unknown): string[] | undefined {
 }
 
 /** Jeu mis en forme pour un fichier (aussi repris tel quel dans une sauvegarde complète). */
-export async function encodeGame(
-  game: Pick<CustomGame, 'name' | 'kind' | 'items'>,
-): Promise<GameFile> {
+export async function encodeGame(game: SharedGame): Promise<GameFile> {
   const items: FileItem[] = [];
   for (const it of game.items) {
     const item: FileItem = { answer: it.answer };
@@ -96,6 +102,8 @@ export async function encodeGame(
     version: GAME_FILE_VERSION,
     name: game.name,
     kind: game.kind,
+    ...(game.activity && { activity: game.activity }),
+    ...(game.level && { level: game.level }),
     items,
   };
 }
@@ -120,7 +128,7 @@ export function gameFileName(name: string): string {
 }
 
 /** Lit et vérifie un fichier de jeu. Lève une CustomGameError au message lisible. */
-export function parseGameFile(text: string): Pick<CustomGame, 'name' | 'kind' | 'items'> {
+export function parseGameFile(text: string): SharedGame {
   let data: unknown;
   try {
     data = JSON.parse(text);
@@ -131,7 +139,7 @@ export function parseGameFile(text: string): Pick<CustomGame, 'name' | 'kind' | 
 }
 
 /** Vérifie un jeu déjà lu (fichier de jeu ou entrée d'une sauvegarde). */
-export function decodeGame(data: unknown): Pick<CustomGame, 'name' | 'kind' | 'items'> {
+export function decodeGame(data: unknown): SharedGame {
   if (typeof data !== 'object' || data === null) throw new CustomGameError(INVALID);
   const raw = data as Record<string, unknown>;
   if (raw.format !== GAME_FILE_FORMAT) throw new CustomGameError(INVALID);
@@ -159,7 +167,14 @@ export function decodeGame(data: unknown): Pick<CustomGame, 'name' | 'kind' | 'i
       audio: kind === 'sound' ? dataUrlToBlob(e.audio, 'audio') : undefined,
     });
   });
-  return { name: cleanGameName(raw.name), kind, items };
+  return {
+    name: cleanGameName(raw.name),
+    kind,
+    items,
+    // Type et âge (#137) : facultatifs, ignorés s'ils sont inconnus.
+    ...(isActivity(raw.activity) && { activity: raw.activity }),
+    ...(isLevel(raw.level) && { level: raw.level }),
+  };
 }
 
 /** « Devinettes » déjà pris → « Devinettes (2) », sans dépasser la longueur maximale. */

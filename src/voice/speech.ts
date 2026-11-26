@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { getSettings, type Volume } from '../data/settings';
+import { appVolume, type Volume } from '../data/settings';
 
 /**
  * Lecture à voix haute (#35) par la synthèse vocale du téléphone (`speechSynthesis`).
@@ -96,7 +96,7 @@ export function speak(
   u.voice = v;
   u.lang = v.lang;
   u.rate = SPEECH_RATES[speed];
-  u.volume = SPEECH_VOLUME[getSettings().volume];
+  u.volume = SPEECH_VOLUME[appVolume()];
   const done = () => {
     if (current !== u) return;
     current = null;

@@ -6,13 +6,20 @@ import { Mascot } from '../../components/Mascot';
 import { IconEar, IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
+import { ChoiceBoard } from '../choices/ChoiceBoard';
+import { useChoices } from '../choices/useChoices';
+import { deckChoicePool, deckOption, showsAnswer } from '../choices/choices';
 import { DrawingGame } from '../dessin/DrawingGame';
 import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
-import { shuffle } from '../shuffle';
+import { getSettings } from '../../data/settings';
+import { cardLevel, drawForLevel } from '../levels';
+import { drawForTurns } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
-import type { Deck, DeckItem } from './types';
+import { TurnPlayer, useTurns } from '../useTurns';
+import { cardKey } from './cardKey';
+import type { Deck, DeckItem, DeckKind } from './types';
 import { useObjectUrl } from './useObjectUrl';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
@@ -37,7 +44,7 @@ function RecordedSound({ audio }: { audio: Blob }) {
   );
 }
 
-function SoundCard({ item }: { item: DeckItem }) {
+export function SoundCard({ item }: { item: DeckItem }) {
   return (
     <section className="song-player" aria-label="Son">
       {item.audio ? (
@@ -54,7 +61,7 @@ function SoundCard({ item }: { item: DeckItem }) {
   );
 }
 
-function ImageCard({ item }: { item: DeckItem }) {
+export function ImageCard({ item }: { item: DeckItem }) {
   const url = useObjectUrl(item.image);
   return (
     <figure className="deck-card deck-card--image">
@@ -78,7 +85,7 @@ function ImageCard({ item }: { item: DeckItem }) {
   );
 }
 
-function QuestionCard({ item }: { item: DeckItem }) {
+export function QuestionCard({ item }: { item: DeckItem }) {
   return (
     <section className="deck-card deck-card--question" aria-label="Question">
       <span className="word-card__label">Le parent lit à voix haute</span>
@@ -88,49 +95,39 @@ function QuestionCard({ item }: { item: DeckItem }) {
   );
 }
 
-/**
- * Clé d'une carte dans le tirage sauvegardé. Les cartes créées n'ont pas d'identifiant :
- * position et réponse, pour qu'un jeu modifié entre-temps donne une nouvelle partie.
- */
-function cardKey(item: DeckItem, index: number) {
-  return item.id ?? `${index}:${item.answer}`;
-}
-
 function answerOf(item: DeckItem) {
   return item.emoji && !item.color ? `${item.emoji} ${item.answer}` : item.answer;
 }
 
-function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
-  const setting = useRoundSetting();
-  // Tirage figé pour la partie, même si le jeu est modifié entre-temps ou la page rafraîchie.
-  const items = useSavedDraw(
-    deck.id,
-    'draw',
-    deck.items,
-    () => shuffle(deck.items).slice(0, setting),
-    cardKey,
-  );
-  const { round, rounds, stars, finished, answer } = useRounds(deck.id, items.length);
-
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
-
-  const item = items[round - 1];
-  const soundToImitate = deck.kind === 'sound' && !item.audio && item.text;
+/**
+ * Une manche : la carte et la zone du parent (aussi jouée dans le Grand Jeu).
+ * `pool` : cartes du jeu où tirer les choix de « Répondre en montrant » (#123).
+ */
+export function DeckRound({
+  kind,
+  item,
+  pool,
+}: {
+  kind: DeckKind;
+  item: DeckItem;
+  pool?: readonly DeckItem[];
+}) {
+  const soundToImitate = kind === 'sound' && !item.audio && item.text;
+  const choices = useChoices(pool && deckOption(item), pool?.map(deckOption));
+  // L'enfant verrait la réponse (couleur, photo) : les choix la remplacent, le parent la demande.
+  const showMe = !!choices && showsAnswer(kind);
   return (
-    <main className="screen">
-      <GameHeader
-        round={round}
-        rounds={rounds}
-        stars={stars}
-        category={deck.category}
-        title={deck.name}
-      />
-      {/* key : nouvelle manche = carte et réponse remises à zéro. */}
-      <div key={round} className="deck-round round-in">
-        {deck.kind === 'sound' && <SoundCard item={item} />}
-        {deck.kind === 'image' && <ImageCard item={item} />}
-        {deck.kind === 'question' && <QuestionCard item={item} />}
-        {/* Premier indice écrit visible d'emblée, les suivants à la demande. */}
+    <div className="deck-round round-in">
+      {kind === 'sound' && <SoundCard item={item} />}
+      {kind === 'image' && !showMe && <ImageCard item={item} />}
+      {kind === 'question' && <QuestionCard item={item} />}
+      {choices && <ChoiceBoard options={choices} answer={deckOption(item).key} />}
+      {showMe ? (
+        <ParentBlock>
+          Demande à l’enfant de montrer : <strong>{item.answer}</strong>
+        </ParentBlock>
+      ) : (
+        /* Premier indice écrit visible d'emblée, les suivants à la demande. */
         <ParentBlock
           hidden={answerOf(item)}
           hints={hintLadder(item)}
@@ -142,7 +139,51 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
             </>
           )}
         </ParentBlock>
-      </div>
+      )}
+    </div>
+  );
+}
+
+function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
+  const setting = useRoundSetting();
+  const turns = useTurns(deck.id);
+  // Tirage figé pour la partie, même si le jeu est modifié entre-temps ou la page rafraîchie.
+  // Chacun son tour (#38) : chaque carte au niveau de l'enfant de la manche.
+  const items = useSavedDraw(
+    deck.id,
+    'draw',
+    deck.items,
+    () =>
+      turns
+        ? drawForTurns(deck.items, turns.levels(Math.min(setting, deck.items.length)), cardLevel)
+        : drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel),
+    cardKey,
+  );
+  const { round, rounds, stars, finished, answer, team, teams } = useRounds(
+    deck.id,
+    items.length,
+    turns?.order,
+  );
+
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
+
+  const item = items[round - 1];
+  return (
+    <main className="screen">
+      <GameHeader
+        round={round}
+        rounds={rounds}
+        stars={stars}
+        category={deck.category}
+        title={deck.name}
+        player={turns?.playerAt(round)}
+        team={team}
+      />
+      {/* key : nouvelle manche = carte et réponse remises à zéro. */}
+      <TurnPlayer.Provider value={turns?.playerAt(round)}>
+        <DeckRound key={round} kind={deck.kind} item={item} pool={deckChoicePool(deck)} />
+      </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}
@@ -176,6 +217,7 @@ export function DeckGame({ deck }: { deck: Deck }) {
         category={deck.category}
         title={deck.name}
         words={deck.items.map((i) => i.answer)}
+        levelOf={(word) => cardLevel(deck.items.find((i) => i.answer === word) ?? {})}
       />
     );
   return <Replayable>{(replay) => <DeckSession deck={deck} onReplay={replay} />}</Replayable>;

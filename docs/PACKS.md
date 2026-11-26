@@ -38,27 +38,29 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 }
 ```
 
-| Champ du pack                      | Rôle                                                                            |
-| ---------------------------------- | ------------------------------------------------------------------------------- |
-| `format`, `version`                | `"dis-moi/jeu"` et `1`, comme un fichier de jeu                                 |
-| `id`                               | identifiant (minuscules, chiffres, tirets) ; fichier `<id>.json`                |
-| `revision`                         | révision du contenu, à augmenter à chaque changement de cartes                  |
-| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`         |
-| `name`, `lang`                     | nom (30 caractères max) et langue (`fr`)                                        |
-| `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS` |
+| Champ du pack                      | Rôle                                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `format`, `version`                | `"dis-moi/jeu"` et `1`, comme un fichier de jeu                                                                                                                     |
+| `id`                               | identifiant (minuscules, chiffres, tirets) ; fichier `<id>.json`                                                                                                    |
+| `revision`                         | révision du contenu, à augmenter à chaque changement de cartes                                                                                                      |
+| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`                                                                                             |
+| `name`, `lang`                     | nom (30 caractères max) et langue (`fr`)                                                                                                                            |
+| `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS`                                                                                     |
+| `moves`                            | facultatif : `true` si le jeu fait bouger l'enfant (mime) ; écarté au Coucher                                                                                       |
+| `activities`, `skill`              | jeux du catalogue : types (`ecouter`, `parler`, `lire-compter`, `dessiner`, `bouger`, `calme` ; le premier range le jeu) et ce qu'il fait travailler, en une phrase |
 
-| Champ d'une carte | Rôle                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| `id`              | identifiant stable dans le pack (minuscules, chiffres, tirets), unique               |
-| `answer`          | réponse (unique dans le pack) ; pour `glyph`, le caractère ; pour `melody`, le titre |
-| `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)              |
-| `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)             |
-| `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »       |
-| `emoji`, `color`  | visuel montré en grand (`image`) ; couleur `#rrggbb` en minuscules                   |
-| `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`           |
-| `level`           | facultatif : âge à partir duquel la carte convient (2 à 10)                          |
-| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`)                                     |
-| `lang`            | facultatif : langue de la carte si elle diffère du pack                              |
+| Champ d'une carte | Rôle                                                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `id`              | identifiant stable dans le pack (minuscules, chiffres, tirets), unique                                            |
+| `answer`          | réponse (unique dans le pack) ; pour `glyph`, le caractère ; pour `melody`, le titre                              |
+| `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)                                           |
+| `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)                                          |
+| `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                    |
+| `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules |
+| `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                        |
+| `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                             |
+| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`)                                                                  |
+| `lang`            | facultatif : langue de la carte si elle diffère du pack                                                           |
 
 Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ inconnu est refusé
 (faute de frappe).

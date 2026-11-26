@@ -6,10 +6,16 @@ import { IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { clock } from '../format';
 import { firstLetterHint, writtenHints } from '../hints';
+import { ChoiceBoard } from '../choices/ChoiceBoard';
+import { useChoices } from '../choices/useChoices';
+import { songOption } from '../choices/choices';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
-import { draw } from '../shuffle';
+import { getSettings } from '../../data/settings';
+import { drawForLevel } from '../levels';
+import { drawForTurns } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
+import { TurnPlayer, useTurns } from '../useTurns';
 import { EXTRACT_SECONDS, SONGS, type Song } from './songs';
 import { useMelody } from './useMelody';
 
@@ -61,8 +67,12 @@ function Player({ song, slow }: { song: Song; slow: boolean }) {
 /** Indice « air ralenti » : le parent fait réécouter l'extrait plus lentement. */
 const SLOW_HINT = 'l’air passe au ralenti, fais-le réécouter';
 
-/** Une manche : lecteur et indices en escalier (écrits, air ralenti, première lettre). */
-function SongRound({ song }: { song: Song }) {
+/**
+ * Une manche : lecteur et indices en escalier (écrits, air ralenti, première lettre).
+ * Avec `pool` et « Répondre en montrant » (#123), l'enfant touche la chanson parmi des images.
+ */
+export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }) {
+  const choices = useChoices(pool && songOption(song), pool?.map(songOption));
   const written = writtenHints(song);
   const letter = firstLetterHint(song.title);
   const hints = [...written, SLOW_HINT, ...(letter ? [letter] : [])];
@@ -72,6 +82,7 @@ function SongRound({ song }: { song: Song }) {
     <>
       {/* key : le lecteur repart de zéro quand il passe au ralenti. */}
       <Player key={slow ? 'lent' : 'normal'} song={song} slow={slow} />
+      {choices && <ChoiceBoard options={choices} answer={song.id} />}
       <ParentBlock hidden={song.title} hints={hints} openHints={1} onHint={setShown} />
     </>
   );
@@ -79,16 +90,25 @@ function SongRound({ song }: { song: Song }) {
 
 function SongSession({ onReplay }: { onReplay: () => void }) {
   const wanted = useRoundSetting();
+  const turns = useTurns('chanson');
   const songs = useSavedDraw(
     'chanson',
     'draw',
     SONGS,
-    () => draw(SONGS, wanted),
+    () =>
+      turns
+        ? drawForTurns(SONGS, turns.levels(Math.min(wanted, SONGS.length)), (s) => s.level)
+        : drawForLevel(SONGS, wanted, getSettings().gameLevel, (s) => s.level),
     (s) => s.id,
   );
-  const { round, rounds, stars, finished, answer } = useRounds('chanson', songs.length);
+  const { round, rounds, stars, finished, answer, team, teams } = useRounds(
+    'chanson',
+    songs.length,
+    turns?.order,
+  );
 
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
   const song = songs[round - 1];
   return (
@@ -99,9 +119,13 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
         stars={stars}
         category="Musique"
         title="Quelle chanson ?"
+        player={turns?.playerAt(round)}
+        team={team}
       />
       {/* key : nouvelle manche = lecteur, indices et réponse remis à zéro. */}
-      <SongRound key={song.id} song={song} />
+      <TurnPlayer.Provider value={turns?.playerAt(round)}>
+        <SongRound key={song.id} song={song} pool={SONGS} />
+      </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar onSkip={() => answer(false)} onFound={() => answer(true)} skipLabel="Pas encore" />
     </main>

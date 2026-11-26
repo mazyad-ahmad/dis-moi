@@ -1,8 +1,17 @@
 import { deckItems, getPack } from '../../content/packs';
+import { levelsOf, type Activity } from '../activities';
 import type { Deck, DeckKind } from '../deck/types';
+import type { Level } from '../levels';
+import { needsOf, type PlayNeeds } from '../modes';
 
 export interface CatalogueGame extends Deck {
   desc: string;
+  /** Ce que le jeu demande à l'enfant (#42), d'après son type et son pack. */
+  needs: PlayNeeds;
+  /** Trouver le bon jeu (#137) : types, tranche d'âge (niveaux des cartes), ce qu'il fait travailler. */
+  activities: Activity[];
+  levels: Level[];
+  skill: string;
 }
 
 /**
@@ -23,6 +32,10 @@ export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
     tint: pack.tint!,
     kind: pack.kind as DeckKind,
     items: deckItems(pack),
+    needs: needsOf(pack.kind, pack.moves ? { moves: true } : {}),
+    activities: pack.activities!,
+    levels: levelsOf(pack.items),
+    skill: pack.skill!,
   };
 });
 

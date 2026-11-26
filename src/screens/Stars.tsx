@@ -1,3 +1,4 @@
+import { Avatar } from '../components/Avatar';
 import { Card } from '../components/Card';
 import { Mascot } from '../components/Mascot';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -6,6 +7,7 @@ import { useCustomGames } from '../data/customGames';
 import { REWARDS, totalStars, useRecords } from '../data/history';
 import { usePlayers } from '../data/players';
 import { dayLabel, starsLabel } from '../games/format';
+import { modeInfo } from '../games/modes';
 import { gameName } from '../games/useGames';
 
 /** Nombre de parties affichées dans l'historique. */
@@ -38,11 +40,7 @@ export function Stars() {
 
   const total = totalStars(records);
   const next = REWARDS.find((r) => r.stars > total);
-  const names = (ids: number[]) =>
-    ids
-      .map((id) => players.find((p) => p.id === id)?.name)
-      .filter(Boolean)
-      .join(', ');
+  const present = (ids: number[]) => players.filter((p) => ids.includes(p.id));
 
   return (
     <main className="screen">
@@ -94,7 +92,7 @@ export function Stars() {
         </h2>
         <ul className="catalogue__list">
           {records.slice(0, HISTORY_LENGTH).map((r) => {
-            const who = names(r.playerIds);
+            const who = present(r.playerIds);
             return (
               <li key={r.id}>
                 <Card className="history-row">
@@ -102,9 +100,19 @@ export function Stars() {
                     <strong>{gameName(r.gameId, custom)}</strong>
                     <span className="muted">
                       {dayLabel(r.startedAt)}
-                      {who && ` · ${who}`}
+                      {who.length > 0 && ` · ${who.map((p) => p.name).join(', ')}`}
+                      {r.teams?.length &&
+                        ` · En équipes : ${r.teams.map((t) => t.name).join(', ')}`}
+                      {r.mode && r.mode !== 'normal' && ` · ${modeInfo(r.mode).name}`}
                       {r.played < r.rounds && ` · ${r.played} manches sur ${r.rounds}`}
                     </span>
+                    {who.length > 0 && (
+                      <span className="avatar-row">
+                        {who.map((p) => (
+                          <Avatar key={p.id} player={p} size="sm" />
+                        ))}
+                      </span>
+                    )}
                   </span>
                   <span className="history-row__stars" aria-label={starsLabel(r.stars)}>
                     <IconStar size={18} /> {r.stars}

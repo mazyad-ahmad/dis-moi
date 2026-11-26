@@ -11,7 +11,7 @@ import {
 import { addItem, createCustomGame } from './customGames';
 import { db } from './db';
 import { startRecord, updateRecord } from './history';
-import { addPlayer } from './players';
+import { addPlayer, setPlayerLevel } from './players';
 import { getSettings, loadSettings, setSetting } from './settings';
 
 const TABLES = [db.players, db.games, db.customGames, db.settings];
@@ -28,14 +28,34 @@ async function snapshot() {
 
 /** Un téléphone avec joueurs, parties, réglages et un jeu créé (médias : voir e2e). */
 async function fillPhone() {
-  await addPlayer('Léa');
-  await addPlayer('Sami');
+  const lea = await addPlayer('Léa');
+  await setPlayerLevel(lea, 1);
+  const sami = await addPlayer('Sami');
   const r = await startRecord({ gameId: 'lettres', rounds: 5, played: 1, stars: 1 });
-  await updateRecord(r, { played: 5, stars: 4 });
-  await startRecord({ gameId: 'chanson', rounds: 10, played: 1, stars: 0 });
+  // Chacun son tour (#38) : qui a joué chaque manche.
+  await updateRecord(r, { played: 5, stars: 4, turns: [sami, lea, sami, lea, sami] });
+  await startRecord({ gameId: 'chanson', rounds: 3, played: 1, stars: 0, mode: 'express' });
+  // En équipes (#44) : étoiles par équipe dans la partie ; les équipes elles-mêmes restent locales.
+  await startRecord({
+    gameId: 'dessin',
+    rounds: 2,
+    played: 2,
+    stars: 1,
+    teams: [
+      { name: 'Les Renards', color: 'dawn', stars: 1, children: 2 },
+      { name: 'Les Dauphins', color: 'sky', stars: 0, children: 1 },
+    ],
+  });
+  await setSetting('teams', [
+    { name: 'Les Renards', color: 'dawn', members: [{ name: 'Invité' }] },
+    { name: 'Les Dauphins', color: 'sky', members: [{ name: 'Léa', playerId: lea }] },
+  ]);
   await setSetting('theme', 'night');
   await setSetting('rounds', 15);
   await setSetting('catalogue', ['devinette']);
+  await setSetting('gameLevel', 3);
+  await setSetting('gameMode', 'voiture');
+  await setSetting('turnMode', 'turns');
   const id = await createCustomGame('Devinettes de Léa', 'question');
   await addItem(id, { answer: 'Un chat', text: 'Il miaule', hint: 'Il a des moustaches' });
 }
@@ -68,11 +88,21 @@ describe('Sauvegarde complète', () => {
     const after = await snapshot();
     expect(after.players).toEqual(before.players);
     expect(after.games).toEqual(before.games);
+    expect(after.games).toContainEqual(expect.objectContaining({ mode: 'express' }));
+    expect(after.games).toContainEqual(
+      expect.objectContaining({ teams: expect.arrayContaining([expect.anything()]) }),
+    );
+    // Les prénoms des invités ne quittent pas le téléphone.
+    expect(text).not.toContain('Invité');
+    expect(getSettings().teams).toBeNull();
     expect(after.customGames).toEqual(before.customGames);
     expect(getSettings()).toMatchObject({
       theme: 'night',
       rounds: 15,
       catalogue: ['devinette'],
+      gameLevel: 3,
+      gameMode: 'voiture',
+      turnMode: 'turns',
       lastBackupAt: createdAt,
     });
   });
@@ -85,6 +115,25 @@ describe('Sauvegarde complète', () => {
     await restoreBackup(parseBackup(text), 'replace');
     expect((await db.players.toArray()).map((p) => p.name)).toEqual(['Léa', 'Sami']);
     expect(await db.customGames.count()).toBe(1);
+  });
+
+  it('garde les avatars, et en donne un aux joueurs d’une sauvegarde plus ancienne', async () => {
+    const id = await addPlayer('Léa', { animal: 'hibou', color: 'lilac' });
+    await addPlayer('Sami');
+    const text = await backupText();
+    await db.players.clear();
+    await restoreBackup(parseBackup(text), 'merge');
+    expect((await db.players.toArray()).find((p) => p.name === 'Léa')).toMatchObject({
+      animal: 'hibou',
+      color: 'lilac',
+    });
+
+    const data = JSON.parse(text);
+    for (const p of data.players) delete p.animal;
+    await restoreBackup(parseBackup(JSON.stringify(data)), 'replace');
+    const players = await db.players.toArray();
+    expect(players.map((p) => p.animal)).toEqual(['renard', 'ours']);
+    expect(players[0]).toMatchObject({ id, color: 'lilac' });
   });
 
   describe('fichier refusé, sans rien modifier', () => {
@@ -157,7 +206,7 @@ describe('Sauvegarde complète', () => {
       expect(players.map((p) => p.name)).toEqual(['LÉA', 'Sami']);
       const sami = players[1].id;
       const games = await db.games.toArray();
-      expect(games).toHaveLength(2);
+      expect(games).toHaveLength(3);
       expect(games[0].playerIds).toEqual([lea, sami]);
       expect((await db.customGames.toArray()).map((g) => g.name)).toEqual([
         'Devinettes de Léa',
