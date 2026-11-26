@@ -39,7 +39,7 @@ Appareil : Poco F6, HyperOS 3, Chrome, appli installée.
 | 6   | Micro              | ❌       | Autorisation, enregistrement et création OK, mais aucun son pendant la partie : #141 |
 | 7   | Photo              | ❌       | « Ajouter des questions » ne fait rien dans un jeu photo : #142                      |
 | 8   | Partage de fichier | —        |                                                                                      |
-| 9   | Dessin au doigt    | —        |                                                                                      |
+| 9   | Dessin au doigt    | ✅       |                                                                                      |
 | 10  | Écran allumé       | ✅       |                                                                                      |
 | 11  | Remise à zéro      | ❌       | Page Étoiles vide après la remise à zéro, même après de nouvelles parties : #143     |
 | 12  | Pages longues      | ❌       | Espace Parent : on défile au-delà du contenu, la barre du bas remonte : #145         |
