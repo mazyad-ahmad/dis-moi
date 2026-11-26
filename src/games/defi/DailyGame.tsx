@@ -17,6 +17,8 @@ import { SongRound } from '../chanson/SongGame';
 import { DeckAnswer, ImageCard, QuestionCard, SoundCard } from '../deck/DeckGame';
 import { DrawingCanvas, type DrawingCanvasHandle } from '../dessin/DrawingCanvas';
 import { hintLadder, writtenHints } from '../hints';
+import { TreasureRound } from '../tresor/TreasureGame';
+import { TREASURE_ID, treasureWay } from '../tresor/treasure';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -145,7 +147,15 @@ function DailyRound({ day }: { day: string }) {
     <main className="screen">
       <GameHeader category={DAILY_NAME} title={source.name} />
       <p className="muted">Une carte surprise, la même toute la journée.</p>
-      <CardBody card={card} />
+      {source.game === TREASURE_ID && card.kind === 'question' ? (
+        <TreasureRound
+          item={card.item}
+          way={treasureWay('run', getSettings().gameMode)}
+          seconds={0}
+        />
+      ) : (
+        <CardBody card={card} />
+      )}
       <div className="spacer" />
       <AnswerBar
         onSkip={() => navigate('/')}

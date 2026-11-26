@@ -26,6 +26,7 @@ export const CATALOGUE_PACKS = [
   'devinette',
   'emotion',
   'emotion-mime',
+  'tresor',
 ];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
@@ -39,7 +40,10 @@ export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
     tint: pack.tint!,
     kind: pack.kind as DeckKind,
     items: deckItems(pack),
-    needs: needsOf(pack.kind, pack.moves ? { moves: true } : {}),
+    needs: needsOf(pack.kind, {
+      ...(pack.moves && { moves: true }),
+      ...(pack.still && { still: true }),
+    }),
     activities: pack.activities!,
     levels: levelsOf(pack.items),
     skill: pack.skill!,

@@ -44,6 +44,8 @@ export interface Pack {
   tint?: Tint;
   /** Le jeu fait bouger l'enfant (mime…) : pas proposé en mode Coucher (#42). */
   moves?: boolean;
+  /** Le jeu qui fait bouger a une version sans bouger, jouée au Coucher et en Voiture. */
+  still?: boolean;
   /** Jeux du catalogue (#137) : types du jeu (le premier le range) et ce qu'il fait travailler. */
   activities?: Activity[];
   skill?: string;
@@ -68,6 +70,7 @@ const PACK_FIELDS = new Set([
   'mark',
   'tint',
   'moves',
+  'still',
   'activities',
   'skill',
   'items',
@@ -184,6 +187,8 @@ export function validatePack(raw: unknown, file: string): Pack {
   if (pack.tint !== undefined && !TINTS.includes(pack.tint as Tint)) fail('teinte inconnue');
   if (pack.moves !== undefined && typeof pack.moves !== 'boolean')
     fail('« moves » : true ou false attendu');
+  if (pack.still !== undefined && !(pack.still === true && pack.moves === true))
+    fail('« still » : true, seulement pour un jeu qui fait bouger (« moves »)');
   if (
     pack.activities !== undefined &&
     !(

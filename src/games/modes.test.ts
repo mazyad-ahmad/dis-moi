@@ -22,7 +22,7 @@ describe('façons de jouer', () => {
   });
 
   it('Voiture : seulement des jeux oraux, rien à regarder', () => {
-    expect(suited('voiture')).toEqual(['chanson', 'animal', 'devinette']);
+    expect(suited('voiture')).toEqual(['chanson', 'animal', 'devinette', 'tresor']);
     for (const g of ALL.filter((g) => suitsMode(g.needs, 'voiture')))
       expect(g.needs!.looks).toBe(false);
   });
@@ -37,6 +37,7 @@ describe('façons de jouer', () => {
       'couleur',
       'devinette',
       'emotion',
+      'tresor',
     ]);
   });
 
@@ -55,7 +56,7 @@ describe('façons de jouer', () => {
 
   it('le défi du jour déclare aussi ses besoins', () => {
     const car = DAILY_SOURCES.filter((s) => suitsMode(s.needs, 'voiture')).map((s) => s.game);
-    expect(car).toEqual(['chanson', 'animal', 'devinette']);
+    expect(car).toEqual(['chanson', 'animal', 'devinette', 'tresor']);
   });
 
   it('Express : 3 manches ; Coucher : pas de minuteur', () => {

@@ -108,16 +108,18 @@
   l'autre (réglage `gameMode`, comme le niveau) et s'applique à la partie suivante.
 - **Express** : 3 manches (ou moins si le réglage de l'espace Parent est plus court).
 - **Coucher** : thème nuit imposé, volume doux imposé, pas de minuteur dans les dessins, pas de
-  jeu qui fait bouger (Mime ça ; plus tard la chasse au trésor). Fin en douceur : ni confettis
+  jeu qui fait bouger (Mime ça) ; la chasse au trésor s'y joue en version « sans courir ». Fin en douceur : ni confettis
   ni vibration de fête, la mascotte dort, « C'est l'heure de dormir. Bonne nuit ! », pas de
   bouton « Un autre jeu ».
 - **Voiture** : seulement des cartes orales (Quelle chanson ?, Quel animal ?, Devinettes, jeux
-  créés « Son » et « Question ») ; rien à regarder ni à dessiner.
+  créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à regarder ni à dessiner.
 - L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
   conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
 - Règle commune (`src/games/modes.ts`, fonction pure `suitsMode`) : chaque jeu déclare ce qu'il
   demande à l'enfant (`needs` : regarder l'écran, bouger), d'après son type de cartes et, pour un
-  pack, le champ `moves`. Un jeu qui ne déclare rien n'est proposé ni au Coucher ni en Voiture.
+  pack, le champ `moves`. Un jeu qui fait bouger mais a une version sans bouger (champ `still`
+  d'un pack, la chasse au trésor) est proposé au Coucher et en Voiture dans cette version
+  (`playsStill`). Un jeu qui ne déclare rien n'est proposé ni au Coucher ni en Voiture.
 - Le mode est noté dans la partie enregistrée (champ `mode`) et rappelé dans l'historique
   (« · Voiture »).
 
@@ -160,7 +162,8 @@
   la carte (emoji et nom ; une chanson a son emoji ; sans image, le texte de la réponse).
 - Couleurs, lettres et chiffres, jeux créés de type Image : l'enfant verrait la réponse, donc les
   choix (pastilles, glyphes, photos) **remplacent** l'image et le parent demande « Montre-moi… ».
-- Pas de choix dans les jeux de dessin ni dans Mime ça (ni Mime l’émotion), ni dans le Défi du jour. Ils marchent
+- Pas de choix dans les jeux de dessin, dans Mime ça (ni Mime l’émotion) ni dans la Chasse au
+  trésor, ni dans le Défi du jour. Ils marchent
   aussi dans le Grand Jeu.
 - Chaque choix est un bouton d'au moins 64 px, nommé pour le lecteur d'écran (« La vache »,
   « Lettre A », « Rouge »). Images : emoji dessinés par la police du téléphone, aucun fichier.
@@ -256,6 +259,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
 | **Quelle émotion ?** | Un visage (emoji) en grand, l'enfant nomme l'émotion. Voir « Les émotions ».                                                               |
 | **Mime l’émotion**   | L'écran montre à l'enfant l'émotion à mimer (visage + consigne), le parent devine. Voir « Les émotions ».                                  |
+| **Chasse au trésor** | « Trouve quelque chose de rouge » : l'enfant cherche dans la maison, le parent valide l'objet. Voir ci-dessous.                            |
 
 ### Les émotions (#58)
 
@@ -269,6 +273,28 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Mime l’émotion fait bouger (pas au Coucher) et n'a pas de choix « En montrant », comme Mime ça.
   Quelle émotion ? convient au Coucher ; en montrant, les visages au choix remplacent le visage.
 - Visages : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
+
+### Chasse au trésor (#60)
+
+- **60 consignes** « Trouve quelque chose… » sur les trois niveaux (20 chacun) : une couleur,
+  une forme, une matière, puis pour les grands une lettre initiale ou deux critères à la fois
+  (« rond et rouge »). Pack `src/content/catalogue-tresor.json`. Chaque carte donne au parent
+  des idées d'objets, derrière « Un indice ». Rien de dangereux à rapporter (ni verre, ni objet
+  lourd ou coupant).
+- **Deux façons de chercher**, choisies en haut de la manche : **Partout** (« Va le chercher
+  dans la maison, puis reviens le montrer ! ») ou **Sans courir**, pour le soir ou les petits
+  espaces (« Sans te lever : cherche des yeux et montre-le du doigt »). Le choix est gardé pour
+  la partie. Au **Coucher** et en **Voiture**, seule la version sans courir est jouée.
+- **Minuteur facultatif** (même compte à rebours que Dessine ça, en pause écran éteint) : le
+  parent le lance s'il veut, 1 min partout, 30 s sans courir, aucun au Coucher. À zéro, deux
+  tintements et « Le temps est fini, ce n'est pas grave : le parent décide » ; **Trouvé**
+  rapporte toujours l'étoile.
+- **Musique d'attente** facultative (éteinte par défaut) pendant le minuteur : une petite boucle
+  écrite pour l'appli, jouée par le synthétiseur des chansons (aucun fichier, aucun droit tiers),
+  coupée à zéro et à la manche suivante.
+- Pas de « Répondre en montrant » (l'enfant montre l'objet lui-même). Dans le Grand Jeu et le
+  Défi du jour, la carte se joue avec sa consigne, partout (sans courir au Coucher et en
+  Voiture) ; sans minuteur dans le Défi du jour.
 
 ### Le Grand Jeu (#41)
 
@@ -476,7 +502,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
-   Quelle émotion ?, Mime l’émotion)
+   Quelle émotion ?, Mime l’émotion, Chasse au trésor)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

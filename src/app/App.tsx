@@ -20,6 +20,8 @@ import { customDeck, parseCustomRouteId, useCustomGame } from '../data/customGam
 import { findCatalogueGame } from '../games/catalogue/catalogue';
 import { DeckGame } from '../games/deck/DeckGame';
 import { DailyGame } from '../games/defi/DailyGame';
+import { TreasureGame } from '../games/tresor/TreasureGame';
+import { TREASURE_ID } from '../games/tresor/treasure';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -89,7 +91,11 @@ function GameScreen({ id }: { id: string }) {
   if (catalogue)
     return (
       <ModeGuard title={catalogue.name} needs={catalogue.needs}>
-        <DeckGame deck={catalogue} />
+        {catalogue.id === TREASURE_ID ? (
+          <TreasureGame game={catalogue} />
+        ) : (
+          <DeckGame deck={catalogue} />
+        )}
       </ModeGuard>
     );
   const custom = parseCustomRouteId(id);

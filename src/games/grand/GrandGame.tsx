@@ -14,6 +14,8 @@ import { glyphPool } from '../lettres/bank';
 import { GlyphRound } from '../lettres/LettersGame';
 import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
+import { TreasureRound } from '../tresor/TreasureGame';
+import { TREASURE_ID, treasureSeconds, treasureWay } from '../tresor/treasure';
 import { useSaved } from '../session';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
@@ -120,6 +122,9 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   const [seconds] = useState(() =>
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
   );
+  // Chasse au trésor (#60) : partout dans la maison, sauf au Coucher et en Voiture.
+  const [mode] = useState(() => getSettings().gameMode);
+  const hunt = treasureWay('run', mode);
   // Dernière manche déjà annoncée par l'écran-éclair.
   const [announced, setAnnounced] = useState(0);
   const go = useCallback(() => setAnnounced(round), [round]);
@@ -164,7 +169,15 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
         {card.type === 'glyph' && (
           <GlyphRound key={round} card={card.glyph} pool={glyphPool(card.glyph)} />
         )}
-        {card.type === 'deck' && (
+        {card.type === 'deck' && game.id === TREASURE_ID && (
+          <TreasureRound
+            key={round}
+            item={card.item}
+            way={hunt}
+            seconds={treasureSeconds(hunt, mode)}
+          />
+        )}
+        {card.type === 'deck' && game.id !== TREASURE_ID && (
           <DeckRound key={round} kind={card.kind} item={card.item} pool={deckPool(game)} />
         )}
       </TurnPlayer.Provider>
