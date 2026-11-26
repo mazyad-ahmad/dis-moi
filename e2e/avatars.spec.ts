@@ -29,5 +29,10 @@ test('choisir l’animal d’un enfant, le changer et le retrouver sur l’accue
   // Gardé sur le téléphone : toujours là après un rechargement.
   await page.goto('./#/');
   await page.reload();
-  await expect(page.getByRole('img', { name: 'Léa, renard' })).toBeVisible();
+  // Sur l'accueil, l'avatar est dans la pastille « Qui joue ? » (#37), nommée par le prénom.
+  await expect(
+    page
+      .getByRole('button', { name: 'Léa', exact: true })
+      .getByRole('img', { name: 'Léa, renard', includeHidden: true }),
+  ).toBeVisible();
 });

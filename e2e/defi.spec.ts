@@ -29,9 +29,9 @@ test('défi du jour : une étoile bonus, puis un nouveau défi après minuit', a
 
   await page.getByRole('link', { name: 'Accueil' }).click();
   await expect(card).toContainText('Réussi ! À demain pour une nouvelle surprise.');
-  await page.getByRole('link', { name: 'Étoiles' }).click();
+  await page.getByRole('link', { name: 'Étoiles', exact: true }).click();
   await expect(page.getByText('Défi du jour').first()).toBeVisible();
-  await page.getByRole('link', { name: 'Jeux' }).click();
+  await page.getByRole('link', { name: 'Jeux', exact: true }).click();
 
   // Minuit passe, appli ouverte : un nouveau défi, sans un mot sur la veille.
   await page.clock.runFor(15 * 60_000);
@@ -44,7 +44,7 @@ test('défi du jour : une étoile bonus, puis un nouveau défi après minuit', a
 test('le parent masque le défi du jour', async ({ page }) => {
   await page.goto('./#/parent');
   await page.getByRole('group', { name: 'Défi du jour' }).getByText('Masqué').click();
-  await page.getByRole('link', { name: 'Jeux' }).click();
+  await page.getByRole('link', { name: 'Jeux', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'On joue à quoi ?' })).toBeVisible();
   await expect(page.locator('.daily-card')).toHaveCount(0);
 });

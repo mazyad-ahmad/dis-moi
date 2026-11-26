@@ -44,8 +44,9 @@ test('jeu créé pour les grands : rangé sous « Pour d’autres âges » quand
     .getByText('7 ans et plus', { exact: true })
     .click();
   await page.getByRole('button', { name: 'Ajouter les questions' }).click();
-  await page.getByLabel('Question').fill('Capitale de la France ?');
-  await page.getByLabel('Réponse').fill('Paris');
+  // Le formulaire de création a aussi un choix « Question » : on vise le champ de l'éditeur.
+  await page.getByRole('textbox', { name: 'Question' }).fill('Capitale de la France ?');
+  await page.getByRole('textbox', { name: 'Réponse' }).fill('Paris');
   await page.getByRole('button', { name: 'Ajouter la carte' }).click();
 
   await page.goto('./');

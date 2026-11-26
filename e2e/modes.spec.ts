@@ -31,7 +31,7 @@ test('Express : 3 manches, notées dans l’historique', async ({ page }) => {
   }
   await expect(page.getByRole('heading', { name: '3 étoiles gagnées ensemble !' })).toBeVisible();
   await page.getByRole('link', { name: 'Accueil' }).click();
-  await page.getByRole('link', { name: 'Étoiles' }).click();
+  await page.getByRole('link', { name: 'Étoiles', exact: true }).click();
   await expect(
     page.getByRole('region', { name: 'Dernières parties' }).getByText(/Express/),
   ).toBeVisible();
