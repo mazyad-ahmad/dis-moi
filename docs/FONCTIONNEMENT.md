@@ -9,6 +9,12 @@
 - Le parent valide : **Trouvé** (gagne une étoile) ou **Pas encore / Passer**.
 - Les zones « **Pour le parent** » (réponse, indice, consigne) sont fermées par défaut :
   la réponse ne s'affiche qu'après « Voir la réponse ».
+- **Indices en escalier** : quand l'enfant sèche, « Encore un indice » en montre un de plus à
+  chaque appui, jamais la réponse : d'abord les indices écrits de la carte (`hint`, puis la liste
+  facultative `hints`), puis « Ça commence par « V » » (première lettre du mot à deviner, articles
+  sautés), généré pour toute carte. Dans « Quelle chanson ? », un indice fait aussi passer
+  l'extrait au ralenti (mêmes notes, tempo × 0,7). Le bouton disparaît une fois la réponse vue.
+  Pas de pénalité : **Trouvé** rapporte une étoile, quel que soit le nombre d'indices.
 
 ## Déroulé d'une partie (proposition)
 

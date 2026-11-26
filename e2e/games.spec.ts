@@ -41,3 +41,15 @@ test('Quelle lettre : partie complète jusqu’au résultat', async ({ page }) =
   await page.getByRole('link', { name: 'Accueil' }).click();
   await expect(page.getByRole('heading', { name: 'On joue à quoi ?' })).toBeVisible();
 });
+
+test('Devinettes : un indice de plus à chaque appui, jamais la réponse', async ({ page }) => {
+  await page.goto('./#/jeu/devinette');
+  const parent = page.getByRole('region', { name: 'Pour le parent' });
+  await expect(parent.getByText(/^Indice :/)).toHaveCount(1);
+  const more = page.getByRole('button', { name: 'Encore un indice' });
+  while (await more.isVisible()) await more.click();
+  await expect(parent.getByText(/^Indice : Ça commence par « .+ »$/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Voir la réponse' })).toBeVisible();
+  await page.getByRole('button', { name: 'Trouvé' }).click();
+  await expect(page.getByLabel('1 étoile')).toBeVisible();
+});

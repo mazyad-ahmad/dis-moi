@@ -17,6 +17,7 @@ interface FileItem {
   answer: string;
   text?: string;
   hint?: string;
+  hints?: string[];
   emoji?: string;
   color?: string;
   image?: string;
@@ -64,6 +65,13 @@ function optionalText(value: unknown): string | undefined {
   return value;
 }
 
+function optionalTextList(value: unknown): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value) || value.some((v) => typeof v !== 'string'))
+    throw new CustomGameError(INVALID);
+  return value as string[];
+}
+
 /** Jeu mis en forme pour un fichier (aussi repris tel quel dans une sauvegarde complète). */
 export async function encodeGame(
   game: Pick<CustomGame, 'name' | 'kind' | 'items'>,
@@ -73,6 +81,7 @@ export async function encodeGame(
     const item: FileItem = { answer: it.answer };
     if (it.text) item.text = it.text;
     if (it.hint) item.hint = it.hint;
+    if (it.hints?.length) item.hints = it.hints;
     if (it.emoji) item.emoji = it.emoji;
     if (it.color) item.color = it.color;
     if (it.image) item.image = await blobToDataUrl(it.image);
@@ -140,6 +149,7 @@ export function decodeGame(data: unknown): Pick<CustomGame, 'name' | 'kind' | 'i
       answer: e.answer,
       text: optionalText(e.text),
       hint: optionalText(e.hint),
+      hints: optionalTextList(e.hints),
       emoji: optionalText(e.emoji),
       color: optionalText(e.color),
       image: kind === 'image' ? dataUrlToBlob(e.image, 'image') : undefined,

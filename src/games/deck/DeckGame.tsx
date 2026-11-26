@@ -5,6 +5,7 @@ import { GameResult } from '../../components/GameResult';
 import { IconEar, IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { DrawingGame } from '../dessin/DrawingGame';
+import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
 import { shuffle } from '../shuffle';
@@ -143,14 +144,17 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         {deck.kind === 'sound' && <SoundCard item={item} />}
         {deck.kind === 'image' && <ImageCard item={item} />}
         {deck.kind === 'question' && <QuestionCard item={item} />}
-        <ParentBlock hidden={answerOf(item)}>
+        {/* Premier indice écrit visible d'emblée, les suivants à la demande. */}
+        <ParentBlock
+          hidden={answerOf(item)}
+          hints={hintLadder(item)}
+          openHints={writtenHints(item).length ? 1 : 0}
+        >
           {soundToImitate && (
             <>
               À imiter : <strong>{item.text}</strong>
-              <br />
             </>
           )}
-          {item.hint && <>Indice : {item.hint}</>}
         </ParentBlock>
       </div>
       <div className="spacer" />

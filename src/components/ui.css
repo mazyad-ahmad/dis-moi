@@ -163,6 +163,18 @@
 .parent-block__body {
   color: var(--ink);
 }
+.parent-block__hints {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--ink);
+}
+.parent-block__hints:empty {
+  display: none;
+}
+.parent-block__hints p {
+  margin: 0;
+}
 
 /* ---------- En-têtes ---------- */
 .game-header {

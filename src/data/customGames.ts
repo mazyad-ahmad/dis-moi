@@ -6,6 +6,8 @@ import { requestPersistentStorage } from './storage';
 export const MAX_GAME_NAME = 30;
 export const MAX_ITEMS = 50;
 export const MAX_TEXT = 140;
+/** Indices écrits en plus de « hint » sur une carte (#34). */
+export const MAX_HINTS = 3;
 /** Préfixe des identifiants de route des jeux créés : #/jeu/perso-12. */
 export const CUSTOM_PREFIX = 'perso-';
 
@@ -28,6 +30,11 @@ export function cleanItem(kind: DeckKind, raw: DeckItem): DeckItem {
   const hint = clean(raw.hint, MAX_TEXT);
   if (text && kind !== 'draw') item.text = text;
   if (hint && kind !== 'draw') item.hint = hint;
+  const hints = (raw.hints ?? [])
+    .map((h) => clean(h, MAX_TEXT))
+    .filter(Boolean)
+    .slice(0, MAX_HINTS);
+  if (hints.length && kind !== 'draw') item.hints = hints;
   if (raw.image && kind === 'image') item.image = raw.image;
   // Visuels intégrés (cartes du catalogue, packs partagés) : emoji ou couleur montrés en grand.
   const emoji = clean(raw.emoji, 16);
