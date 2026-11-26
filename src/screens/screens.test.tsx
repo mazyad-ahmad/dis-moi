@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../data/db';
+import { addPlayer, listActivePlayers } from '../data/players';
 import { loadSettings } from '../data/settings';
 
 beforeEach(async () => {
@@ -33,7 +34,45 @@ it('ajoute des joueurs et les affiche sur l’accueil', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent('Léa est déjà dans la liste.');
 
   await user.click(screen.getByRole('link', { name: 'Retour' }));
-  expect(await screen.findByText('Léa · Sami')).toBeInTheDocument();
+  const group = await screen.findByRole('group', { name: 'Qui joue ?' });
+  expect(within(group).getByRole('button', { name: 'Léa' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  expect(within(group).getByRole('button', { name: 'Sami' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+});
+
+it('choisit qui joue aujourd’hui avec les pastilles, au clavier, et garde le choix', async () => {
+  const user = userEvent.setup();
+  const lea = await addPlayer('Léa');
+  const sami = await addPlayer('Sami');
+  const view = render(<App />);
+  const samiBtn = await screen.findByRole('button', { name: 'Sami' });
+
+  // Tab jusqu'à la pastille de Sami, puis Espace : elle n'est plus appuyée.
+  samiBtn.focus();
+  await user.keyboard(' ');
+  expect(samiBtn).toHaveAttribute('aria-pressed', 'false');
+  expect(screen.getByRole('button', { name: 'Léa' })).toHaveAttribute('aria-pressed', 'true');
+  await waitFor(async () => expect((await listActivePlayers()).map((p) => p.id)).toEqual([lea]));
+
+  // Le choix est gardé d'une partie à l'autre (et après un rechargement).
+  view.unmount();
+  await loadSettings();
+  render(<App />);
+  expect(await screen.findByRole('button', { name: 'Sami' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Sami' }));
+  expect(screen.getByRole('button', { name: 'Sami' })).toHaveAttribute('aria-pressed', 'true');
+  await waitFor(async () =>
+    expect((await listActivePlayers()).map((p) => p.id)).toEqual([lea, sami]),
+  );
 });
 
 it('choisit l’animal à la création, le change ensuite, et l’affiche sur l’accueil', async () => {
@@ -57,7 +96,7 @@ it('choisit l’animal à la création, le change ensuite, et l’affiche sur l�
   ).toBeInTheDocument();
 
   await user.click(screen.getByRole('link', { name: 'Retour' }));
-  expect(await screen.findByRole('img', { name: 'Léa, renard' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: 'Léa' })).toHaveTextContent('🦊');
 });
 
 it('niveau de la partie sur l’accueil (Tous par défaut) et niveau de chaque joueur', async () => {

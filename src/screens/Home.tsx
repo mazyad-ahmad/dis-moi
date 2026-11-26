@@ -6,7 +6,7 @@ import { Logo } from '../components/Logo';
 import { Mascot } from '../components/Mascot';
 import { useNightTheme } from '../components/useNightTheme';
 import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
-import { usePlayers } from '../data/players';
+import { setPlayerActive, usePlayers } from '../data/players';
 import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
 import type { GameInfo } from '../games/registry';
@@ -29,6 +29,7 @@ function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
 
 export function Home() {
   const players = usePlayers();
+  const { absentPlayers } = useSettings();
   const games = useHomeGames();
   const { over } = useSeance();
   const night = useNightTheme();
@@ -55,24 +56,43 @@ export function Home() {
       </div>
 
       <Card className="players-card">
-        <span className="players-card__names">
-          <span className="eyebrow">Joueurs</span>
-          {players === undefined ? (
-            <strong>&nbsp;</strong>
-          ) : players.length ? (
-            <>
-              <span className="avatar-row">
-                {players.map((p) => (
-                  <Avatar key={p.id} player={p} size="sm" />
-                ))}
-              </span>
-              <strong>{players.map((p) => p.name).join(' · ')}</strong>
-            </>
-          ) : (
-            <span className="muted">Ajoute le prénom des enfants</span>
-          )}
-        </span>
-        <a href={href('/joueurs')}>{players?.length ? 'Modifier' : 'Ajouter'}</a>
+        <div className="players-card__head">
+          <span className="players-card__names">
+            <span className="eyebrow" id="players-label">
+              {players?.length ? 'Qui joue ?' : 'Joueurs'}
+            </span>
+            {players === undefined ? (
+              <strong>&nbsp;</strong>
+            ) : (
+              !players.length && <span className="muted">Ajoute le prénom des enfants</span>
+            )}
+          </span>
+          <a href={href('/joueurs')}>{players?.length ? 'Modifier' : 'Ajouter'}</a>
+        </div>
+        {!!players?.length && (
+          <div className="player-toggles" role="group" aria-labelledby="players-label">
+            {players.map((p) => {
+              const on = !absentPlayers.includes(p.id);
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`player-toggle player-toggle--${p.color}`}
+                  aria-pressed={on}
+                  onClick={() => void setPlayerActive(p.id, !on)}
+                >
+                  <span aria-hidden="true">
+                    <Avatar player={p} size="sm" />
+                  </span>
+                  <span className="player-toggle__mark" aria-hidden="true">
+                    {on ? '✓' : ''}
+                  </span>
+                  <span>{p.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </Card>
 
       {/* Niveaux par âge (#40) : le niveau de la partie se règle au lancement. */}

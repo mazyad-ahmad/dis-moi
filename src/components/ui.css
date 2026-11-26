@@ -257,6 +257,11 @@
 }
 .players-card {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.players-card__head {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -278,6 +283,56 @@
   font-weight: 600;
   padding: 10px 4px;
   flex: none;
+}
+/* Pastilles « Qui joue ? » (#37) : appuyée = le joueur joue aujourd'hui. */
+.player-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.player-toggle {
+  min-height: 48px;
+  padding: 0 16px 0 10px;
+  border-radius: var(--radius-full);
+  border: 2px dashed var(--ink-muted);
+  background: var(--paper);
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.player-toggle__mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+}
+.player-toggle[aria-pressed='true'] {
+  border: 2px solid var(--forest);
+  color: var(--ink);
+  font-weight: 700;
+}
+.player-toggle--meadow[aria-pressed='true'] {
+  background: var(--meadow);
+}
+.player-toggle--sky[aria-pressed='true'] {
+  background: var(--sky);
+}
+.player-toggle--dawn[aria-pressed='true'] {
+  background: var(--dawn);
+}
+.player-toggle:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
 }
 .game-grid {
   display: grid;

@@ -76,6 +76,12 @@
 ## Plusieurs enfants (proposition)
 
 - Les prénoms sont enregistrés une fois (6 maximum, 20 caractères, pas de doublon).
+- **Qui joue aujourd'hui ?** (#37) : sur l'accueil, chaque prénom est une pastille à appuyer
+  pour l'activer ou la désactiver (bouton « appuyé / non appuyé », utilisable au clavier). Un
+  nouveau joueur est actif. Le choix est gardé d'une partie à l'autre (réglage local
+  `absentPlayers`, hors sauvegarde) ; seuls les joueurs actifs sont enregistrés avec la partie.
+  Sans joueur enregistré, rien ne change. Pour les autres modes : `useActivePlayers()` /
+  `listActivePlayers()` de `src/data/players.ts`.
 - Par défaut, on joue **en équipe**.
 - Option ultérieure : **tour par tour**, le prénom de l'enfant dont c'est le tour s'affiche
   en haut de la manche.
@@ -156,7 +162,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   après un rafraîchissement, elle reprend et continue le même enregistrement, sans doublon.
   Elle est effacée en fin de partie, quand on quitte le jeu et à la fermeture de l'onglet.
   Dans « Dessine ça », le mot est gardé ; le minuteur et le dessin repartent à zéro.
-- Données gardées : jeu, date, manches jouées, étoiles, joueurs présents (sur l'appareil uniquement).
+- Données gardées : jeu, date, manches jouées, étoiles, joueurs actifs au lancement (sur l'appareil uniquement).
 
 ## Sons d'interface
 
@@ -273,7 +279,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 ## Écrans
 
-1. **Accueil** — titre « On joue à quoi ? », joueurs (avatars et prénoms, modifiables), grille des jeux,
+1. **Accueil** — titre « On joue à quoi ? », joueurs (pastilles « Qui joue ? » avec avatar et prénom, modifiables), grille des jeux,
    rappel de la dernière partie, barre de navigation _Jeux · Étoiles · Parent_.
 2. **Quelle chanson ?** — manche _n_ sur 10, compteur d'étoiles, lecteur d'extrait (10 s),
    bloc parent avec titre caché + indice, bouton « Voir la réponse ».

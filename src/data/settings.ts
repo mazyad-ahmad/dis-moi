@@ -29,6 +29,8 @@ export interface Settings {
   volume: Volume;
   /** Niveau de la partie en équipe (#40), choisi sur l'accueil ; `null` : tous niveaux. */
   gameLevel: Level | null;
+  /** Joueurs qui ne jouent pas aujourd'hui (#37) ; un nouveau joueur joue par défaut. */
+  absentPlayers: number[];
 }
 
 export type Volume = 'soft' | 'normal';
@@ -51,6 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
   praise: true,
   volume: 'soft',
   gameLevel: null,
+  absentPlayers: [],
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

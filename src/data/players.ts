@@ -8,6 +8,7 @@ import {
   type PlayerAnimal,
   type PlayerColor,
 } from './db';
+import { getSettings, setSetting, useSettings } from './settings';
 
 export const MAX_PLAYERS = 6;
 export const MAX_NAME_LENGTH = 20;
@@ -91,6 +92,12 @@ export async function renamePlayer(id: number, rawName: string): Promise<void> {
 
 export async function removePlayer(id: number): Promise<void> {
   await db.players.delete(id);
+  const { absentPlayers } = getSettings();
+  if (absentPlayers.includes(id))
+    await setSetting(
+      'absentPlayers',
+      absentPlayers.filter((a) => a !== id),
+    );
 }
 
 export async function setPlayerAvatar(id: number, avatar: Partial<Avatar>): Promise<void> {
@@ -105,4 +112,32 @@ export async function setPlayerLevel(id: number, level: Level | null): Promise<v
 /** `undefined` tant que la base n'a pas répondu. */
 export function usePlayers(): Player[] | undefined {
   return useLiveQuery(listPlayers, []);
+}
+
+/* ---------- Joueurs actifs (#37) ----------
+ * Sur l'accueil, le parent choisit qui joue aujourd'hui. La sélection est gardée dans les
+ * réglages (liste des absents) d'une partie à l'autre ; seuls les joueurs actifs sont
+ * enregistrés avec la partie. */
+
+/** Joueurs actifs, dans l'ordre de la liste. */
+export function activePlayers(players: Player[], absent: readonly number[]): Player[] {
+  return players.filter((p) => !absent.includes(p.id));
+}
+
+/** Joueurs qui jouent aujourd'hui (tous, si personne n'a été désactivé). */
+export async function listActivePlayers(): Promise<Player[]> {
+  return activePlayers(await listPlayers(), getSettings().absentPlayers);
+}
+
+/** Active ou désactive un joueur pour les prochaines parties. */
+export async function setPlayerActive(id: number, active: boolean): Promise<void> {
+  const absent = getSettings().absentPlayers.filter((a) => a !== id);
+  await setSetting('absentPlayers', active ? absent : [...absent, id]);
+}
+
+/** Joueurs actifs ; `undefined` tant que la base n'a pas répondu. */
+export function useActivePlayers(): Player[] | undefined {
+  const players = usePlayers();
+  const { absentPlayers } = useSettings();
+  return players && activePlayers(players, absentPlayers);
 }

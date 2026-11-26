@@ -1,13 +1,14 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type GameRecord } from './db';
+import { listActivePlayers } from './players';
 import { requestPersistentStorage } from './storage';
 
 type NewRecord = Omit<GameRecord, 'id' | 'startedAt' | 'updatedAt' | 'playerIds'>;
 
-/** Crée la partie à la première manche jouée, avec les joueurs présents. */
+/** Crée la partie à la première manche jouée, avec les joueurs actifs (choisis sur l'accueil). */
 export async function startRecord(data: NewRecord): Promise<number> {
   const now = Date.now();
-  const playerIds = (await db.players.toArray()).map((p) => p.id);
+  const playerIds = (await listActivePlayers()).map((p) => p.id);
   // Première partie : l'appli a désormais quelque chose à garder.
   void requestPersistentStorage();
   return db.games.add({ ...data, startedAt: now, updatedAt: now, playerIds } as GameRecord);
