@@ -38,11 +38,15 @@ export function Privacy() {
       </Card>
 
       <Card>
-        <h2 className="h3">Micro et photos</h2>
+        <h2 className="h3">Micro, photos et voix</h2>
         <p>
           Le micro et les photos ne servent qu'à « Créer mon propre jeu », quand le parent ajoute un
           son ou une image à une carte. Android demande alors l'autorisation ; on peut la refuser et
           créer des cartes sans son ni photo.
+        </p>
+        <p>
+          Le bouton « Lire » utilise seulement une voix française installée sur le téléphone : le
+          texte lu n’est envoyé nulle part. Sans voix installée, le bouton n’apparaît pas.
         </p>
       </Card>
 

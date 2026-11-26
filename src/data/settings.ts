@@ -1,4 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react';
+import type { SpeechSpeed } from '../voice/speech';
 import { db, type Theme } from './db';
 
 export interface Settings {
@@ -17,7 +18,12 @@ export interface Settings {
   sessionMinutes: number;
   /** Vibrations légères sur « Trouvé », à la fin du minuteur et de la partie (#31). */
   vibrations: boolean;
+  /** Bouton « Lire » des jeux (#35) : vitesse de lecture, ou « off » pour le masquer. */
+  readAloud: ReadAloud;
 }
+
+export type ReadAloud = 'off' | SpeechSpeed;
+export const READ_ALOUD_CHOICES = ['normal', 'slow', 'off'] as const satisfies readonly ReadAloud[];
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'auto',
@@ -28,6 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
   parentLock: false,
   sessionMinutes: 0,
   vibrations: true,
+  readAloud: 'normal',
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

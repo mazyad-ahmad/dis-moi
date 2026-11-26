@@ -1242,3 +1242,24 @@ a.pill {
 .segmented--5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
+
+/* ---------- Lecture à voix haute (#35) ---------- */
+.read-aloud {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  padding: 0 16px;
+  margin-top: 8px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.word-card .read-aloud {
+  margin-top: 6px;
+}

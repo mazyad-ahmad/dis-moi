@@ -13,18 +13,49 @@ import { extend, resetSeance, SESSION_CHOICES, useSeance } from '../data/seance'
 import {
   DRAW_SECONDS_CHOICES,
   loadSettings,
+  READ_ALOUD_CHOICES,
   ROUND_CHOICES,
   setSetting,
   useSettings,
 } from '../data/settings';
 import { clock } from '../games/format';
 import { promptInstall, usePwa } from '../pwa/pwa';
+import { useFrenchVoice } from '../voice/speech';
 
 const THEMES: { value: Theme; label: string }[] = [
   { value: 'auto', label: 'Auto' },
   { value: 'light', label: 'Jour' },
   { value: 'night', label: 'Nuit' },
 ];
+
+const READ_ALOUD_LABELS = { normal: 'Normale', slow: 'Lente', off: 'Non' } as const;
+
+/** Lecture à voix haute (#35) : proposée seulement avec une voix française locale. */
+function ReadAloudSetting() {
+  const { readAloud } = useSettings();
+  const voice = useFrenchVoice();
+  if (!voice)
+    return (
+      <section className="setting" aria-labelledby="read-aloud-title">
+        <h2 id="read-aloud-title" className="eyebrow">
+          Lecture à voix haute
+        </h2>
+        <p className="muted">
+          Aucune voix française installée sur ce téléphone : le bouton « Lire » n’apparaît pas.
+        </p>
+      </section>
+    );
+  return (
+    <Choice
+      legend="Lecture à voix haute"
+      name="read-aloud"
+      value={readAloud}
+      options={READ_ALOUD_CHOICES.map((v) => ({ value: v, label: READ_ALOUD_LABELS[v] }))}
+      onChange={(v) => void setSetting('readAloud', v)}
+      hint="Bouton « Lire » sur les questions, les mots et les consignes, avec la voix du téléphone, sans réseau."
+    />
+  );
+}
 
 const LOCK_CHOICES = [
   { value: 'off', label: 'Désactivé' },
@@ -186,6 +217,8 @@ export function Parent() {
         options={DRAW_SECONDS_CHOICES.map((n) => ({ value: n, label: clock(n) }))}
         onChange={(v) => void setSetting('drawSeconds', v)}
       />
+
+      <ReadAloudSetting />
 
       <Choice
         legend="Vibrations"

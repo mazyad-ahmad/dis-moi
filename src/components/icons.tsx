@@ -109,6 +109,13 @@ export const IconEar = (p: P) => (
     <path d="M10 9a2 2 0 0 1 4 0c0 1.2-1 1.6-1.6 2.4" />
   </svg>
 );
+export const IconSpeaker = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 10v4h4l5 4V6L8 10z" />
+    <path d="M16.5 9a4 4 0 0 1 0 6" />
+    <path d="M19 6.5a7.5 7.5 0 0 1 0 11" />
+  </svg>
+);
 export const IconCamera = (p: P) => (
   <svg {...base(p)}>
     <path d="M4 8h3l2-3h6l2 3h3v11H4z" />

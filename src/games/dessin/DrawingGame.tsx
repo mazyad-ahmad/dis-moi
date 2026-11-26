@@ -3,6 +3,7 @@ import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
+import { ReadAloud } from '../../components/ReadAloud';
 import { IconRefresh, IconTimer, IconTrash } from '../../components/icons';
 import { vibrate } from '../../pwa/haptics';
 import { clock } from '../format';
@@ -107,6 +108,7 @@ function DrawingSession({
         <div key={index} className="round-in">
           <span className="word-card__label">Le parent lit à voix haute</span>
           <strong className="word-card__word">{word}</strong>
+          <ReadAloud text={word} />
         </div>
         <button
           type="button"

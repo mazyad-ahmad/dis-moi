@@ -160,6 +160,20 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   l'écran. Le temps est gardé sur le téléphone : ni un rafraîchissement ni la fermeture de
   l'appli ne le remettent à zéro.
 
+## Lecture à voix haute
+
+- Bouton **« Lire »** sous la question (jeux à questions, Devinettes), le mot (Dessine ça, mots à
+  dessiner) et la consigne (Quelle lettre, quel chiffre ?), lu par la synthèse vocale du téléphone
+  (`speechSynthesis`, module `src/voice/speech.ts`). Un second appui arrête la lecture.
+- Seule une voix française **installée sur le téléphone** est utilisée (`localService`) : une voix
+  en ligne enverrait le texte à un serveur. Sans voix française locale, le bouton n'apparaît pas et
+  l'espace Parent l'explique.
+- La lecture s'arrête au changement de manche, avec « Autre mot » et en quittant la partie.
+- Réglage dans l'espace Parent : vitesse **Normale** (par défaut) ou **Lente**, ou **Non** pour
+  masquer le bouton.
+- Pas de bouton sur ce que l'enfant doit deviner ou montrer (images, mime, bruits à imiter,
+  indices et réponses du parent).
+
 ## Écrans
 
 1. **Accueil** — titre « On joue à quoi ? », joueurs (prénoms, modifiables), grille des jeux,

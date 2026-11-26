@@ -4,6 +4,7 @@ import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { IconEar, IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
+import { ReadAloud } from '../../components/ReadAloud';
 import { DrawingGame } from '../dessin/DrawingGame';
 import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
@@ -98,6 +99,7 @@ function QuestionCard({ item }: { item: DeckItem }) {
     <section className="deck-card deck-card--question" aria-label="Question">
       <span className="word-card__label">Le parent lit à voix haute</span>
       <p className="deck-card__question">{item.text}</p>
+      {item.text && <ReadAloud text={item.text} />}
     </section>
   );
 }

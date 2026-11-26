@@ -6,6 +6,7 @@ import {
   DEFAULT_SETTINGS,
   DRAW_SECONDS_CHOICES,
   loadSettings,
+  READ_ALOUD_CHOICES,
   ROUND_CHOICES,
   setSetting,
   type Settings,
@@ -172,6 +173,8 @@ function readSettings(raw: unknown): Partial<Settings> {
     out.catalogue = raw.catalogue;
   if (isNumber(raw.lastBackupAt)) out.lastBackupAt = raw.lastBackupAt;
   if (typeof raw.vibrations === 'boolean') out.vibrations = raw.vibrations;
+  if ((READ_ALOUD_CHOICES as readonly unknown[]).includes(raw.readAloud))
+    out.readAloud = raw.readAloud as Settings['readAloud'];
   return out;
 }
 
