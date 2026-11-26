@@ -166,7 +166,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   (5 maximum, 10 s chacune) : elles remplacent alors la voix du téléphone. Elles sont jouées comme
   tout enregistrement du parent, au niveau commun (`playRecording`, voir « Volume »), restent dans
   le téléphone (IndexedDB, table `praises`), ne vont ni dans la sauvegarde ni dans un jeu
-  partagé, et partent avec « Effacer toutes les données ».
+  partagé, et partent avec « Effacer toutes les données ». Chacune peut être réécoutée ou
+  supprimée (après confirmation) ; une félicitation supprimée n’est plus jamais jouée.
 - Sans voix française locale ni enregistrement, la fonction n’est pas proposée : l’espace Parent
   propose seulement d’enregistrer (si le micro existe).
 - La félicitation ne retarde rien : elle part après le son d’interface, la manche suivante déjà

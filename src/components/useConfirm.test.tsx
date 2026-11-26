@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
+import { StrictMode, useState } from 'react';
 import { useConfirm } from './useConfirm';
 
 function Demo() {
@@ -73,5 +73,36 @@ describe('Dialogue de confirmation', () => {
     const { user, dialog } = await openDialog();
     await user.click(dialog);
     expect(await screen.findByText('false')).toBeInTheDocument();
+  });
+
+  // #147 : en développement (StrictMode), React monte, démonte puis remonte le dialogue.
+  // L'évènement « close » du premier démontage ne doit pas refermer le dialogue rouvert.
+  it.each([
+    ['tout de suite', (fire: () => void) => fire()],
+    ['un peu plus tard, comme le navigateur', (fire: () => void) => setTimeout(fire, 0)],
+  ])('reste ouvert en StrictMode, close envoyé %s', async (_, schedule) => {
+    const close = HTMLDialogElement.prototype.close;
+    HTMLDialogElement.prototype.close = function (this: HTMLDialogElement) {
+      if (!this.open) return;
+      this.open = false;
+      schedule(() => this.dispatchEvent(new Event('close')));
+    };
+    try {
+      const user = userEvent.setup();
+      render(
+        <StrictMode>
+          <Demo />
+        </StrictMode>,
+      );
+      await user.click(screen.getByRole('button', { name: 'Effacer' }));
+      const dialog = await screen.findByRole('alertdialog', { name: 'Tout effacer ?' });
+      await new Promise((r) => setTimeout(r, 20));
+      expect(dialog).toHaveAttribute('open');
+      expect(screen.queryByText('false')).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Tout effacer' }));
+      expect(await screen.findByText('true')).toBeInTheDocument();
+    } finally {
+      HTMLDialogElement.prototype.close = close;
+    }
   });
 });

@@ -128,3 +128,64 @@ test('sans voix, les félicitations du parent sont enregistrées, jouées puis e
   await expect(page.getByText('Toutes les données ont été effacées.')).toBeVisible();
   await expect(page.getByText('Félicitation 1')).toHaveCount(0);
 });
+
+// #147 : sur le téléphone, le parent supprime une félicitation (au doigt), après confirmation.
+test('le parent supprime une félicitation, qui n’est plus jouée', async ({ page }) => {
+  await phone(page, false);
+  await page.goto('./#/parent');
+  const group = page.getByRole('group', { name: 'Félicitations parlées' });
+  await group.getByRole('button', { name: 'Enregistrer une félicitation' }).tap();
+  await page.waitForTimeout(800);
+  await group.getByRole('button', { name: 'Arrêter' }).tap();
+  await expect(group.getByText('Félicitation 1')).toBeVisible();
+
+  // Le bouton est visible et assez grand pour un doigt.
+  const remove = group.getByRole('button', { name: 'Supprimer Félicitation 1' });
+  await remove.scrollIntoViewIfNeeded();
+  await expect(remove).toBeInViewport();
+  const box = (await remove.boundingBox())!;
+  expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
+
+  // « Annuler » la garde.
+  await remove.tap();
+  const dialog = page.getByRole('alertdialog', { name: 'Supprimer la félicitation 1 ?' });
+  await expect(dialog).toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Annuler' }).tap();
+  await expect(dialog).toHaveCount(0);
+  await expect(group.getByText('Félicitation 1')).toBeVisible();
+
+  // « Supprimer » l'enlève de la liste, puis du téléphone.
+  await remove.tap();
+  await dialog.getByRole('button', { name: 'Supprimer' }).tap();
+  await expect(dialog).toHaveCount(0);
+  await expect(group.getByText('Félicitation 1')).toHaveCount(0);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          new Promise<number>((resolve) => {
+            const open = indexedDB.open('dis-moi');
+            open.onsuccess = () => {
+              const req = open.result.transaction('praises').objectStore('praises').count();
+              req.onsuccess = () => {
+                open.result.close();
+                resolve(req.result);
+              };
+            };
+          }),
+      ),
+    )
+    .toBe(0);
+  await page.reload();
+  await expect(page.getByRole('group', { name: 'Félicitations parlées' })).toBeVisible();
+  await expect(page.getByText('Félicitation 1')).toHaveCount(0);
+
+  // Au « Trouvé », plus rien n'est joué (ni enregistrement, ni voix absente du téléphone).
+  await page.goto('./#/jeu/lettres');
+  await page.getByRole('button', { name: 'Trouvé' }).tap();
+  await page.waitForTimeout(1500);
+  expect(await page.evaluate(() => window.clips)).toBe(0);
+  expect(await said(page)).toEqual([]);
+});
