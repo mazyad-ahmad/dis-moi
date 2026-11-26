@@ -58,8 +58,9 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                    |
 | `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules |
 | `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                        |
+| `source`          | `melody` seulement, obligatoire : auteur ou origine de l'air et son statut (« …, domaine public »)                |
 | `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                             |
-| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`)                                                                  |
+| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`) ; pour `melody`, obligatoire : `comptine`, `noel` ou `classique` |
 | `lang`            | facultatif : langue de la carte si elle diffère du pack                                                           |
 
 Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ inconnu est refusé

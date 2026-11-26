@@ -49,6 +49,21 @@ describe('un pack invalide nomme la carte fautive', () => {
       'carte 1 (« Frère Jacques ») : air illisible',
     ],
     [
+      'source d’un air manquante',
+      withItem(songs, 2, { source: undefined }),
+      'carte 3 (« Ah ! vous dirai-je, maman ») : source (« source ») manquante',
+    ],
+    [
+      'thème d’un air manquant',
+      withItem(songs, 0, { tags: ['ferme'] }),
+      'carte 1 (« Frère Jacques ») : thème (« tags ») : un seul parmi comptine, noel, classique',
+    ],
+    [
+      'source hors d’un pack d’airs',
+      withItem(animals, 0, { source: 'Traditionnel' }),
+      'carte 1 (« La vache ») : « melody », « bpm » et « source »',
+    ],
+    [
       'bruit manquant',
       withItem(animals, 2, { text: undefined }),
       'carte 3 (« Le chien ») : bruit à imiter',

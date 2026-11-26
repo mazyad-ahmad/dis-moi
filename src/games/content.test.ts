@@ -1,3 +1,4 @@
+import { getPack, MELODY_THEMES } from '../content/packs';
 import { extractLength, noteFreq, parseMelody, schedule } from './chanson/melody';
 import { EXTRACT_SECONDS, SONGS } from './chanson/songs';
 import { DRAW_WORDS } from './dessin/words';
@@ -59,6 +60,33 @@ describe('mélodies', () => {
     const events = schedule(parseMelody('C4:30'), 60, 10);
     expect(extractLength(events)).toBe(10);
   });
+  it('a au moins 40 airs, chacun avec sa source et son thème (#45)', () => {
+    const items = getPack('chansons').items;
+    expect(items.length).toBeGreaterThanOrEqual(40);
+    for (const item of items) {
+      expect(item.source, item.answer).toMatch(/domaine public/);
+      expect(
+        item.tags?.filter((t) => (MELODY_THEMES as readonly string[]).includes(t)),
+      ).toHaveLength(1);
+    }
+    for (const theme of MELODY_THEMES)
+      expect(items.filter((i) => i.tags?.includes(theme)).length).toBeGreaterThanOrEqual(5);
+  });
+  it('a une partie entière d’airs à chaque niveau', () => {
+    for (const level of [1, 2, 3])
+      expect(SONGS.filter((s) => s.level === level).length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);
+  });
+  it.each(SONGS.map((s) => [s.title, s] as const))(
+    '« %s » est une mélodie chantable : notes lisibles, du do3 au do6',
+    (_, s) => {
+      const notes = parseMelody(s.melody);
+      const sounding = notes.filter((n) => n.freq !== null).map((n) => n.freq!);
+      expect(sounding.length).toBeGreaterThanOrEqual(8);
+      expect(Math.min(...sounding)).toBeGreaterThanOrEqual(noteFreq('C3') - 0.01);
+      expect(Math.max(...sounding)).toBeLessThanOrEqual(noteFreq('C6') + 0.01);
+      for (const n of notes) expect(n.beats).toBeLessThanOrEqual(8);
+    },
+  );
   it.each(SONGS.map((s) => [s.title, s] as const))(
     '« %s » donne un extrait de 6 à 10 s',
     (_, s) => {

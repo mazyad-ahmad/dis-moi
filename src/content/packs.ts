@@ -25,6 +25,8 @@ export interface PackItem extends Omit<DeckItem, 'image' | 'audio'> {
   melody?: string;
   /** Tempo de l'air, en battements par minute (pack « melody »). */
   bpm?: number;
+  /** Origine et statut de domaine public de l'air (pack « melody », #45). */
+  source?: string;
 }
 
 export interface Pack {
@@ -85,7 +87,11 @@ const ITEM_FIELDS = new Set([
   'lang',
   'melody',
   'bpm',
+  'source',
 ]);
+
+/** Thèmes des airs (#45) : chaque air en a un, dans « tags ». */
+export const MELODY_THEMES = ['comptine', 'noel', 'classique'] as const;
 
 const isText = (v: unknown, max = MAX_TEXT): v is string =>
   typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max;
@@ -114,6 +120,13 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
       if (typeof item.bpm !== 'number' || item.bpm < 40 || item.bpm > 240)
         return 'tempo (« bpm ») entre 40 et 240 attendu';
       if (typeof item.melody !== 'string') return 'air (« melody ») manquant';
+      if (!isText(item.source))
+        return 'source (« source ») manquante : auteur ou origine, et statut de domaine public';
+      if (
+        !Array.isArray(item.tags) ||
+        item.tags.filter((t) => (MELODY_THEMES as readonly unknown[]).includes(t)).length !== 1
+      )
+        return `thème (« tags ») : un seul parmi ${MELODY_THEMES.join(', ')}`;
       try {
         parseMelody(item.melody);
       } catch (e) {
@@ -155,8 +168,11 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     return 'thèmes (« tags ») : liste de mots en minuscules attendue';
   if (item.lang !== undefined && !(typeof item.lang === 'string' && /^[a-z]{2}$/.test(item.lang)))
     return 'langue (« lang ») : code à deux lettres attendu';
-  if (kind !== 'melody' && (item.melody !== undefined || item.bpm !== undefined))
-    return '« melody » et « bpm » sont réservés aux packs d’airs';
+  if (
+    kind !== 'melody' &&
+    (item.melody !== undefined || item.bpm !== undefined || item.source !== undefined)
+  )
+    return '« melody », « bpm » et « source » sont réservés aux packs d’airs';
   return kindRule(kind, item);
 }
 
@@ -237,9 +253,10 @@ export function getPack(id: string): Pack {
 /** Cartes d'un pack, au format des jeux à cartes. */
 export function deckItems(pack: Pack): DeckItem[] {
   return pack.items.map((item) => {
-    const copy: DeckItem & Partial<Pick<PackItem, 'melody' | 'bpm'>> = { ...item };
+    const copy: DeckItem & Partial<Pick<PackItem, 'melody' | 'bpm' | 'source'>> = { ...item };
     delete copy.melody;
     delete copy.bpm;
+    delete copy.source;
     return copy;
   });
 }

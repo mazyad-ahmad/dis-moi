@@ -211,8 +211,12 @@
 
 ### Contenu des chansons
 
-- Uniquement des **airs traditionnels ou du domaine public** (Frère Jacques, Au clair de la lune,
-  Joyeux anniversaire, Vive le vent, Ode à la joie…), liste dans `src/games/chanson/songs.ts`.
+- Uniquement des **airs traditionnels ou du domaine public** : 43 airs (Frère Jacques, Une souris
+  verte, Il est né le divin enfant, la Marche turque…), dans le pack `src/content/chansons.json`.
+- Chaque air note sa **source** (auteur mort depuis plus de 70 ans, ou air traditionnel) et un
+  **thème** : comptine, Noël ou classique. Les tests refusent un air sans source ni thème.
+- Seul l'air est joué, jamais de paroles : un air ancien reste libre même quand des paroles
+  françaises récentes existent (« Vive le vent »).
 - Les mélodies sont **jouées par un petit synthétiseur** dans l'appli (Web Audio), à partir
   d'une notation texte : aucun enregistrement, donc pas de droits d'interprète ni de fichier
   audio à télécharger, et le jeu marche hors ligne.
