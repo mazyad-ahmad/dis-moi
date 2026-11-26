@@ -13,6 +13,7 @@ test('remets dans l’ordre : déplacer les images au doigt et au clavier', asyn
     (await tiles.evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')!))).map((n) =>
       n.replace(/, place \d sur \d$/, ''),
     );
+  await expect(tiles.first()).toBeVisible();
   expect(await tiles.count()).toBeGreaterThanOrEqual(3);
 
   // Au doigt : toucher la dernière image, puis la première place.
@@ -21,12 +22,12 @@ test('remets dans l’ordre : déplacer les images au doigt et au clavier', asyn
   await tiles.last().tap();
   await expect(tiles.last()).toHaveAttribute('aria-pressed', 'true');
   await tiles.first().tap();
-  expect((await names())[0]).toBe(lastName);
+  await expect.poll(async () => (await names())[0]).toBe(lastName);
 
   // Au clavier : flèche bas sur l'image, qui garde le focus.
   await tiles.first().focus();
   await page.keyboard.press('ArrowDown');
-  expect((await names())[1]).toBe(lastName);
+  await expect.poll(async () => (await names())[1]).toBe(lastName);
   await expect(
     board.getByRole('button', { name: new RegExp(`^${lastName}, place 2`) }),
   ).toBeFocused();

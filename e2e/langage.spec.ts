@@ -22,7 +22,7 @@ for (const { name, question } of [
     await expect(parent.getByText(/^Indice : /)).toBeVisible();
     await page.getByRole('button', { name: 'Voir la réponse' }).click();
     // Plusieurs réponses acceptées, séparées par des virgules.
-    await expect(parent.getByText(/\S+, \S+/)).toBeVisible();
+    await expect(parent.locator('.parent-block__answer')).toHaveText(/\S+, \S+/);
     await page.getByRole('button', { name: 'Trouvé' }).click();
     await expect(page.getByText('Manche 2 sur 10')).toBeVisible();
   });
