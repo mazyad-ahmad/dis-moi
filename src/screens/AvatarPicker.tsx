@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
 import { Dialog } from '../components/Dialog';
@@ -13,8 +13,15 @@ interface Props {
 }
 
 /** Choix de l'animal et de la couleur d'un joueur ; chaque touche s'applique tout de suite. */
-export function AvatarPicker({ name, value, onChange, onClose }: Props) {
+export function AvatarPicker({ name, value: initial, onChange, onClose }: Props) {
   const id = useId();
+  // Choix affiché tout de suite : l'enregistrement d'un joueur existant est asynchrone, et la
+  // case cochée ne doit pas revenir en arrière le temps que la base réponde.
+  const [value, setValue] = useState<AvatarValue>({ animal: initial.animal, color: initial.color });
+  function choose(avatar: AvatarValue) {
+    setValue(avatar);
+    onChange(avatar);
+  }
   return (
     <Dialog labelledBy={`${id}-title`} onClose={onClose}>
       <h2 id={`${id}-title`} className="dialog__title">
@@ -33,7 +40,7 @@ export function AvatarPicker({ name, value, onChange, onClose }: Props) {
                 name={`${id}-animal`}
                 aria-label={a.id}
                 checked={value.animal === a.id}
-                onChange={() => onChange({ ...value, animal: a.id })}
+                onChange={() => choose({ ...value, animal: a.id })}
               />
               <span aria-hidden="true">{a.emoji}</span>
             </label>
@@ -50,7 +57,7 @@ export function AvatarPicker({ name, value, onChange, onClose }: Props) {
                 name={`${id}-color`}
                 aria-label={COLOR_NAMES[c]}
                 checked={value.color === c}
-                onChange={() => onChange({ ...value, color: c })}
+                onChange={() => choose({ ...value, color: c })}
               />
               <span className={`avatar-choice__swatch avatar--${c}`} aria-hidden="true" />
             </label>
