@@ -11,6 +11,7 @@ import { activePlayers, setPlayerActive, usePlayers } from '../data/players';
 import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
 import { AnswerModeChoice } from '../games/choices/AnswerModeChoice';
+import { BreatheCard } from '../games/respire/BreatheCard';
 import { teamsReady } from '../games/teams';
 import { MIN_TURN_PLAYERS, type TurnMode } from '../games/turns';
 import { usePlayableGames } from '../games/useGames';
@@ -122,6 +123,8 @@ export function Home() {
       </Card>
 
       {!over && <DailyCard />}
+      {/* Respire comme… (#126) : à part des jeux ; après la séance, dans « Revenir plus tard ». */}
+      {!over && <BreatheCard />}
 
       {/* Niveaux par âge (#40) : le niveau de la partie se règle au lancement. */}
       {!over && (

@@ -27,6 +27,7 @@ import { Players } from '../screens/Players';
 import { Teams } from '../screens/Teams';
 import { Stars } from '../screens/Stars';
 import { Privacy } from '../screens/Privacy';
+import { BreatheGame } from '../games/respire/BreatheGame';
 import { UpdateBanner } from '../pwa/UpdateBanner';
 import { TurnsGate } from '../games/TurnsGate';
 import { useRoute, type Route } from './router';
@@ -127,6 +128,9 @@ function screenFor(route: Route) {
       return <AddGame />;
     case 'privacy':
       return <Privacy />;
+    case 'breathe':
+      // Respire comme… (#126) : proposé aussi après la fin de séance et au coucher.
+      return <BreatheGame />;
     case 'edit-game':
       return <EditGame key={route.id} id={route.id} />;
     case 'game':

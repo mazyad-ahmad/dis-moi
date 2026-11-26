@@ -69,6 +69,9 @@ function SeanceEnd({ stars }: { stars: number }) {
       </p>
       <p className="lead">On range le téléphone ?</p>
       <div className="spacer" />
+      <a className="btn btn--secondary btn--block" href={href('/respire')}>
+        Respirer ensemble
+      </a>
       <a className="btn btn--primary btn--block" href={href('/')}>
         À plus tard
       </a>
@@ -152,6 +155,11 @@ export function GameResult({ stars, rounds, teams, onReplay }: Props) {
       {gentle && <p className="lead">C’est l’heure de dormir. Bonne nuit !</p>}
       {seance.nextIsLast && <p className="seance-notice">Encore une partie, et après on range.</p>}
       <div className="spacer" />
+      {gentle && (
+        <a className="btn btn--secondary btn--block" href={href('/respire')}>
+          Respirer avant de dormir
+        </a>
+      )}
       {other && (
         <a className="btn btn--secondary btn--block" href={href(`/jeu/${other.id}`)}>
           Un autre jeu : {other.name}

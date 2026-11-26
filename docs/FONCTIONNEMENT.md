@@ -77,6 +77,30 @@
 - Masqué pendant la fin de séance, et depuis l'espace Parent (réglage **Défi du jour** :
   affiché par défaut).
 
+## Respire comme… (#126)
+
+- Pour redescendre avant le coucher ou après une colère : carte **Respire comme…** sur
+  l'accueil, à part des jeux (écran `#/respire`). Proposée aussi en fin de séance (« Respirer
+  ensemble », sur l'écran de fin et dans « Revenir plus tard ») et en mode Coucher (« Respirer
+  avant de dormir » sur l'écran de fin, phrase du coucher sur la carte).
+- Quatre exercices en images (emoji, aucun fichier) : « Souffle comme le vent », « Respire
+  comme un ours qui dort », « Gonfle un ballon », « Sens la fleur, souffle la bougie ».
+- Une forme grossit quand on inspire (**3 s**) et rapetisse quand on souffle (**4 s**), sans
+  pause entre les deux : jamais de souffle retenu. Le texte dit chaque temps (« On inspire »,
+  « On souffle » et la phrase de l'exercice) : l'exercice marche sans son, et avec « réduire les
+  animations » la forme reste immobile, le texte guide seul.
+- Longueur selon l'âge, toujours entre 1 et 2 minutes : 9 respirations pour les Petits, 12 pour
+  les Moyens, 15 pour les Grands, 10 sans niveau connu (le plus jeune des joueurs du jour, ou le
+  niveau de la partie). Aucun minuteur ni compteur à l'écran : l'exercice se termine quand
+  l'animation s'arrête. « Arrêter » revient au choix, sans rien enregistrer.
+- Le parent fait l'exercice avec l'enfant ; à la fin, **une étoile gagnée ensemble**
+  (partie « Respire comme… » dans l'historique). Mascotte endormie et « Bonne nuit » en mode
+  Coucher, dont le thème nuit s'applique aussi à cet écran.
+- **Son doux** facultatif, coupé par défaut (bouton sur l'écran, proposé si les sons de l'appli
+  sont activés) : une note synthétisée qui monte à l'inspiration et redescend en soufflant, par la
+  sortie commune (voir « Volume »). Aucune voix. L'écran reste allumé pendant l'exercice.
+- Il ne compte pas comme une partie de la séance : il reste ouvert après la fin de séance.
+
 ## Façons de jouer (#42)
 
 - Sur l'accueil, **Façon de jouer** : **Normal** (par défaut), **Express**, **Coucher** ou
