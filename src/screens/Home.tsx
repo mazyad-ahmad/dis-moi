@@ -3,9 +3,11 @@ import { Card } from '../components/Card';
 import { Logo } from '../components/Logo';
 import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
 import { usePlayers } from '../data/players';
+import { useSeance } from '../data/seance';
 import type { GameInfo } from '../games/registry';
 import { useHomeGames } from '../games/useGames';
 import { LastGame } from './LastGame';
+import { SeanceOverCard } from './SeanceOver';
 
 const ICON_COLOR = { music: 'var(--forest)', letters: 'var(--river)', pencil: 'var(--sun)' };
 
@@ -23,6 +25,7 @@ function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
 export function Home() {
   const players = usePlayers();
   const games = useHomeGames();
+  const { over } = useSeance();
 
   return (
     <main className="screen">
@@ -54,26 +57,30 @@ export function Home() {
         <a href={href('/joueurs')}>{players?.length ? 'Modifier' : 'Ajouter'}</a>
       </Card>
 
-      <div className="game-grid">
-        {games.map((g) => (
-          <a key={g.id} href={href(`/jeu/${g.id}`)} className={`game-tile game-tile--${g.tint}`}>
-            <TileIcon game={g} />
+      {over ? (
+        <SeanceOverCard />
+      ) : (
+        <div className="game-grid">
+          {games.map((g) => (
+            <a key={g.id} href={href(`/jeu/${g.id}`)} className={`game-tile game-tile--${g.tint}`}>
+              <TileIcon game={g} />
+              <span>
+                <span className="game-tile__name">{g.name}</span>
+                <span className="game-tile__category">{g.category}</span>
+              </span>
+            </a>
+          ))}
+          <a href={href('/ajouter')} className="game-tile game-tile--add">
+            <span className="game-tile__icon">
+              <IconPlus />
+            </span>
             <span>
-              <span className="game-tile__name">{g.name}</span>
-              <span className="game-tile__category">{g.category}</span>
+              <span className="game-tile__name">Ajouter un jeu</span>
+              <span className="game-tile__category">Catalogue ou créer</span>
             </span>
           </a>
-        ))}
-        <a href={href('/ajouter')} className="game-tile game-tile--add">
-          <span className="game-tile__icon">
-            <IconPlus />
-          </span>
-          <span>
-            <span className="game-tile__name">Ajouter un jeu</span>
-            <span className="game-tile__category">Catalogue ou créer</span>
-          </span>
-        </a>
-      </div>
+        </div>
+      )}
 
       <div className="spacer" />
 

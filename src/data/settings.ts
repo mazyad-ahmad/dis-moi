@@ -13,6 +13,8 @@ export interface Settings {
   lastBackupAt: number | null;
   /** Verrou parent : une opération avant l'espace Parent, les joueurs et les jeux. */
   parentLock: boolean;
+  /** Durée d'une séance en minutes, 0 : pas de limite (#120). */
+  sessionMinutes: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -22,6 +24,7 @@ export const DEFAULT_SETTINGS: Settings = {
   catalogue: [],
   lastBackupAt: null,
   parentLock: false,
+  sessionMinutes: 0,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

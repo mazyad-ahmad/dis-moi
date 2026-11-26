@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { BottomNav, type Tab } from '../components/BottomNav';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useApplyTheme, useSettings } from '../data/settings';
 import { isProtected, useUnlocked } from '../data/parentLock';
+import { isSeanceOver } from '../data/seance';
+import { SeanceOver } from '../screens/SeanceOver';
 import { Home } from '../screens/Home';
 import { Parent } from '../screens/Parent';
 import { ParentGate } from '../screens/ParentGate';
@@ -43,6 +46,15 @@ function GameScreen({ id }: { id: string }) {
   return <NotFound />;
 }
 
+/**
+ * Fin de séance (#120) : un jeu ouvert après l'échéance (par l'adresse) ne démarre pas.
+ * Vérifié à l'ouverture seulement : la partie qui vient de finir garde son écran de fin.
+ */
+function GuardedGame({ id }: { id: string }) {
+  const [over] = useState(() => isSeanceOver());
+  return over ? <SeanceOver /> : <GameScreen id={id} />;
+}
+
 function screenFor(route: Route) {
   switch (route.name) {
     case 'home':
@@ -61,7 +73,7 @@ function screenFor(route: Route) {
       return <EditGame key={route.id} id={route.id} />;
     case 'game':
       // key : changer de jeu repart d'une partie neuve.
-      return <GameScreen key={route.id} id={route.id} />;
+      return <GuardedGame key={route.id} id={route.id} />;
     case 'not-found':
       return <NotFound />;
   }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { href } from '../app/router';
+import { useSeance } from '../data/seance';
 import { starsLabel } from '../games/format';
 import { IconClose, IconStar } from './icons';
 
@@ -15,6 +16,7 @@ interface Props {
 
 /** En-tête commun des jeux : quitter, manche, étoiles, catégorie et titre. */
 export function GameHeader({ round, rounds, stars, category, title, aside }: Props) {
+  const { lastGame } = useSeance();
   return (
     <header className="game-header">
       <div className="game-header__bar">
@@ -39,6 +41,7 @@ export function GameHeader({ round, rounds, stars, category, title, aside }: Pro
         </div>
         {aside}
       </div>
+      {lastGame && <p className="seance-notice">Dernière partie, et après on range.</p>}
     </header>
   );
 }

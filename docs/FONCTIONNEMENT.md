@@ -134,6 +134,17 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   prolongées à chaque écran parent ouvert ; l'échéance n'est vérifiée qu'en changeant
   d'écran (jamais au milieu d'une modification). Un rafraîchissement le garde, fermer
   l'onglet ou l'appli reverrouille.
+- **Durée d'une séance** (désactivée par défaut ; 10, 15, 20 ou 30 minutes) : le temps compte
+  à partir du premier jeu lancé et repart à zéro après une pause de plus de 30 minutes. Une
+  partie à l'avance, l'écran de fin annonce « Encore une partie, et après on range » (la
+  dernière partie est prévue d'après la durée de la précédente, 5 minutes sinon). À
+  l'échéance, la partie en cours va jusqu'au bout, puis vient la fin en douceur : « C'était la
+  dernière partie ! », un dernier bravo, une respiration, « On range le téléphone ? ».
+  L'accueil ne propose plus alors que « Revenir plus tard », et un jeu ouvert par l'adresse
+  ne démarre pas. Le parent peut prolonger de 10 minutes ou repartir sur une nouvelle séance
+  depuis son espace (derrière le verrou parent s'il est activé). Aucun compte à rebours à
+  l'écran. Le temps est gardé sur le téléphone : ni un rafraîchissement ni la fermeture de
+  l'appli ne le remettent à zéro.
 
 ## Écrans
 

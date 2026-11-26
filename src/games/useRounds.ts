@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { startRecord, updateRecord } from '../data/history';
+import { beginGame, endGame, touch } from '../data/seance';
 import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
 import { useWakeLock } from '../pwa/useWakeLock';
 import { clearSaved, readSaved, useClearSavedOnLeave, useSaved, writeSaved } from './session';
@@ -45,6 +46,10 @@ function restoreProgress(saved: unknown): Progress | undefined {
 export function useRounds(gameId: string, wanted?: number): Rounds {
   const setting = useRoundSetting();
   const rounds = wanted ?? setting;
+  // Fin de séance (#120) : une partie neuve compte ; une partie reprise, déjà comptée.
+  useState(() => {
+    if (readSaved(gameId, 'progress') === undefined) beginGame();
+  });
   const [progress, setProgress] = useSaved<Progress>(
     gameId,
     'progress',
@@ -65,7 +70,10 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
       if (played >= rounds) return;
       const data = { played: played + 1, stars: stars + (found ? 1 : 0) };
       setProgress(data);
-      if (data.played >= rounds) clearSaved(gameId);
+      if (data.played >= rounds) {
+        clearSaved(gameId);
+        endGame();
+      } else touch();
       if (!record.current) {
         record.current = startRecord({ gameId, rounds, ...data });
         void record.current.then((id) => writeSaved(gameId, 'record', id, true));
