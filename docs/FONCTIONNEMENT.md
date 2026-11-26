@@ -291,6 +291,14 @@
 - Les mélodies sont **jouées par un petit synthétiseur** dans l'appli (Web Audio), à partir
   d'une notation texte : aucun enregistrement, donc pas de droits d'interprète ni de fichier
   audio à télécharger, et le jeu marche hors ligne.
+- **Instruments** (#46) : boîte à musique, flûte, piano ou xylophone, tiré au hasard à chaque
+  manche (gardé pour l'air ralenti) et affiché sous le lecteur (« Joué à la flûte »). Chacun est
+  une somme de quelques ondes douces (sinus, triangle), sans harmonique au-dessus de 2,5 kHz, qui
+  reste sous le plafond de la sortie même avec l'accompagnement : doux à plein volume sur un
+  haut-parleur de téléphone. Moteur commun aux jeux musicaux : `src/audio/instruments.ts`.
+- **Accompagnement** facultatif : bouton « Accompagnement » sous le lecteur (éteint par défaut),
+  qui ajoute un bourdon doux sur la tonique de l'air (sa dernière note), dans l'octave grave.
+  L'activer ou l'éteindre remet l'extrait au début ; pause et reprise le gardent.
 - Chaque partie tire 10 chansons différentes.
 
 ### Jeux du catalogue

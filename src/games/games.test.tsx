@@ -131,6 +131,18 @@ it('Quelle chanson : indice visible, titre caché, son indisponible signalé', a
   await user.click(screen.getByRole('button', { name: 'Écouter l’extrait' }));
   expect(screen.getByRole('status')).toHaveTextContent('Le son n’est pas disponible');
 
+  // Un instrument tiré au hasard, et l'accompagnement que le parent ajoute s'il veut.
+  expect(
+    screen.getByText(/^Joué (à la boîte à musique|à la flûte|au piano|au xylophone)$/),
+  ).toBeInTheDocument();
+  const drone = screen.getByRole('button', { name: 'Accompagnement' });
+  expect(drone).toHaveAttribute('aria-pressed', 'false');
+  await user.click(drone);
+  expect(screen.getByRole('button', { name: 'Accompagnement' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
   await user.click(screen.getByRole('button', { name: 'Pas encore' }));
   expect(screen.getByText('Manche 2 sur 10')).toBeInTheDocument();
   // Nouvelle manche : la réponse est de nouveau cachée.

@@ -62,3 +62,9 @@ export function extractLength(events: NoteEvent[]): number {
   const last = events[events.length - 1];
   return last ? last.start + last.duration : 0;
 }
+
+/** Tonique de l'air : sa dernière note jouée (les comptines finissent sur la tonique). */
+export function tonic(notes: Note[]): number | null {
+  for (let i = notes.length - 1; i >= 0; i--) if (notes[i].freq !== null) return notes[i].freq;
+  return null;
+}

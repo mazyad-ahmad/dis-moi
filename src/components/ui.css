@@ -615,6 +615,17 @@
   font-size: 15px;
   text-align: center;
 }
+.song-player__options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 16px;
+}
+.song-player__timbre {
+  font-size: 15px;
+  font-weight: 600;
+}
 
 /* ---------- Quelle lettre, quel chiffre ? ---------- */
 .glyph-card {

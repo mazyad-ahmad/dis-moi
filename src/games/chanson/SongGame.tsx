@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { INSTRUMENTS, randomTimbre, type Timbre } from '../../audio/instruments';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
@@ -23,8 +24,17 @@ import { useMelody } from './useMelody';
 /** Hauteurs de la forme d'onde décorative (maquette Musique). */
 const BARS = [18, 38, 56, 30, 46, 64, 40, 22, 48, 34, 54, 26, 14];
 
-function Player({ song, slow }: { song: Song; slow: boolean }) {
-  const { state, elapsed, length, toggle } = useMelody(song, slow);
+interface PlayerProps {
+  song: Song;
+  slow: boolean;
+  timbre: Timbre;
+  drone: boolean;
+  onDrone: (on: boolean) => void;
+}
+
+function Player({ song, slow, timbre, drone, onDrone }: PlayerProps) {
+  const { state, elapsed, length, toggle } = useMelody(song, slow, timbre, drone);
+  const instrument = INSTRUMENTS[timbre];
   const progress = length ? elapsed / length : 0;
   const playing = state === 'playing';
   return (
@@ -61,6 +71,23 @@ function Player({ song, slow }: { song: Song; slow: boolean }) {
             ? `Extrait ralenti · ${clock(elapsed)}`
             : `Extrait de ${EXTRACT_SECONDS} secondes · ${clock(elapsed)}`}
       </span>
+      <div className="song-player__options">
+        <span className="song-player__timbre">
+          <span aria-hidden="true">{instrument.emoji}</span> Joué {instrument.label}
+        </span>
+        {/* Accompagnement facultatif (#46) : une note grave tenue sous l'air. */}
+        <button
+          type="button"
+          className="player-toggle"
+          aria-pressed={drone}
+          onClick={() => onDrone(!drone)}
+        >
+          <span className="player-toggle__mark" aria-hidden="true">
+            {drone ? '✓' : ''}
+          </span>
+          <span>Accompagnement</span>
+        </button>
+      </div>
     </section>
   );
 }
@@ -69,7 +96,8 @@ function Player({ song, slow }: { song: Song; slow: boolean }) {
 const SLOW_HINT = 'l’air passe au ralenti, fais-le réécouter';
 
 /**
- * Une manche : lecteur et indices en escalier (écrits, air ralenti, première lettre).
+ * Une manche : lecteur (instrument tiré au hasard, accompagnement facultatif) et indices en
+ * escalier (écrits, air ralenti, première lettre).
  * Avec `pool` et « Répondre en montrant » (#123), l'enfant touche la chanson parmi des images.
  */
 export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }) {
@@ -78,11 +106,21 @@ export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }
   const letter = firstLetterHint(song.title);
   const hints = [...written, SLOW_HINT, ...(letter ? [letter] : [])];
   const [shown, setShown] = useState(1);
+  // Un instrument tiré au hasard pour la manche, gardé pour l'air ralenti (#46).
+  const [timbre] = useState(randomTimbre);
+  const [drone, setDrone] = useState(false);
   const slow = shown > written.length;
   return (
     <>
-      {/* key : le lecteur repart de zéro quand il passe au ralenti. */}
-      <Player key={slow ? 'lent' : 'normal'} song={song} slow={slow} />
+      {/* key : le lecteur repart de zéro au ralenti ou quand l'accompagnement change. */}
+      <Player
+        key={`${slow ? 'lent' : 'normal'}-${drone ? 'bourdon' : 'seul'}`}
+        song={song}
+        slow={slow}
+        timbre={timbre}
+        drone={drone}
+        onDrone={setDrone}
+      />
       {choices && <ChoiceBoard options={choices} answer={song.id} />}
       <ParentBlock hidden={song.title} hints={hints} openHints={1} onHint={setShown} />
     </>

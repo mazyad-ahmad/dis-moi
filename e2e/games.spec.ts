@@ -12,6 +12,23 @@ test('Quelle chanson : l’extrait se joue et avance', async ({ page }) => {
   await expect(page.getByText('Manche 2 sur 10')).toBeVisible();
 });
 
+test('Quelle chanson : instrument et accompagnement, pause et reprise', async ({ page }) => {
+  await page.goto('./#/jeu/chanson');
+  await expect(page.getByText(/^Joué (à la|au) /)).toBeVisible();
+  await page.getByRole('button', { name: 'Accompagnement' }).click();
+  await expect(page.getByRole('button', { name: 'Accompagnement' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.getByRole('button', { name: 'Écouter l’extrait' }).click();
+  await expect(page.getByRole('status')).toHaveText(/· 0:0[1-9]/, { timeout: 4000 });
+  await page.getByRole('button', { name: 'Pause' }).click();
+  const paused = await page.getByRole('status').textContent();
+  await page.getByRole('button', { name: 'Écouter l’extrait' }).click();
+  await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
+  await expect(page.getByRole('status')).not.toHaveText(paused!, { timeout: 4000 });
+});
+
 test('Dessine ça : on dessine au doigt et on efface', async ({ page }) => {
   await page.goto('./#/jeu/dessin');
   const canvas = page.getByLabel('Zone de dessin');
