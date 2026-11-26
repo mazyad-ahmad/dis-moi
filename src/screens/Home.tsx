@@ -12,6 +12,7 @@ import { useSeance } from '../data/seance';
 import { GrandTile } from '../games/grand/GrandTile';
 import type { GameInfo } from '../games/registry';
 import { useHomeGames } from '../games/useGames';
+import { DailyCard } from './DailyCard';
 import { LastGame } from './LastGame';
 import { SeanceOverCard } from './SeanceOver';
 
@@ -95,6 +96,8 @@ export function Home() {
           </div>
         )}
       </Card>
+
+      {!over && <DailyCard />}
 
       {/* Niveaux par âge (#40) : le niveau de la partie se règle au lancement. */}
       {!over && (

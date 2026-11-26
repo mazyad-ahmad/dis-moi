@@ -1324,3 +1324,29 @@ a.pill {
   margin: 0;
   font-size: 14px;
 }
+
+/* ---------- Défi du jour (#43) ---------- */
+.daily-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.daily-card__icon {
+  color: var(--sun);
+  flex: none;
+  display: flex;
+}
+.daily-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+}
+.daily-card a {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 14px 8px;
+  flex: none;
+}

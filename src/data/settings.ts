@@ -33,6 +33,8 @@ export interface Settings {
   absentPlayers: number[];
   /** Jeux retirés du Grand Jeu (#41) ; un jeu ajouté ensuite y entre d'office. */
   grandExcluded: string[];
+  /** Défi du jour sur l'accueil (#43). */
+  dailyChallenge: boolean;
 }
 
 export type Volume = 'soft' | 'normal';
@@ -57,6 +59,7 @@ export const DEFAULT_SETTINGS: Settings = {
   gameLevel: null,
   absentPlayers: [],
   grandExcluded: [],
+  dailyChallenge: true,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

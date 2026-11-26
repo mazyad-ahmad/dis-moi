@@ -62,6 +62,20 @@
   Elles ne retardent jamais la manche suivante (on peut enchaîner vite) et sont toutes coupées
   quand le téléphone demande de « réduire les animations ».
 
+## Défi du jour (#43)
+
+- Une **carte surprise par jour** sur l'accueil, tirée de tous les jeux intégrés (chansons,
+  lettres, chiffres, mots à dessiner et les jeux du catalogue, même pas encore ajoutés).
+- Le tirage ne dépend que de la **date du téléphone** : la même carte toute la journée, une
+  nouvelle à minuit (heure du téléphone), sans réseau (`src/games/defi/daily.ts`).
+- Une seule carte, sans minuteur : **Trouvé** (ou « C'est fini » pour un dessin) rapporte une
+  **étoile bonus** gagnée ensemble, enregistrée comme une partie « Défi du jour », puis un mot
+  gentil. **Pas encore** ramène à l'accueil sans rien enregistrer : le défi reste là toute la journée.
+- Réussi, l'accueil dit « À demain pour une nouvelle surprise ». Aucune série, aucune
+  notification, rien sur les jours sans défi.
+- Masqué pendant la fin de séance, et depuis l'espace Parent (réglage **Défi du jour** :
+  affiché par défaut).
+
 ## Mascotte (proposition)
 
 - Une petite bulle qui parle, dessinée pour l'appli en SVG dans le code (pas d'image à charger,
@@ -249,7 +263,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **jeux du Grand Jeu**, **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **jeux du Grand Jeu**, **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **défi du jour**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :

@@ -35,7 +35,7 @@ function RecordedSound({ audio }: { audio: Blob }) {
   );
 }
 
-function SoundCard({ item }: { item: DeckItem }) {
+export function SoundCard({ item }: { item: DeckItem }) {
   return (
     <section className="song-player" aria-label="Son">
       {item.audio ? (
@@ -52,7 +52,7 @@ function SoundCard({ item }: { item: DeckItem }) {
   );
 }
 
-function ImageCard({ item }: { item: DeckItem }) {
+export function ImageCard({ item }: { item: DeckItem }) {
   const url = useObjectUrl(item.image);
   return (
     <figure className="deck-card deck-card--image">
@@ -76,7 +76,7 @@ function ImageCard({ item }: { item: DeckItem }) {
   );
 }
 
-function QuestionCard({ item }: { item: DeckItem }) {
+export function QuestionCard({ item }: { item: DeckItem }) {
   return (
     <section className="deck-card deck-card--question" aria-label="Question">
       <span className="word-card__label">Le parent lit à voix haute</span>

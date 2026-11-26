@@ -116,6 +116,11 @@ const LOCK_CHOICES = [
   { value: 'on', label: 'Activé' },
 ] as const;
 
+const DAILY_CHOICES = [
+  { value: 'on', label: 'Affiché' },
+  { value: 'off', label: 'Masqué' },
+] as const;
+
 const VIBRATION_CHOICES = [
   { value: 'off', label: 'Sans' },
   { value: 'on', label: 'Avec' },
@@ -288,6 +293,16 @@ export function Parent() {
       />
 
       <PraiseSection />
+
+      <Choice
+        legend="Défi du jour"
+        name="daily-challenge"
+        value={settings.dailyChallenge ? 'on' : 'off'}
+        options={DAILY_CHOICES}
+        onChange={(v) => void setSetting('dailyChallenge', v === 'on')}
+        className="segmented--2"
+        hint="Une carte surprise par jour sur l’accueil, une étoile bonus si elle est trouvée. Aucune série, aucune notification."
+      />
 
       <Choice
         legend="Volume de l’appli"

@@ -3,6 +3,7 @@ import type { CustomGame } from '../data/db';
 import { setSetting, getSettings, useSettings } from '../data/settings';
 import { CATALOGUE, findCatalogueGame } from './catalogue/catalogue';
 import { GRAND_ID, GRAND_NAME } from './grand/pool';
+import { DAILY_ID, DAILY_NAME } from './defi/daily';
 import { GAMES, type GameInfo } from './registry';
 
 function customInfo(g: CustomGame): GameInfo {
@@ -32,6 +33,7 @@ export function gameName(gameId: string, custom: CustomGame[] = []): string {
     GAMES.find((g) => g.id === gameId)?.name ??
     findCatalogueGame(gameId)?.name ??
     custom.find((g) => customRouteId(g.id) === gameId)?.name ??
+    (gameId === DAILY_ID ? DAILY_NAME : undefined) ??
     'Jeu supprimé'
   );
 }

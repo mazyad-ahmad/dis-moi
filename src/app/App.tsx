@@ -19,6 +19,7 @@ import { EditGame } from '../screens/EditGame';
 import { customDeck, parseCustomRouteId, useCustomGame } from '../data/customGames';
 import { findCatalogueGame } from '../games/catalogue/catalogue';
 import { DeckGame } from '../games/deck/DeckGame';
+import { DailyGame } from '../games/defi/DailyGame';
 import { Players } from '../screens/Players';
 import { Stars } from '../screens/Stars';
 import { Privacy } from '../screens/Privacy';
@@ -30,6 +31,7 @@ const GAME_SCREENS: Record<string, () => React.ReactElement> = {
   lettres: LettersGame,
   dessin: DrawingGame,
   [GRAND_ID]: GrandGame,
+  defi: DailyGame,
 };
 
 function CustomGameScreen({ id }: { id: number }) {
