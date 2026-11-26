@@ -41,6 +41,8 @@ export interface Pack {
   desc?: string;
   mark?: string;
   tint?: Tint;
+  /** Le jeu fait bouger l'enfant (mime…) : pas proposé en mode Coucher (#42). */
+  moves?: boolean;
   items: PackItem[];
 }
 
@@ -61,6 +63,7 @@ const PACK_FIELDS = new Set([
   'desc',
   'mark',
   'tint',
+  'moves',
   'items',
 ]);
 const ITEM_FIELDS = new Set([
@@ -172,6 +175,8 @@ export function validatePack(raw: unknown, file: string): Pack {
   if (!isText(pack.name, MAX_GAME_NAME)) fail(`nom vide ou trop long (${MAX_GAME_NAME} max)`);
   if (pack.lang !== 'fr') fail('langue (« lang ») : seul « fr » existe pour l’instant');
   if (pack.tint !== undefined && !TINTS.includes(pack.tint as Tint)) fail('teinte inconnue');
+  if (pack.moves !== undefined && typeof pack.moves !== 'boolean')
+    fail('« moves » : true ou false attendu');
   for (const field of ['category', 'desc', 'mark'] as const)
     if (pack[field] !== undefined && !isText(pack[field])) fail(`« ${field} » vide ou trop long`);
   if (!Array.isArray(pack.items) || pack.items.length === 0) fail('aucune carte');

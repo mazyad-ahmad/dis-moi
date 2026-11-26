@@ -76,6 +76,26 @@
 - Masqué pendant la fin de séance, et depuis l'espace Parent (réglage **Défi du jour** :
   affiché par défaut).
 
+## Façons de jouer (#42)
+
+- Sur l'accueil, **Façon de jouer** : **Normal** (par défaut), **Express**, **Coucher** ou
+  **Voiture**, avec une phrase qui dit ce que le mode change. Le choix est gardé d'une partie à
+  l'autre (réglage `gameMode`, comme le niveau) et s'applique à la partie suivante.
+- **Express** : 3 manches (ou moins si le réglage de l'espace Parent est plus court).
+- **Coucher** : thème nuit imposé, volume doux imposé, pas de minuteur dans les dessins, pas de
+  jeu qui fait bouger (Mime ça ; plus tard la chasse au trésor). Fin en douceur : ni confettis
+  ni vibration de fête, la mascotte dort, « C'est l'heure de dormir. Bonne nuit ! », pas de
+  bouton « Un autre jeu ».
+- **Voiture** : seulement des cartes orales (Quelle chanson ?, Quel animal ?, Devinettes, jeux
+  créés « Son » et « Question ») ; rien à regarder ni à dessiner.
+- L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
+  conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
+- Règle commune (`src/games/modes.ts`, fonction pure `suitsMode`) : chaque jeu déclare ce qu'il
+  demande à l'enfant (`needs` : regarder l'écran, bouger), d'après son type de cartes et, pour un
+  pack, le champ `moves`. Un jeu qui ne déclare rien n'est proposé ni au Coucher ni en Voiture.
+- Le mode est noté dans la partie enregistrée (champ `mode`) et rappelé dans l'historique
+  (« · Voiture »).
+
 ## Mascotte (proposition)
 
 - Une petite bulle qui parle, dessinée pour l'appli en SVG dans le code (pas d'image à charger,
@@ -143,6 +163,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   manches de dessin (« Autre mot » pris dans le même jeu).
 - Nombre de manches : le réglage de l'espace Parent. La partie est enregistrée sous l'identifiant
   `grand-jeu` (« Le Grand Jeu » dans l'historique) et reprend après un rafraîchissement.
+- **Niveau de la partie** (#40) : dans chaque jeu, les cartes du niveau choisi sur l'accueil
+  passent d'abord, puis les niveaux voisins, comme dans les autres jeux.
 - **Jeux inclus** : choisis dans l'espace Parent (« Le Grand Jeu », boutons Inclus / Inclure),
   mémorisés (réglage `grandExcluded` : les jeux retirés ; un jeu ajouté ensuite est inclus
   d'office). Au moins deux jeux restent inclus.

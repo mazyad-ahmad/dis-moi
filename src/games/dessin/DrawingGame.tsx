@@ -11,6 +11,7 @@ import { clock } from '../format';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
 import { orderByLevel, type Level } from '../levels';
+import { modeDrawSeconds } from '../modes';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { DrawingCanvas, type DrawingCanvasHandle } from './DrawingCanvas';
 import { useCountdown } from './useCountdown';
@@ -64,8 +65,10 @@ function DrawingSession({
     () => 0,
     (i) => (Number.isInteger(i) && (i as number) >= 0 ? (i as number) : undefined),
   );
-  // Durée réglée dans l'espace Parent, figée pour la partie.
-  const [seconds] = useState(() => getSettings().drawSeconds);
+  // Durée réglée dans l'espace Parent (aucun minuteur en mode Coucher), figée pour la partie.
+  const [seconds] = useState(() =>
+    modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
+  );
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
@@ -89,7 +92,7 @@ interface BoardProps {
   word: string;
   /** Change à chaque nouveau mot : relance le minuteur. */
   turn: unknown;
-  /** Durée du minuteur, en secondes. */
+  /** Durée du minuteur, en secondes ; 0 : pas de minuteur (mode Coucher, #42). */
   seconds: number;
   /** « Autre mot » : absent, le bouton n'est pas proposé. */
   onOtherWord?: () => void;
@@ -103,8 +106,9 @@ interface BoardProps {
 export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnswer }: BoardProps) {
   const [pen, setPen] = useState(PENS[0].color);
   const canvas = useRef<DrawingCanvasHandle>(null);
-  const left = useCountdown(seconds, turn);
-  const timeUp = left <= 0;
+  const timed = seconds > 0;
+  const left = useCountdown(Math.max(0, seconds), turn);
+  const timeUp = timed && left <= 0;
   // Double vibration quand le temps est écoulé : le dessin est figé, l'enfant a fini.
   useEffect(() => {
     if (timeUp) vibrate('timeUp');
@@ -128,14 +132,16 @@ export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnsw
       <GameHeader
         {...heading}
         aside={
-          <span
-            className={`timer${timeUp ? ' timer--done' : ''}`}
-            role="timer"
-            aria-label={timeUp ? 'Temps écoulé' : `${left} secondes restantes`}
-          >
-            <IconTimer size={20} />
-            {clock(left)}
-          </span>
+          timed && (
+            <span
+              className={`timer${timeUp ? ' timer--done' : ''}`}
+              role="timer"
+              aria-label={timeUp ? 'Temps écoulé' : `${left} secondes restantes`}
+            >
+              <IconTimer size={20} />
+              {clock(left)}
+            </span>
+          )
         }
       />
 

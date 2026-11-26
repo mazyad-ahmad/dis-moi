@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import type { Level } from '../games/levels';
+import { DEFAULT_MODE, forcesNight, forcesSoftVolume, type GameMode } from '../games/modes';
 import type { SpeechSpeed } from '../voice/speech';
 import { db, type Theme } from './db';
 
@@ -35,6 +36,8 @@ export interface Settings {
   grandExcluded: string[];
   /** Défi du jour sur l'accueil (#43). */
   dailyChallenge: boolean;
+  /** Façon de jouer (#42), choisie sur l'accueil : Normal, Express, Coucher ou Voiture. */
+  gameMode: GameMode;
 }
 
 export type Volume = 'soft' | 'normal';
@@ -60,6 +63,7 @@ export const DEFAULT_SETTINGS: Settings = {
   absentPlayers: [],
   grandExcluded: [],
   dailyChallenge: true,
+  gameMode: DEFAULT_MODE,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;
@@ -109,8 +113,19 @@ export function setTheme(theme: Theme): Promise<void> {
   return setSetting('theme', theme);
 }
 
+/** Thème affiché : celui du parent, sauf en mode Coucher (#42) qui impose la nuit. */
+export function shownTheme(s: Settings): Theme {
+  return forcesNight(s.gameMode) ? 'night' : s.theme;
+}
+
+/** Thème affiché (voir `shownTheme`). */
 export function useTheme(): Theme {
-  return useSettings().theme;
+  return shownTheme(useSettings());
+}
+
+/** Volume de l'appli : celui du parent, sauf en mode Coucher (#42), toujours doux. */
+export function appVolume(s: Settings = current): Volume {
+  return forcesSoftVolume(s.gameMode) ? 'soft' : s.volume;
 }
 
 /** Pose data-theme sur <html> ; les tokens nuit/jour suivent. */

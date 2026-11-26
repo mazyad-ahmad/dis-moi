@@ -4,8 +4,9 @@ import { findCatalogueGame } from '../catalogue/catalogue';
 import { SONGS, type Song } from '../chanson/songs';
 import { cardKey } from '../deck/cardKey';
 import type { Deck, DeckItem, DeckKind } from '../deck/types';
-import { DRAW_WORDS } from '../dessin/words';
+import { DRAW_LEVELS, DRAW_WORDS } from '../dessin/words';
 import { DIGITS, LETTERS, type GlyphCard } from '../lettres/bank';
+import { cardLevel, orderByLevel, type Level } from '../levels';
 import type { GameInfo } from '../registry';
 import { shuffle } from '../shuffle';
 
@@ -18,8 +19,11 @@ export const GRAND_NAME = 'Le Grand Jeu';
 /** Il faut au moins deux jeux pour varier les manches. */
 export const MIN_GRAND_GAMES = 2;
 
-/** Une carte jouable dans le Grand Jeu, avec sa clé stable (pour reprendre la partie). */
-export type GrandCard = { key: string } & (
+/**
+ * Une carte jouable dans le Grand Jeu, avec sa clé stable (pour reprendre la partie)
+ * et son niveau par âge (#40) ; sans niveau, elle convient à tous.
+ */
+export type GrandCard = { key: string; level?: Level } & (
   | { type: 'song'; song: Song }
   | { type: 'glyph'; glyph: GlyphCard }
   | { type: 'draw'; word: string }
@@ -30,16 +34,30 @@ export interface GrandGame extends GameInfo {
   cards: GrandCard[];
 }
 
-const songCards = (): GrandCard[] => SONGS.map((song) => ({ key: song.id, type: 'song', song }));
+const songCards = (): GrandCard[] =>
+  SONGS.map((song) => ({ key: song.id, level: song.level, type: 'song', song }));
 const glyphCards = (): GrandCard[] =>
-  [...LETTERS, ...DIGITS].map((glyph) => ({ key: glyph.glyph, type: 'glyph', glyph }));
-const wordCards = (words: readonly string[]): GrandCard[] =>
-  [...new Set(words)].map((word) => ({ key: word, type: 'draw', word }));
+  [...LETTERS, ...DIGITS].map((glyph) => ({
+    key: glyph.glyph,
+    level: glyph.level,
+    type: 'glyph',
+    glyph,
+  }));
+const wordCards = (
+  words: readonly string[],
+  levelOf: (word: string) => Level | undefined,
+): GrandCard[] =>
+  [...new Set(words)].map((word) => ({ key: word, level: levelOf(word), type: 'draw', word }));
 
 function deckCards(deck: Deck): GrandCard[] {
-  if (deck.kind === 'draw') return wordCards(deck.items.map((i) => i.answer));
+  if (deck.kind === 'draw')
+    return wordCards(
+      deck.items.map((i) => i.answer),
+      (word) => cardLevel(deck.items.find((i) => i.answer === word) ?? {}),
+    );
   return deck.items.map((item, i) => ({
     key: cardKey(item, i),
+    level: cardLevel(item),
     type: 'deck',
     kind: deck.kind,
     item,
@@ -50,7 +68,7 @@ function deckCards(deck: Deck): GrandCard[] {
 const BASE_CARDS: Record<string, () => GrandCard[]> = {
   chanson: songCards,
   lettres: glyphCards,
-  dessin: () => wordCards(DRAW_WORDS),
+  dessin: () => wordCards(DRAW_WORDS, (word) => DRAW_LEVELS.get(word)),
 };
 
 function cardsOf(game: GameInfo, custom: CustomGame[]): GrandCard[] {
@@ -87,12 +105,14 @@ export interface PlannedRound {
 /**
  * Prévoit les manches : les jeux passent chacun leur tour dans un ordre mélangé, sans que
  * deux manches de suite utilisent le même jeu (dès qu'il y en a au moins deux). Dans chaque
- * jeu, les cartes sont tirées sans répétition tant qu'il en reste.
+ * jeu, les cartes sont tirées sans répétition tant qu'il en reste, celles du niveau de la
+ * partie (#40) d'abord, puis les niveaux voisins, comme dans les autres jeux.
  */
 export function planRounds(
   games: GrandGame[],
   rounds: number,
   random: () => number = Math.random,
+  level: Level | null = null,
 ): PlannedRound[] {
   if (!games.length) return [];
   const order: GrandGame[] = [];
@@ -104,7 +124,8 @@ export function planRounds(
   const queues = new Map<string, GrandCard[]>();
   return order.slice(0, rounds).map((game) => {
     let queue = queues.get(game.id);
-    if (!queue?.length) queues.set(game.id, (queue = shuffle(game.cards, random)));
+    if (!queue?.length)
+      queues.set(game.id, (queue = orderByLevel(game.cards, level, (c) => c.level, random)));
     return { game: game.id, card: queue.shift()!.key };
   });
 }

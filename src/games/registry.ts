@@ -1,3 +1,5 @@
+import { needsOf, type PlayNeeds } from './modes';
+
 export type Tint = 'meadow' | 'sky' | 'dawn';
 export type GameIcon = 'music' | 'letters' | 'pencil';
 
@@ -9,6 +11,8 @@ export interface GameInfo {
   /** Icône des jeux de base, sinon une marque de 1 à 3 caractères. */
   icon?: GameIcon;
   mark?: string;
+  /** Ce que le jeu demande à l'enfant (#42) : regarder l'écran, bouger. Voir `modes.ts`. */
+  needs?: PlayNeeds;
 }
 
 /** Jeux de base, dans l'ordre de l'accueil (maquette Main). */
@@ -19,6 +23,7 @@ export const GAMES: GameInfo[] = [
     category: 'Musique',
     tint: 'meadow',
     icon: 'music',
+    needs: needsOf('melody'),
   },
   {
     id: 'lettres',
@@ -26,8 +31,16 @@ export const GAMES: GameInfo[] = [
     category: 'Lettres et chiffres',
     tint: 'sky',
     icon: 'letters',
+    needs: needsOf('glyph'),
   },
-  { id: 'dessin', name: 'Dessine ça', category: 'Dessin', tint: 'dawn', icon: 'pencil' },
+  {
+    id: 'dessin',
+    name: 'Dessine ça',
+    category: 'Dessin',
+    tint: 'dawn',
+    icon: 'pencil',
+    needs: needsOf('draw'),
+  },
 ];
 
 export function findGame(id: string): GameInfo | undefined {

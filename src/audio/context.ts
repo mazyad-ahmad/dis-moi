@@ -1,4 +1,4 @@
-import { getSettings, type Volume } from '../data/settings';
+import { appVolume, type Volume } from '../data/settings';
 
 /**
  * Un seul `AudioContext` pour toute l'appli (mélodies, sons d'interface, enregistrements…).
@@ -68,7 +68,7 @@ export function audioContext(): AudioContext | null {
   const ceiling = ctx.createWaveShaper();
   ceiling.curve = ceilingCurve();
   volume = ctx.createGain();
-  volume.gain.value = VOLUME_GAIN[getSettings().volume];
+  volume.gain.value = VOLUME_GAIN[appVolume()];
   output.connect(ceiling).connect(volume).connect(ctx.destination);
   if (!listening) {
     document.addEventListener('visibilitychange', onVisible);
@@ -83,7 +83,7 @@ export function audioContext(): AudioContext | null {
  */
 export function audioOutput(): GainNode | null {
   if (!audioContext()) return null;
-  if (volume) volume.gain.value = VOLUME_GAIN[getSettings().volume];
+  if (volume) volume.gain.value = VOLUME_GAIN[appVolume()];
   return output;
 }
 

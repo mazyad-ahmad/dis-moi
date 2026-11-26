@@ -96,6 +96,26 @@ describe('manches du Grand Jeu', () => {
     }
   });
 
+  it('suit le niveau de la partie : les cartes du niveau d’abord, dans chaque jeu (#40)', () => {
+    for (let seed = 1; seed < 30; seed++) {
+      const plan = planRounds(games, 15, seeded(seed), 1);
+      for (const r of plan) {
+        const card = games.find((g) => g.id === r.game)!.cards.find((c) => c.key === r.card)!;
+        // Chaque jeu de base a au moins 5 cartes des petits : 5 manches par jeu au plus.
+        expect(card.level).toBe(1);
+      }
+    }
+  });
+
+  it('les cartes portent leur niveau par âge', () => {
+    for (const g of games) expect(g.cards.every((c) => c.level !== undefined)).toBe(true);
+    const created = grandGames(
+      [{ id: 'perso-4', name: 'Quiz', category: 'Question', tint: 'sky' }],
+      [custom(4, [{ answer: 'Paris', text: 'Capitale ?' }])],
+    );
+    expect(created[0].cards[0].level).toBeUndefined();
+  });
+
   it('reprend les manches prévues, ou rien si un jeu a disparu', () => {
     const plan = planRounds(games, 10, seeded(3));
     const rounds = resolvePlan(plan, games)!;

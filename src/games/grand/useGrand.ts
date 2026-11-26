@@ -1,12 +1,13 @@
 import { useCustomGames } from '../../data/customGames';
 import { setSetting, getSettings, useSettings } from '../../data/settings';
 import { useHomeGames } from '../useGames';
+import { suitsMode } from '../modes';
 import { grandGames, includedGames, type GrandGame } from './pool';
 
 export interface GrandPool {
   /** Tous les jeux de l'accueil jouables dans le Grand Jeu. */
   all: GrandGame[];
-  /** Ceux que le parent a gardés. */
+  /** Ceux que le parent a gardés, parmi ceux qui conviennent à la façon de jouer (#42). */
   included: GrandGame[];
 }
 
@@ -14,10 +15,11 @@ export interface GrandPool {
 export function useGrandPool(): GrandPool | undefined {
   const home = useHomeGames();
   const custom = useCustomGames();
-  const { grandExcluded } = useSettings();
+  const { grandExcluded, gameMode } = useSettings();
   if (custom === undefined) return undefined;
   const all = grandGames(home, custom);
-  return { all, included: includedGames(all, grandExcluded) };
+  const suited = all.filter((g) => suitsMode(g.needs, gameMode));
+  return { all, included: includedGames(suited, grandExcluded) };
 }
 
 /** Inclut ou retire un jeu du Grand Jeu (choix mémorisé). */

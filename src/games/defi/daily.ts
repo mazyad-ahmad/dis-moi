@@ -5,6 +5,7 @@ import { SONGS, type Song } from '../chanson/songs';
 import type { DeckItem } from '../deck/types';
 import { DRAW_WORDS } from '../dessin/words';
 import { DIGITS, LETTERS, type GlyphCard } from '../lettres/bank';
+import { needsOf, type PlayNeeds } from '../modes';
 
 /**
  * Défi du jour (#43) : une carte surprise par jour, tirée de tous les jeux intégrés.
@@ -27,6 +28,8 @@ export interface DailySource {
   game: string;
   name: string;
   category: string;
+  /** Ce que la carte demande à l'enfant (#42) : le défi est masqué si le mode ne s'y prête pas. */
+  needs: PlayNeeds;
   cards: DailyCard[];
 }
 
@@ -36,30 +39,35 @@ export const DAILY_SOURCES: DailySource[] = [
     game: 'chanson',
     name: 'Quelle chanson ?',
     category: 'Musique',
+    needs: needsOf('melody'),
     cards: SONGS.map((song) => ({ kind: 'melody', song })),
   },
   {
     game: 'lettres',
     name: 'Quelle lettre ?',
     category: 'Lettres et chiffres',
+    needs: needsOf('glyph'),
     cards: LETTERS.map((card) => ({ kind: 'glyph', card })),
   },
   {
     game: 'lettres',
     name: 'Quel chiffre ?',
     category: 'Lettres et chiffres',
+    needs: needsOf('glyph'),
     cards: DIGITS.map((card) => ({ kind: 'glyph', card })),
   },
   {
     game: 'dessin',
     name: 'Dessine ça',
     category: 'Dessin',
+    needs: needsOf('draw'),
     cards: DRAW_WORDS.map((word) => ({ kind: 'draw', word })),
   },
   ...CATALOGUE.map((g): DailySource => ({
     game: g.id,
     name: g.name,
     category: g.category,
+    needs: g.needs,
     cards: g.items.map((item) => ({ kind: g.kind as 'sound' | 'image' | 'question', item })),
   })),
 ];

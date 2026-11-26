@@ -9,6 +9,7 @@ import { SongRound } from '../chanson/SongGame';
 import { DeckRound } from '../deck/DeckGame';
 import { DrawingBoard } from '../dessin/DrawingGame';
 import { GlyphRound } from '../lettres/LettersGame';
+import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
 import { useSaved } from '../session';
 import { useRoundSetting, useRounds } from '../useRounds';
@@ -92,13 +93,15 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   const [plan] = useSaved<PlannedRound[]>(
     GRAND_ID,
     'plan',
-    () => planRounds(games, setting),
+    () => planRounds(games, setting, Math.random, getSettings().gameLevel),
     (saved) => (resolvePlan(saved, games) ? (saved as PlannedRound[]) : undefined),
   );
   const [planned] = useState(() => resolvePlan(plan, games)!);
   const { round, rounds, stars, finished, answer } = useRounds(GRAND_ID, planned.length);
-  // Durée du minuteur de dessin, figée pour la partie.
-  const [seconds] = useState(() => getSettings().drawSeconds);
+  // Durée du minuteur de dessin (aucun en mode Coucher), figée pour la partie.
+  const [seconds] = useState(() =>
+    modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
+  );
   // Dernière manche déjà annoncée par l'écran-éclair.
   const [announced, setAnnounced] = useState(0);
   const go = useCallback(() => setAnnounced(round), [round]);

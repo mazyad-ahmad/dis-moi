@@ -6,14 +6,15 @@ import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
 import { vibrate } from '../pwa/haptics';
 import { useWakeLock } from '../pwa/useWakeLock';
 import { cancelPraise, praise } from '../voice/praise';
+import { gentleEnd, modeRounds } from './modes';
 import { clearSaved, readSaved, useClearSavedOnLeave, useSaved, writeSaved } from './session';
 
 /** Nombre de manches par défaut (docs/FONCTIONNEMENT.md), réglable dans l'espace Parent. */
 export const DEFAULT_ROUNDS = DEFAULT_SETTINGS.rounds;
 
-/** Nombre de manches réglé, figé au lancement de la partie. */
+/** Nombre de manches réglé (3 en mode Express, #42), figé au lancement de la partie. */
 export function useRoundSetting(): number {
-  return useState(() => getSettings().rounds)[0];
+  return useState(() => modeRounds(getSettings().rounds, getSettings().gameMode))[0];
 }
 
 export interface Rounds {
@@ -49,6 +50,8 @@ function restoreProgress(saved: unknown): Progress | undefined {
 export function useRounds(gameId: string, wanted?: number): Rounds {
   const setting = useRoundSetting();
   const rounds = wanted ?? setting;
+  // Façon de jouer (#42), figée au lancement et notée avec la partie.
+  const [mode] = useState(() => getSettings().gameMode);
   // Fin de séance (#120) : une partie neuve compte ; une partie reprise, déjà comptée.
   useState(() => {
     if (readSaved(gameId, 'progress') === undefined) beginGame();
@@ -101,17 +104,18 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
       if (finished) {
         clearSaved(gameId);
         endGame();
-        vibrate('party');
+        // Mode Coucher : fin en douceur, sans vibration de fête.
+        if (!gentleEnd(mode)) vibrate('party');
       } else {
         touch();
         if (found) vibrate('found');
       }
       if (!record.current) {
-        record.current = startRecord({ gameId, rounds, ...data });
+        record.current = startRecord({ gameId, rounds, mode, ...data });
         void record.current.then((id) => writeSaved(gameId, 'record', id, true));
       } else void record.current.then((id) => updateRecord(id, data));
     },
-    [gameId, played, rounds, setProgress, stars],
+    [gameId, mode, played, rounds, setProgress, stars],
   );
 
   // Quitter ou rejouer la partie coupe la félicitation en cours.

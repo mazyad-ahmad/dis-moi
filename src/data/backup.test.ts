@@ -32,11 +32,12 @@ async function fillPhone() {
   await addPlayer('Sami');
   const r = await startRecord({ gameId: 'lettres', rounds: 5, played: 1, stars: 1 });
   await updateRecord(r, { played: 5, stars: 4 });
-  await startRecord({ gameId: 'chanson', rounds: 10, played: 1, stars: 0 });
+  await startRecord({ gameId: 'chanson', rounds: 3, played: 1, stars: 0, mode: 'express' });
   await setSetting('theme', 'night');
   await setSetting('rounds', 15);
   await setSetting('catalogue', ['devinette']);
   await setSetting('gameLevel', 3);
+  await setSetting('gameMode', 'voiture');
   const id = await createCustomGame('Devinettes de Léa', 'question');
   await addItem(id, { answer: 'Un chat', text: 'Il miaule', hint: 'Il a des moustaches' });
 }
@@ -69,12 +70,14 @@ describe('Sauvegarde complète', () => {
     const after = await snapshot();
     expect(after.players).toEqual(before.players);
     expect(after.games).toEqual(before.games);
+    expect(after.games).toContainEqual(expect.objectContaining({ mode: 'express' }));
     expect(after.customGames).toEqual(before.customGames);
     expect(getSettings()).toMatchObject({
       theme: 'night',
       rounds: 15,
       catalogue: ['devinette'],
       gameLevel: 3,
+      gameMode: 'voiture',
       lastBackupAt: createdAt,
     });
   });

@@ -7,6 +7,7 @@ import { useCustomGames } from '../data/customGames';
 import { REWARDS, totalStars, useRecords } from '../data/history';
 import { usePlayers } from '../data/players';
 import { dayLabel, starsLabel } from '../games/format';
+import { modeInfo } from '../games/modes';
 import { gameName } from '../games/useGames';
 
 /** Nombre de parties affichées dans l'historique. */
@@ -94,6 +95,7 @@ export function Stars() {
                     <span className="muted">
                       {dayLabel(r.startedAt)}
                       {who.length > 0 && ` · ${who.map((p) => p.name).join(', ')}`}
+                      {r.mode && r.mode !== 'normal' && ` · ${modeInfo(r.mode).name}`}
                       {r.played < r.rounds && ` · ${r.played} manches sur ${r.rounds}`}
                     </span>
                     {who.length > 0 && (

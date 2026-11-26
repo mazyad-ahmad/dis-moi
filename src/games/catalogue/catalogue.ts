@@ -1,8 +1,11 @@
 import { deckItems, getPack } from '../../content/packs';
 import type { Deck, DeckKind } from '../deck/types';
+import { needsOf, type PlayNeeds } from '../modes';
 
 export interface CatalogueGame extends Deck {
   desc: string;
+  /** Ce que le jeu demande à l'enfant (#42), d'après son type et son pack. */
+  needs: PlayNeeds;
 }
 
 /**
@@ -23,6 +26,7 @@ export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
     tint: pack.tint!,
     kind: pack.kind as DeckKind,
     items: deckItems(pack),
+    needs: needsOf(pack.kind, pack.moves ? { moves: true } : {}),
   };
 });
 

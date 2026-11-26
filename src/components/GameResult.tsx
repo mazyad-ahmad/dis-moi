@@ -4,7 +4,9 @@ import { playSound } from '../audio/sounds';
 import { useRecords } from '../data/history';
 import { useSeance } from '../data/seance';
 import { starsLabel } from '../games/format';
-import { useHomeGames } from '../games/useGames';
+import { gentleEnd } from '../games/modes';
+import { usePlayableGames } from '../games/useGames';
+import { useSettings } from '../data/settings';
 import { Button } from './Button';
 import { Confetti } from './Confetti';
 import { IconStar } from './icons';
@@ -70,18 +72,23 @@ export function GameResult({ stars, rounds, onReplay }: Props) {
   const seance = useSeance();
   const route = useRoute();
   const records = useRecords();
-  const other = nextGame(useHomeGames(), route.name === 'game' ? route.id : undefined);
+  // Mode Coucher (#42) : fin en douceur, sans confettis ni nouveau jeu proposé.
+  const gentle = gentleEnd(useSettings().gameMode);
+  const playable = usePlayableGames();
+  const other = gentle
+    ? undefined
+    : nextGame(playable, route.name === 'game' ? route.id : undefined);
   const [message] = useState(() => resultMessage(stars, rounds));
   useStarCount(seance.over ? 0 : stars);
   if (seance.over) return <SeanceEnd stars={stars} />;
   const rewards = records?.length ? resultRewards(records, stars) : undefined;
   return (
     <main className="screen result">
-      <Confetti />
+      {!gentle && <Confetti />}
       <div className="result__stars" aria-hidden="true">
         <IconStar size={96} />
       </div>
-      <Mascot mood="bravo" />
+      <Mascot mood={gentle ? 'sleep' : 'bravo'} />
       <h1 className="h1">{resultTitle(stars)}</h1>
       {stars > 0 && (
         <div className="result__count" aria-hidden="true" data-testid="result-count">
@@ -115,6 +122,7 @@ export function GameResult({ stars, rounds, onReplay }: Props) {
           {`Encore ${starsLabel(rewards.next.missing)} pour la récompense « ${rewards.next.reward.label} ».`}
         </p>
       )}
+      {gentle && <p className="lead">C’est l’heure de dormir. Bonne nuit !</p>}
       {seance.nextIsLast && <p className="seance-notice">Encore une partie, et après on range.</p>}
       <div className="spacer" />
       {other && (

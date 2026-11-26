@@ -4,11 +4,13 @@ import { setSetting, getSettings, useSettings } from '../data/settings';
 import { CATALOGUE, findCatalogueGame } from './catalogue/catalogue';
 import { GRAND_ID, GRAND_NAME } from './grand/pool';
 import { DAILY_ID, DAILY_NAME } from './defi/daily';
+import { needsOf, suitsMode } from './modes';
 import { GAMES, type GameInfo } from './registry';
 
 function customInfo(g: CustomGame): GameInfo {
   const d = customDeck(g);
-  return { id: d.id, name: d.name, category: d.category, tint: d.tint, mark: d.mark };
+  const { id, name, category, tint, mark } = d;
+  return { id, name, category, tint, mark, needs: needsOf(d.kind) };
 }
 
 /** Jeux de l'accueil : jeux de base, jeux du catalogue ajoutés, puis jeux créés. */
@@ -16,9 +18,22 @@ export function useHomeGames(): GameInfo[] {
   const { catalogue } = useSettings();
   const custom = useCustomGames() ?? [];
   const added = CATALOGUE.filter((g) => catalogue.includes(g.id)).map(
-    ({ id, name, category, tint, mark }): GameInfo => ({ id, name, category, tint, mark }),
+    ({ id, name, category, tint, mark, needs }): GameInfo => ({
+      id,
+      name,
+      category,
+      tint,
+      mark,
+      needs,
+    }),
   );
   return [...GAMES, ...added, ...custom.map(customInfo)];
+}
+
+/** Jeux de l'accueil qui conviennent à la façon de jouer choisie (#42). */
+export function usePlayableGames(): GameInfo[] {
+  const { gameMode } = useSettings();
+  return useHomeGames().filter((g) => suitsMode(g.needs, gameMode));
 }
 
 export function toggleCatalogueGame(id: string): Promise<void> {

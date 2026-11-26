@@ -1,6 +1,7 @@
 import { Dexie, type EntityTable } from 'dexie';
 import type { DeckItem, DeckKind } from '../games/deck/types';
 import type { Level } from '../games/levels';
+import type { GameMode } from '../games/modes';
 
 export interface Player {
   id: number;
@@ -47,6 +48,8 @@ export interface GameRecord {
   stars: number;
   /** Joueurs présents au lancement de la partie. */
   playerIds: number[];
+  /** Façon de jouer (#42) ; absente : partie normale (ou d'avant les modes). */
+  mode?: GameMode;
 }
 
 /** Jeu créé par le parent (#10). Les photos et sons sont des Blob dans les cartes. */

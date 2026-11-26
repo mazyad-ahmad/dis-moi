@@ -46,6 +46,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`         |
 | `name`, `lang`                     | nom (30 caractères max) et langue (`fr`)                                        |
 | `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS` |
+| `moves`                            | facultatif : `true` si le jeu fait bouger l'enfant (mime) ; écarté au Coucher   |
 
 | Champ d'une carte | Rôle                                                                                  |
 | ----------------- | ------------------------------------------------------------------------------------- |

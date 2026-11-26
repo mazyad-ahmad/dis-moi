@@ -10,6 +10,7 @@
   "desc": "L’enfant mime, le parent devine",
   "mark": "Mi",
   "tint": "sky",
+  "moves": true,
   "items": [
     {"id": "lapin", "level": 1, "answer": "Le lapin", "emoji": "🐇", "text": "Saute comme un lapin"},
     {"id": "elephant", "level": 1, "answer": "L’éléphant", "emoji": "🐘", "text": "Fais l’éléphant"},

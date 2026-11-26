@@ -9,6 +9,7 @@ import {
 } from './db';
 import { decodeGame, encodeGame, shareFile, uniqueGameName, type GameFile } from './gameFile';
 import { isLevel } from '../games/levels';
+import { isGameMode } from '../games/modes';
 import { cleanName, isAnimal, isPlayerColor, MAX_PLAYERS, PlayerError } from './players';
 import {
   DEFAULT_SETTINGS,
@@ -158,6 +159,8 @@ function readRecord(raw: unknown): GameRecord {
     rounds: rounds as number,
     stars: stars as number,
     playerIds: raw.playerIds,
+    // Façon de jouer (#42) : facultative, ignorée si elle est inconnue.
+    ...(isGameMode(raw.mode) && { mode: raw.mode }),
   };
 }
 
@@ -200,6 +203,7 @@ function readSettings(raw: unknown): Partial<Settings> {
   if ((VOLUME_CHOICES as readonly unknown[]).includes(raw.volume))
     out.volume = raw.volume as Settings['volume'];
   if (raw.gameLevel === null || isLevel(raw.gameLevel)) out.gameLevel = raw.gameLevel;
+  if (isGameMode(raw.gameMode)) out.gameMode = raw.gameMode;
   if (Array.isArray(raw.grandExcluded) && raw.grandExcluded.every((c) => typeof c === 'string'))
     out.grandExcluded = raw.grandExcluded;
   return out;

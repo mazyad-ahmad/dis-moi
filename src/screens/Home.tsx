@@ -2,6 +2,7 @@ import { href } from '../app/router';
 import { Avatar } from '../components/Avatar';
 import { Card } from '../components/Card';
 import { LevelChoice } from '../components/LevelChoice';
+import { ModeChoice } from '../components/ModeChoice';
 import { Logo } from '../components/Logo';
 import { Mascot } from '../components/Mascot';
 import { useNightTheme } from '../components/useNightTheme';
@@ -11,7 +12,7 @@ import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
 import { GrandTile } from '../games/grand/GrandTile';
 import type { GameInfo } from '../games/registry';
-import { useHomeGames } from '../games/useGames';
+import { usePlayableGames } from '../games/useGames';
 import { DailyCard } from './DailyCard';
 import { LastGame } from './LastGame';
 import { SeanceOverCard } from './SeanceOver';
@@ -32,10 +33,11 @@ export function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
 export function Home() {
   const players = usePlayers();
   const { absentPlayers } = useSettings();
-  const games = useHomeGames();
+  // Seuls les jeux qui conviennent à la façon de jouer (#42) sont proposés.
+  const games = usePlayableGames();
   const { over } = useSeance();
   const night = useNightTheme();
-  const { gameLevel } = useSettings();
+  const { gameLevel, gameMode } = useSettings();
 
   return (
     <main className="screen">
@@ -108,6 +110,11 @@ export function Home() {
           allLabel="Tous"
           onChange={(level) => void setSetting('gameLevel', level)}
         />
+      )}
+
+      {/* Façons de jouer (#42) : Normal par défaut, choisie au lancement. */}
+      {!over && (
+        <ModeChoice value={gameMode} onChange={(mode) => void setSetting('gameMode', mode)} />
       )}
 
       {over ? (
