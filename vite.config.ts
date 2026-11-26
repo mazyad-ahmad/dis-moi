@@ -7,6 +7,8 @@ export default defineConfig({
   // Chemins relatifs : l'appli peut être servie depuis n'importe quel sous-dossier.
   base: './',
   plugins: [react(), serviceWorker()],
+  // Port fixe : 5173 est souvent pris par d'autres applis sur la machine de dev.
+  server: { port: 5190, strictPort: true },
   test: {
     environment: 'jsdom',
     globals: true,
