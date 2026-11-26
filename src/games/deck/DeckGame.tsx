@@ -139,7 +139,7 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         title={deck.name}
       />
       {/* key : nouvelle manche = carte et réponse remises à zéro. */}
-      <div key={round} className="deck-round">
+      <div key={round} className="deck-round round-in">
         {deck.kind === 'sound' && <SoundCard item={item} />}
         {deck.kind === 'image' && <ImageCard item={item} />}
         {deck.kind === 'question' && <QuestionCard item={item} />}

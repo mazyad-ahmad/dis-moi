@@ -2,6 +2,7 @@ import { href } from '../app/router';
 import { useSeance } from '../data/seance';
 import { starsLabel } from '../games/format';
 import { Button } from './Button';
+import { Confetti } from './Confetti';
 import { IconStar } from './icons';
 
 interface Props {
@@ -39,6 +40,7 @@ export function GameResult({ stars, rounds, onReplay }: Props) {
   if (seance.over) return <SeanceEnd stars={stars} />;
   return (
     <main className="screen result">
+      <Confetti />
       <div className="result__stars" aria-hidden="true">
         <IconStar size={96} />
       </div>

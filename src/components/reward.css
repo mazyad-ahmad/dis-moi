@@ -1,0 +1,111 @@
+/* ---------- Récompenses (#32) ----------
+   Uniquement transform et opacity : animé par le compositeur, fluide même sur un petit Android.
+   Avec « réduire les animations », global.css coupe les animations ; ce qui ne doit pas rester
+   figé à l'écran est en plus masqué ci-dessous. */
+
+/* Étoile qui part du bouton « Trouvé » vers le compteur. Trajet en arc :
+   l'horizontale ralentit, la verticale accélère. */
+.star-flight {
+  position: fixed;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  will-change: transform;
+  animation: star-flight-x 600ms cubic-bezier(0.2, 0.7, 0.4, 1) both;
+}
+.star-flight__lift {
+  display: block;
+  color: var(--sun);
+  will-change: transform, opacity;
+  animation: star-flight-y 600ms cubic-bezier(0.6, 0, 0.9, 0.5) both;
+}
+.star-flight svg {
+  display: block;
+  fill: currentColor;
+}
+@keyframes star-flight-x {
+  to {
+    transform: translateX(var(--star-dx));
+  }
+}
+@keyframes star-flight-y {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(0) scale(1.2);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--star-dy)) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Le compteur rebondit quand l'étoile arrive. */
+.game-header__stars.is-bumped {
+  animation: star-bump 400ms 480ms ease-out;
+}
+@keyframes star-bump {
+  40% {
+    transform: scale(1.4);
+  }
+  70% {
+    transform: scale(0.92);
+  }
+}
+
+/* Nouvelle manche : la carte entre en douceur, sans retarder les boutons. */
+.round-in {
+  animation: round-in 240ms ease-out;
+}
+@keyframes round-in {
+  from {
+    opacity: 0.2;
+    transform: translateX(24px);
+  }
+}
+
+/* Confettis de fin de partie. */
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+}
+.confetti__piece {
+  position: absolute;
+  top: -16px;
+  left: var(--x);
+  width: 10px;
+  height: 14px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: confetti-fall var(--fall) var(--delay) cubic-bezier(0.3, 0.4, 0.6, 1) both;
+}
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift), 105vh) rotate(var(--turn));
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-flight,
+  .confetti {
+    display: none;
+  }
+}

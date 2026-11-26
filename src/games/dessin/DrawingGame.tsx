@@ -103,7 +103,8 @@ function DrawingSession({
       />
 
       <section className="word-card" aria-label="Mot à dessiner">
-        <div>
+        {/* key : chaque nouveau mot entre en douceur. */}
+        <div key={index} className="round-in">
           <span className="word-card__label">Le parent lit à voix haute</span>
           <strong className="word-card__word">{word}</strong>
         </div>

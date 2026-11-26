@@ -80,7 +80,8 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
         ))}
       </div>
 
-      <figure className="glyph-card">
+      {/* key : chaque manche entre en douceur. */}
+      <figure key={round} className="glyph-card round-in">
         <span className="glyph-card__glyph" data-testid="glyph">
           {card.glyph}
         </span>

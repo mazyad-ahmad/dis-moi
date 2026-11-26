@@ -19,7 +19,7 @@ function Player({ song }: { song: Song }) {
   const progress = length ? elapsed / length : 0;
   const playing = state === 'playing';
   return (
-    <section className="song-player" aria-label="Extrait">
+    <section className="song-player round-in" aria-label="Extrait">
       <div className="song-player__wave" aria-hidden="true">
         {BARS.map((h, i) => (
           <span
