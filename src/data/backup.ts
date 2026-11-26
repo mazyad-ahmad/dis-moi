@@ -199,6 +199,8 @@ function readSettings(raw: unknown): Partial<Settings> {
   if ((VOLUME_CHOICES as readonly unknown[]).includes(raw.volume))
     out.volume = raw.volume as Settings['volume'];
   if (raw.gameLevel === null || isLevel(raw.gameLevel)) out.gameLevel = raw.gameLevel;
+  if (Array.isArray(raw.grandExcluded) && raw.grandExcluded.every((c) => typeof c === 'string'))
+    out.grandExcluded = raw.grandExcluded;
   return out;
 }
 

@@ -5,6 +5,7 @@ import { Card } from '../components/Card';
 import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { BackupSection } from './BackupSection';
+import { GrandSection } from './GrandSection';
 import { PraiseSection } from './PraiseSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
@@ -269,6 +270,8 @@ export function Parent() {
         options={DRAW_SECONDS_CHOICES.map((n) => ({ value: n, label: clock(n) }))}
         onChange={(v) => void setSetting('drawSeconds', v)}
       />
+
+      <GrandSection />
 
       <ReadAloudSetting />
 

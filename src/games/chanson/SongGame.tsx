@@ -63,7 +63,7 @@ function Player({ song, slow }: { song: Song; slow: boolean }) {
 const SLOW_HINT = 'l’air passe au ralenti, fais-le réécouter';
 
 /** Une manche : lecteur et indices en escalier (écrits, air ralenti, première lettre). */
-function SongRound({ song }: { song: Song }) {
+export function SongRound({ song }: { song: Song }) {
   const written = writtenHints(song);
   const letter = firstLetterHint(song.title);
   const hints = [...written, SLOW_HINT, ...(letter ? [letter] : [])];

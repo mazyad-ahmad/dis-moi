@@ -116,6 +116,23 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
 | **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
 
+### Le Grand Jeu (#41)
+
+- Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
+- Chaque manche tire un jeu parmi ceux de l'accueil (de base, catalogue ajoutés, jeux créés qui
+  ont au moins une carte), puis une carte de ce jeu. Les jeux passent chacun leur tour dans un
+  ordre mélangé : **jamais deux manches de suite dans le même jeu** ; dans un jeu, pas de carte
+  répétée tant qu'il en reste.
+- Un **écran-éclair** annonce le jeu de la manche (« Maintenant : Mime ça ! ») ; il passe tout seul
+  après 2 s, ou d'un appui sur « C'est parti ! ».
+- Chaque manche se joue comme dans son jeu : indices, réponse cachée, et **minuteur** pour les
+  manches de dessin (« Autre mot » pris dans le même jeu).
+- Nombre de manches : le réglage de l'espace Parent. La partie est enregistrée sous l'identifiant
+  `grand-jeu` (« Le Grand Jeu » dans l'historique) et reprend après un rafraîchissement.
+- **Jeux inclus** : choisis dans l'espace Parent (« Le Grand Jeu », boutons Inclus / Inclure),
+  mémorisés (réglage `grandExcluded` : les jeux retirés ; un jeu ajouté ensuite est inclus
+  d'office). Au moins deux jeux restent inclus.
+
 ### Créer mon propre jeu
 
 - Nom (30 caractères), type choisi à la création : **Son**, **Image**, **Mot à dessiner** ou **Question**.
@@ -232,7 +249,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **jeux du Grand Jeu**, **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :

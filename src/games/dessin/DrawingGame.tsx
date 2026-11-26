@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentProps } from 'react';
 import { playSound } from '../../audio/sounds';
 import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
@@ -64,41 +64,69 @@ function DrawingSession({
     () => 0,
     (i) => (Number.isInteger(i) && (i as number) >= 0 ? (i as number) : undefined),
   );
-  const [pen, setPen] = useState(PENS[0].color);
-  const canvas = useRef<DrawingCanvasHandle>(null);
   // Durée réglée dans l'espace Parent, figée pour la partie.
   const [seconds] = useState(() => getSettings().drawSeconds);
-  const left = useCountdown(seconds, index);
+
+  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+
+  return (
+    <DrawingBoard
+      heading={{ round, rounds, stars, category, title }}
+      word={words[index % words.length]}
+      turn={index}
+      seconds={seconds}
+      onOtherWord={() => setIndex(index + 1)}
+      onAnswer={(found) => {
+        setIndex(index + 1);
+        answer(found);
+      }}
+    />
+  );
+}
+
+interface BoardProps {
+  heading: Omit<ComponentProps<typeof GameHeader>, 'aside'>;
+  word: string;
+  /** Change à chaque nouveau mot : relance le minuteur. */
+  turn: unknown;
+  /** Durée du minuteur, en secondes. */
+  seconds: number;
+  /** « Autre mot » : absent, le bouton n'est pas proposé. */
+  onOtherWord?: () => void;
+  onAnswer: (found: boolean) => void;
+}
+
+/**
+ * Une manche de dessin : mot, minuteur, zone de dessin et boutons.
+ * Partagée par « Dessine ça », les mots à dessiner créés et le Grand Jeu (#41).
+ */
+export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnswer }: BoardProps) {
+  const [pen, setPen] = useState(PENS[0].color);
+  const canvas = useRef<DrawingCanvasHandle>(null);
+  const left = useCountdown(seconds, turn);
   const timeUp = left <= 0;
   // Double vibration quand le temps est écoulé : le dessin est figé, l'enfant a fini.
   useEffect(() => {
-    if (timeUp && !finished) vibrate('timeUp');
-  }, [timeUp, finished]);
+    if (timeUp) vibrate('timeUp');
+  }, [timeUp]);
   // Fin du minuteur : une clochette douce, le parent valide le dessin.
   useEffect(() => {
     if (timeUp) void playSound('timer');
   }, [timeUp]);
 
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
-
-  const word = words[index % words.length];
-  const nextWord = () => {
+  const otherWord = () => {
     canvas.current?.clear();
-    setIndex(index + 1);
+    onOtherWord?.();
   };
   const next = (found: boolean) => {
-    nextWord();
-    answer(found);
+    canvas.current?.clear();
+    onAnswer(found);
   };
 
   return (
     <main className="screen screen--tight">
       <GameHeader
-        round={round}
-        rounds={rounds}
-        stars={stars}
-        category={category}
-        title={title}
+        {...heading}
         aside={
           <span
             className={`timer${timeUp ? ' timer--done' : ''}`}
@@ -113,19 +141,21 @@ function DrawingSession({
 
       <section className="word-card" aria-label="Mot à dessiner">
         {/* key : chaque nouveau mot entre en douceur. */}
-        <div key={index} className="round-in">
+        <div key={`${String(turn)}:${word}`} className="round-in">
           <span className="word-card__label">Le parent lit à voix haute</span>
           <strong className="word-card__word">{word}</strong>
           <ReadAloud text={word} />
         </div>
-        <button
-          type="button"
-          className="icon-btn word-card__other"
-          onClick={nextWord}
-          aria-label="Autre mot"
-        >
-          <IconRefresh size={20} />
-        </button>
+        {onOtherWord && (
+          <button
+            type="button"
+            className="icon-btn word-card__other"
+            onClick={otherWord}
+            aria-label="Autre mot"
+          >
+            <IconRefresh size={20} />
+          </button>
+        )}
       </section>
 
       <div className="drawing-area">

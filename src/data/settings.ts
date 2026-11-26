@@ -31,6 +31,8 @@ export interface Settings {
   gameLevel: Level | null;
   /** Joueurs qui ne jouent pas aujourd'hui (#37) ; un nouveau joueur joue par défaut. */
   absentPlayers: number[];
+  /** Jeux retirés du Grand Jeu (#41) ; un jeu ajouté ensuite y entre d'office. */
+  grandExcluded: string[];
 }
 
 export type Volume = 'soft' | 'normal';
@@ -54,6 +56,7 @@ export const DEFAULT_SETTINGS: Settings = {
   volume: 'soft',
   gameLevel: null,
   absentPlayers: [],
+  grandExcluded: [],
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

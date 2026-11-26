@@ -11,6 +11,8 @@ import { ParentGate } from '../screens/ParentGate';
 import { SongGame } from '../games/chanson/SongGame';
 import { DrawingGame } from '../games/dessin/DrawingGame';
 import { LettersGame } from '../games/lettres/LettersGame';
+import { GrandGame } from '../games/grand/GrandGame';
+import { GRAND_ID } from '../games/grand/pool';
 import { NotFound } from '../screens/Placeholder';
 import { AddGame } from '../screens/AddGame';
 import { EditGame } from '../screens/EditGame';
@@ -27,6 +29,7 @@ const GAME_SCREENS: Record<string, () => React.ReactElement> = {
   chanson: SongGame,
   lettres: LettersGame,
   dessin: DrawingGame,
+  [GRAND_ID]: GrandGame,
 };
 
 function CustomGameScreen({ id }: { id: number }) {

@@ -41,6 +41,25 @@ function restorePlace(saved: unknown): Place | undefined {
     : undefined;
 }
 
+/** Une manche : le glyphe en grand et la consigne du parent (aussi jouée dans le Grand Jeu). */
+export function GlyphRound({ card }: { card: GlyphCard }) {
+  return (
+    <>
+      <figure className="glyph-card round-in">
+        <span className="glyph-card__glyph" data-testid="glyph">
+          {card.glyph}
+        </span>
+        <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
+      </figure>
+
+      <ParentBlock>
+        {card.hint}
+        <ReadAloud text={card.hint} />
+      </ParentBlock>
+    </>
+  );
+}
+
 function LettersSession({ onReplay }: { onReplay: () => void }) {
   // Un paquet mélangé par mode, parcouru sans répétition ; on recommence s'il est épuisé.
   // Tirage, mode et position sont retrouvés après un rafraîchissement.
@@ -87,17 +106,7 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
       </div>
 
       {/* key : chaque manche entre en douceur. */}
-      <figure key={round} className="glyph-card round-in">
-        <span className="glyph-card__glyph" data-testid="glyph">
-          {card.glyph}
-        </span>
-        <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
-      </figure>
-
-      <ParentBlock>
-        {card.hint}
-        <ReadAloud text={card.hint} />
-      </ParentBlock>
+      <GlyphRound key={round} card={card} />
 
       <div className="spacer" />
       <AnswerBar onSkip={() => next(false)} onFound={() => next(true)} />

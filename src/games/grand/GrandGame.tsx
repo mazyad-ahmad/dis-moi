@@ -1,0 +1,162 @@
+import { useCallback, useEffect, useState, type ComponentProps } from 'react';
+import { AnswerBar } from '../../components/AnswerBar';
+import { GameHeader } from '../../components/GameHeader';
+import { GameResult } from '../../components/GameResult';
+import { Mascot } from '../../components/Mascot';
+import { getSettings } from '../../data/settings';
+import { TileIcon } from '../../screens/Home';
+import { SongRound } from '../chanson/SongGame';
+import { DeckRound } from '../deck/DeckGame';
+import { DrawingBoard } from '../dessin/DrawingGame';
+import { GlyphRound } from '../lettres/LettersGame';
+import { Replayable } from '../Replayable';
+import { useSaved } from '../session';
+import { useRoundSetting, useRounds } from '../useRounds';
+import {
+  GRAND_ID,
+  announce,
+  GRAND_NAME,
+  planRounds,
+  resolvePlan,
+  type GrandGame as Game,
+  type GrandRound,
+  type PlannedRound,
+} from './pool';
+import { useGrandPool } from './useGrand';
+import './grand.css';
+
+/** Durée de l'écran-éclair qui annonce le jeu de la manche (un appui le passe). */
+export const FLASH_MS = 2000;
+
+type Heading = Omit<ComponentProps<typeof GameHeader>, 'aside'>;
+
+/** Titre de la manche : « Quel chiffre ? » pour un chiffre tiré dans « Quelle lettre ? ». */
+function titleOf({ game, card }: GrandRound): string {
+  return card.type === 'glyph' && /^\d$/.test(card.glyph.glyph) ? 'Quel chiffre ?' : game.name;
+}
+
+/** Écran-éclair : annonce le jeu de la manche, puis laisse place à la manche. */
+function Flash({ heading, game, onGo }: { heading: Heading; game: Game; onGo: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onGo, FLASH_MS);
+    return () => clearTimeout(timer);
+  }, [onGo]);
+  return (
+    <main className="screen">
+      <GameHeader {...heading} />
+      <button type="button" className={`grand-flash game-tile--${game.tint}`} onClick={onGo}>
+        <span aria-hidden="true">
+          <TileIcon game={game} />
+        </span>
+        <strong className="grand-flash__text">{announce(heading.title)}</strong>
+        <span className="grand-flash__go">C’est parti !</span>
+      </button>
+    </main>
+  );
+}
+
+/** Manche de dessin : minuteur du dessin, « Autre mot » pris dans le même jeu. */
+function DrawRound({
+  game,
+  word,
+  turn,
+  heading,
+  seconds,
+  onAnswer,
+}: {
+  game: Game;
+  word: string;
+  turn: number;
+  heading: Heading;
+  seconds: number;
+  onAnswer: (found: boolean) => void;
+}) {
+  const words = game.cards.flatMap((c) => (c.type === 'draw' ? [c.word] : []));
+  const start = Math.max(0, words.indexOf(word));
+  const [other, setOther] = useState(0);
+  return (
+    <DrawingBoard
+      heading={heading}
+      word={words[(start + other) % words.length]}
+      turn={`${turn}:${other}`}
+      seconds={seconds}
+      onOtherWord={words.length > 1 ? () => setOther(other + 1) : undefined}
+      onAnswer={onAnswer}
+    />
+  );
+}
+
+function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void }) {
+  const setting = useRoundSetting();
+  // Manches prévues au lancement, retrouvées après un rafraîchissement.
+  const [plan] = useSaved<PlannedRound[]>(
+    GRAND_ID,
+    'plan',
+    () => planRounds(games, setting),
+    (saved) => (resolvePlan(saved, games) ? (saved as PlannedRound[]) : undefined),
+  );
+  const [planned] = useState(() => resolvePlan(plan, games)!);
+  const { round, rounds, stars, finished, answer } = useRounds(GRAND_ID, planned.length);
+  // Durée du minuteur de dessin, figée pour la partie.
+  const [seconds] = useState(() => getSettings().drawSeconds);
+  // Dernière manche déjà annoncée par l'écran-éclair.
+  const [announced, setAnnounced] = useState(0);
+  const go = useCallback(() => setAnnounced(round), [round]);
+
+  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+
+  const current = planned[round - 1];
+  const { game, card } = current;
+  const heading: Heading = { round, rounds, stars, category: GRAND_NAME, title: titleOf(current) };
+
+  if (announced < round) return <Flash key={round} heading={heading} game={game} onGo={go} />;
+
+  if (card.type === 'draw')
+    return (
+      <DrawRound
+        key={round}
+        game={game}
+        word={card.word}
+        turn={round}
+        heading={heading}
+        seconds={seconds}
+        onAnswer={answer}
+      />
+    );
+
+  const later = card.type === 'song' || (card.type === 'deck' && card.kind === 'question');
+  return (
+    <main className="screen">
+      <GameHeader {...heading} />
+      {/* key : nouvelle manche = carte, indices et réponse remis à zéro. */}
+      {card.type === 'song' && <SongRound key={round} song={card.song} />}
+      {card.type === 'glyph' && <GlyphRound key={round} card={card.glyph} />}
+      {card.type === 'deck' && <DeckRound key={round} kind={card.kind} item={card.item} />}
+      <div className="spacer" />
+      <AnswerBar
+        onSkip={() => answer(false)}
+        onFound={() => answer(true)}
+        skipLabel={later ? 'Pas encore' : 'Passer'}
+      />
+    </main>
+  );
+}
+
+/** Le Grand Jeu (#41) : chaque manche, un jeu différent de l'accueil. */
+export function GrandGame() {
+  const pool = useGrandPool();
+  if (pool === undefined) return <main className="screen" />;
+  if (!pool.included.length)
+    return (
+      <main className="screen">
+        <GameHeader category="Tous les jeux" title={GRAND_NAME} />
+        <div className="empty">
+          <Mascot mood="think" />
+          <strong>Pas encore de jeu à mélanger</strong>
+        </div>
+      </main>
+    );
+  return (
+    <Replayable>{(replay) => <GrandSession games={pool.included} onReplay={replay} />}</Replayable>
+  );
+}

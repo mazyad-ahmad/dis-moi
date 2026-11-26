@@ -2,6 +2,7 @@ import { customDeck, customRouteId, useCustomGames } from '../data/customGames';
 import type { CustomGame } from '../data/db';
 import { setSetting, getSettings, useSettings } from '../data/settings';
 import { CATALOGUE, findCatalogueGame } from './catalogue/catalogue';
+import { GRAND_ID, GRAND_NAME } from './grand/pool';
 import { GAMES, type GameInfo } from './registry';
 
 function customInfo(g: CustomGame): GameInfo {
@@ -26,6 +27,7 @@ export function toggleCatalogueGame(id: string): Promise<void> {
 
 /** Nom d'un jeu pour l'historique (un jeu créé a pu être supprimé depuis). */
 export function gameName(gameId: string, custom: CustomGame[] = []): string {
+  if (gameId === GRAND_ID) return GRAND_NAME;
   return (
     GAMES.find((g) => g.id === gameId)?.name ??
     findCatalogueGame(gameId)?.name ??

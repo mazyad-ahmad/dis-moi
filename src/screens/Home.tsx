@@ -9,6 +9,7 @@ import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons
 import { setPlayerActive, usePlayers } from '../data/players';
 import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
+import { GrandTile } from '../games/grand/GrandTile';
 import type { GameInfo } from '../games/registry';
 import { useHomeGames } from '../games/useGames';
 import { LastGame } from './LastGame';
@@ -16,7 +17,7 @@ import { SeanceOverCard } from './SeanceOver';
 
 const ICON_COLOR = { music: 'var(--forest)', letters: 'var(--river)', pencil: 'var(--sun)' };
 
-function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
+export function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
   return (
     <span className="game-tile__icon" style={icon && { color: ICON_COLOR[icon] }}>
       {icon === 'music' && <IconMusic size={26} />}
@@ -110,6 +111,7 @@ export function Home() {
         <SeanceOverCard />
       ) : (
         <div className="game-grid">
+          <GrandTile />
           {games.map((g) => (
             <a key={g.id} href={href(`/jeu/${g.id}`)} className={`game-tile game-tile--${g.tint}`}>
               <TileIcon game={g} />

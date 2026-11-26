@@ -13,7 +13,8 @@ import { useSavedDraw } from '../session';
 import { getSettings } from '../../data/settings';
 import { cardLevel, drawForLevel } from '../levels';
 import { useRoundSetting, useRounds } from '../useRounds';
-import type { Deck, DeckItem } from './types';
+import { cardKey } from './cardKey';
+import type { Deck, DeckItem, DeckKind } from './types';
 import { useObjectUrl } from './useObjectUrl';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
@@ -85,16 +86,32 @@ function QuestionCard({ item }: { item: DeckItem }) {
   );
 }
 
-/**
- * Clé d'une carte dans le tirage sauvegardé. Les cartes créées n'ont pas d'identifiant :
- * position et réponse, pour qu'un jeu modifié entre-temps donne une nouvelle partie.
- */
-function cardKey(item: DeckItem, index: number) {
-  return item.id ?? `${index}:${item.answer}`;
-}
-
 function answerOf(item: DeckItem) {
   return item.emoji && !item.color ? `${item.emoji} ${item.answer}` : item.answer;
+}
+
+/** Une manche : la carte et la zone du parent (aussi jouée dans le Grand Jeu). */
+export function DeckRound({ kind, item }: { kind: DeckKind; item: DeckItem }) {
+  const soundToImitate = kind === 'sound' && !item.audio && item.text;
+  return (
+    <div className="deck-round round-in">
+      {kind === 'sound' && <SoundCard item={item} />}
+      {kind === 'image' && <ImageCard item={item} />}
+      {kind === 'question' && <QuestionCard item={item} />}
+      {/* Premier indice écrit visible d'emblée, les suivants à la demande. */}
+      <ParentBlock
+        hidden={answerOf(item)}
+        hints={hintLadder(item)}
+        openHints={writtenHints(item).length ? 1 : 0}
+      >
+        {soundToImitate && (
+          <>
+            À imiter : <strong>{item.text}</strong>
+          </>
+        )}
+      </ParentBlock>
+    </div>
+  );
 }
 
 function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
@@ -112,7 +129,6 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
   const item = items[round - 1];
-  const soundToImitate = deck.kind === 'sound' && !item.audio && item.text;
   return (
     <main className="screen">
       <GameHeader
@@ -123,23 +139,7 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         title={deck.name}
       />
       {/* key : nouvelle manche = carte et réponse remises à zéro. */}
-      <div key={round} className="deck-round round-in">
-        {deck.kind === 'sound' && <SoundCard item={item} />}
-        {deck.kind === 'image' && <ImageCard item={item} />}
-        {deck.kind === 'question' && <QuestionCard item={item} />}
-        {/* Premier indice écrit visible d'emblée, les suivants à la demande. */}
-        <ParentBlock
-          hidden={answerOf(item)}
-          hints={hintLadder(item)}
-          openHints={writtenHints(item).length ? 1 : 0}
-        >
-          {soundToImitate && (
-            <>
-              À imiter : <strong>{item.text}</strong>
-            </>
-          )}
-        </ParentBlock>
-      </div>
+      <DeckRound key={round} kind={deck.kind} item={item} />
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}
