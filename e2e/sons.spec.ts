@@ -25,6 +25,24 @@ test.beforeEach(async ({ page }) => {
 const notes = (page: import('@playwright/test').Page) =>
   page.evaluate(() => (window as unknown as { notes: number }).notes);
 
+const storedSetting = (page: import('@playwright/test').Page, key: string) =>
+  page.evaluate(
+    (k) =>
+      new Promise<unknown>((resolve, reject) => {
+        const open = indexedDB.open('dis-moi');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const req = open.result.transaction('settings').objectStore('settings').get(k);
+          req.onsuccess = () => {
+            open.result.close();
+            resolve((req.result as { value?: unknown } | undefined)?.value);
+          };
+          req.onerror = () => reject(req.error);
+        };
+      }),
+    key,
+  );
+
 test('Trouvé et Passer jouent un son, réglage coupé : plus rien', async ({ page }) => {
   await page.goto('./#/jeu/lettres');
   await page.getByRole('button', { name: 'Trouvé' }).click();
@@ -36,6 +54,8 @@ test('Trouvé et Passer jouent un son, réglage coupé : plus rien', async ({ pa
 
   await page.goto('./#/parent');
   await page.getByText('Désactivés', { exact: true }).click();
+  // Attendre que le réglage soit écrit dans IndexedDB avant de recharger.
+  await expect.poll(() => storedSetting(page, 'sounds')).toBe(false);
   await page.reload();
   await expect(page.getByRole('radio', { name: 'Désactivés' })).toBeChecked();
 
