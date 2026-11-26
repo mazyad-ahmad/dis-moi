@@ -166,7 +166,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   (5 maximum, 10 s chacune) : elles remplacent alors la voix du téléphone. Elles sont jouées comme
   tout enregistrement du parent, au niveau commun (`playRecording`, voir « Volume »), restent dans
   le téléphone (IndexedDB, table `praises`), ne vont ni dans la sauvegarde ni dans un jeu
-  partagé, et partent avec « Effacer toutes les données ».
+  partagé, et partent avec « Effacer toutes les données ». Chacune peut être réécoutée ou
+  supprimée (après confirmation) ; une félicitation supprimée n’est plus jamais jouée.
 - Sans voix française locale ni enregistrement, la fonction n’est pas proposée : l’espace Parent
   propose seulement d’enregistrer (si le micro existe).
 - La félicitation ne retarde rien : elle part après le son d’interface, la manche suivante déjà
@@ -206,7 +207,12 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :
   une impulsion courte sur « Trouvé », deux à la fin du minuteur de Dessine ça (le dessin est
   alors figé), un petit motif de fête en fin de partie. Jamais pendant que l'enfant dessine.
-  Sans vibreur (iPhone, ordinateur), rien ne se passe.
+  Chaque impulsion dure au moins 80 ms : plus courte, beaucoup de téléphones ne la font pas
+  sentir. Sans API de vibration (iPhone, Firefox), le réglage n'est pas proposé et l'espace
+  Parent l'explique. Sinon, un bouton **« Essayer »** fait vibrer tout de suite, pour vérifier
+  les réglages du téléphone : Chrome ne vibre pas en mode silencieux ni quand les vibrations
+  sont coupées dans le téléphone, et n'accepte de vibrer qu'après un premier toucher sur la
+  page (c'est toujours le cas en jeu). Un ordinateur sans vibreur ne vibre simplement pas.
 - **Verrou parent** (désactivé par défaut) : quand il est activé, une petite addition
   (« 7 + 5 = ? », résultat entre 10 et 18) est demandée avant l'espace Parent, les joueurs,
   l'ajout et l'édition des jeux, y compris en tapant l'adresse. Les jeux restent libres.

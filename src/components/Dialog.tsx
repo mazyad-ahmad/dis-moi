@@ -52,6 +52,10 @@ export function Dialog({
 }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const closed = useRef(false);
+  // Fermeture faite par nous au démontage : son évènement « close » n'est pas un « Annuler ».
+  // En développement (StrictMode), React démonte puis remonte aussitôt le dialogue ; sans ce
+  // repère, l'évènement arrivait après la réouverture et refermait tout (#147).
+  const selfClosed = useRef(false);
   const close = useCallback(() => {
     if (closed.current) return;
     closed.current = true;
@@ -65,7 +69,10 @@ export function Dialog({
     if (!dialog.open) dialog.showModal();
     initialFocus?.current?.focus();
     return () => {
-      if (dialog.open) dialog.close();
+      if (dialog.open) {
+        selfClosed.current = true;
+        dialog.close();
+      }
       if (opener?.isConnected) opener.focus();
     };
     // Ouverture une seule fois, au montage.
@@ -86,7 +93,13 @@ export function Dialog({
         close();
       }}
       // Fermeture forcée par le navigateur (retours répétés) : on suit.
-      onClose={close}
+      onClose={() => {
+        if (selfClosed.current) {
+          selfClosed.current = false;
+          return;
+        }
+        if (!ref.current?.open) close();
+      }}
       // Clic sur le voile (hors du contenu) : comme « Annuler ».
       onClick={(e) => e.target === e.currentTarget && close()}
       onKeyDown={trapTab}

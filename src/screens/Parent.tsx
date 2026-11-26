@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { href } from '../app/router';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -21,6 +21,7 @@ import {
   VOLUME_CHOICES,
 } from '../data/settings';
 import { clock } from '../games/format';
+import { canVibrate, tryVibration } from '../pwa/haptics';
 import { promptInstall, usePwa } from '../pwa/pwa';
 import { useFrenchVoice } from '../voice/speech';
 
@@ -60,6 +61,50 @@ function ReadAloudSetting() {
     />
   );
 }
+/** Vibrations (#31, #146) : proposées seulement si le navigateur sait faire vibrer. */
+function VibrationSetting() {
+  const { vibrations } = useSettings();
+  const [tried, setTried] = useState<'ok' | 'refused' | null>(null);
+  if (!canVibrate())
+    return (
+      <section className="setting" aria-labelledby="vibrations-title">
+        <h2 id="vibrations-title" className="eyebrow">
+          Vibrations
+        </h2>
+        <p className="muted">
+          Ce navigateur ne sait pas faire vibrer le téléphone (iPhone, Firefox) : pas de vibrations.
+        </p>
+      </section>
+    );
+  return (
+    <Choice
+      legend="Vibrations"
+      name="vibrations"
+      value={vibrations ? 'on' : 'off'}
+      options={VIBRATION_CHOICES}
+      onChange={(v) => {
+        setTried(null);
+        void setSetting('vibrations', v === 'on');
+      }}
+      className="segmented--2"
+      hint="Une petite vibration sur « Trouvé », à la fin du minuteur et de la partie. Jamais pendant le dessin."
+    >
+      {vibrations && (
+        <div className="media-row">
+          <Button variant="secondary" onClick={() => setTried(tryVibration() ? 'ok' : 'refused')}>
+            Essayer
+          </Button>
+          <span className="muted" role="status">
+            {tried === 'ok' &&
+              'Le téléphone devrait vibrer. Rien senti ? Coupez le mode silencieux et activez les vibrations dans les réglages du téléphone.'}
+            {tried === 'refused' && 'Le navigateur a refusé de faire vibrer le téléphone.'}
+          </span>
+        </div>
+      )}
+    </Choice>
+  );
+}
+
 const SOUND_CHOICES = [
   { value: 'on', label: 'Activés' },
   { value: 'off', label: 'Désactivés' },
@@ -84,6 +129,7 @@ function Choice<T extends string | number>({
   onChange,
   className,
   hint,
+  children,
 }: {
   legend: string;
   name: string;
@@ -92,6 +138,7 @@ function Choice<T extends string | number>({
   onChange: (v: T) => void;
   className?: string;
   hint?: string;
+  children?: ReactNode;
 }) {
   return (
     <fieldset className="setting">
@@ -111,6 +158,7 @@ function Choice<T extends string | number>({
         ))}
       </div>
       {hint && <p className="muted">{hint}</p>}
+      {children}
     </fieldset>
   );
 }
@@ -224,15 +272,7 @@ export function Parent() {
 
       <ReadAloudSetting />
 
-      <Choice
-        legend="Vibrations"
-        name="vibrations"
-        value={settings.vibrations ? 'on' : 'off'}
-        options={VIBRATION_CHOICES}
-        onChange={(v) => void setSetting('vibrations', v === 'on')}
-        className="segmented--2"
-        hint="Une petite vibration sur « Trouvé », à la fin du minuteur et de la partie, sur les téléphones qui le permettent. Jamais pendant le dessin."
-      />
+      <VibrationSetting />
 
       <Choice
         legend="Sons"
