@@ -27,7 +27,7 @@ L'objectif est d'avoir au moins deux appareils, un récent et un modeste.
 
 ### Campagne du 26 novembre 2026
 
-Appareil : Android (modèle et version à compléter), Chrome, appli installée.
+Appareil : Poco F6, HyperOS 3, Chrome, appli installée.
 
 | #   | Cas                | Résultat | Remarque                                                                             |
 | --- | ------------------ | -------- | ------------------------------------------------------------------------------------ |
@@ -40,6 +40,6 @@ Appareil : Android (modèle et version à compléter), Chrome, appli installée.
 | 7   | Photo              | ❌       | « Ajouter des questions » ne fait rien dans un jeu photo : #142                      |
 | 8   | Partage de fichier | —        |                                                                                      |
 | 9   | Dessin au doigt    | —        |                                                                                      |
-| 10  | Écran allumé       | ?        | À préciser                                                                           |
+| 10  | Écran allumé       | ✅       |                                                                                      |
 | 11  | Remise à zéro      | ❌       | Page Étoiles vide après la remise à zéro, même après de nouvelles parties : #143     |
 | 12  | Pages longues      | ❌       | Espace Parent : on défile au-delà du contenu, la barre du bas remonte : #145         |
