@@ -212,7 +212,7 @@
 
 | Jeu                               | Règle proposée                                                                                                                                            |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Quelle chanson ?**              | Extrait de 10 s, réécoutable. Indice visible, titre caché derrière « Voir la réponse ». Voir « Contenu des chansons ».                                    |
+| **Quelle chanson ?**              | Extrait de 10 s, réécoutable. Indice visible, titre caché derrière « Voir la réponse », puis « Chanter ensemble ». Voir « Contenu des chansons ».         |
 | **Quelle lettre, quel chiffre ?** | Lettres, chiffres, nombres ou constellations (voir ci-dessous), tirés au hasard sans répétition dans la partie. Consigne parent associée à chaque glyphe. |
 | **Dessine ça**                    | Minuteur de **60 s** ; à zéro, le dessin reste visible et le parent valide. Pas de note du dessin : « C'est fini » = +1 étoile.                           |
 
@@ -349,8 +349,21 @@
   verte, Il est né le divin enfant, la Marche turque…), dans le pack `src/content/chansons.json`.
 - Chaque air note sa **source** (auteur mort depuis plus de 70 ans, ou air traditionnel) et un
   **thème** : comptine, Noël ou classique. Les tests refusent un air sans source ni thème.
-- Seul l'air est joué, jamais de paroles : un air ancien reste libre même quand des paroles
-  françaises récentes existent (« Vive le vent »).
+- Paroles (#117) : seulement quand elles sont elles aussi du domaine public (traditionnelles,
+  ou d'un auteur mort depuis plus de 70 ans), et la source le dit (« air et paroles
+  traditionnels… »). Un air ancien reste libre même quand des paroles françaises récentes
+  existent (« Vive le vent ») : on joue alors l'air, sans ses paroles.
+- **Chanter ensemble** (#117) : une fois la réponse vue (« Voir la réponse »), ou la bonne
+  image touchée en « Répondre en montrant », un bouton « Chanter ensemble » remplace l'extrait
+  par l'**air en entier** (même instrument, même accompagnement), avec les **paroles du premier
+  couplet** en grand quand la carte en a (champ `lyrics`, 13 airs dont « Une souris verte »,
+  « Frère Jacques », « Au clair de la lune »). Les paroles reçoivent le focus : TalkBack les
+  lit. Sans paroles, l'air se joue quand même (« fredonnez-le ensemble »). C'est un bonus :
+  « Trouvé » et « Pas encore » restent là, et la manche suivante coupe l'air ; « Revenir à
+  l'extrait » l'arrête aussi. Toujours aucun enregistrement chanté, rien à télécharger.
+- L'air noté (`melody`) est l'air entier, une minute au plus : l'extrait en joue les
+  10 premières secondes. Les tests vérifient que l'air d'une carte à paroles couvre tout le
+  couplet (à peu près une note par syllabe).
 - Les mélodies sont **jouées par un petit synthétiseur** dans l'appli (Web Audio), à partir
   d'une notation texte : aucun enregistrement, donc pas de droits d'interprète ni de fichier
   audio à télécharger, et le jeu marche hors ligne.
@@ -627,7 +640,8 @@ turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
    Cette barre reste collée au bas de l'écran : seul le contenu au-dessus défile, et le
    défilement s'arrête à la fin du contenu, sur toutes les pages (#145).
 2. **Quelle chanson ?** — manche _n_ sur 10, compteur d'étoiles, façon d'écouter (#47), lecteur d'extrait (10 s),
-   bloc parent avec titre caché + indice, bouton « Voir la réponse ».
+   bloc parent avec titre caché + indice, bouton « Voir la réponse », puis « Chanter ensemble »
+   (air entier et paroles).
 3. **Quelle lettre, quel chiffre ?** — sélecteur Majuscules / Minuscules / Attaché / Chiffres /
    Nombres / Dés, doigts / Mélange, glyphe en grand
    (« Montre l'écran à l'enfant »), consigne parent, boutons Passer / Trouvé.

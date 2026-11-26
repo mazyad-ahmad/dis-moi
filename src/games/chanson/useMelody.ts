@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Timbre } from '../../audio/instruments';
-import { extractLength, parseMelody, tonic } from './melody';
+import { extractLength, parseMelody, schedule, tonic } from './melody';
 import { audioAvailable, MelodyPlayer } from './player';
-import type { Song } from './songs';
+import { SLOW_TEMPO, type Song } from './songs';
 import { variantSchedule, type Variant } from './variants';
 
 export type PlayState = 'idle' | 'playing' | 'paused' | 'ended' | 'unavailable';
@@ -12,6 +12,7 @@ export type PlayState = 'idle' | 'playing' | 'paused' | 'ended' | 'unavailable';
  * Ralenti (indice) : les mêmes notes, jouées plus lentement.
  * `timbre` : instrument de l'air ; `drone` : accompagnement (bourdon sur la tonique).
  * `variant` et `step` : façon d'écouter (#47) et palier de « Petit à petit ».
+ * `full` : l'air en entier, sans couper à la durée de l'extrait (« Chanter ensemble », #117).
  */
 export function useMelody(
   song: Song,
@@ -20,15 +21,18 @@ export function useMelody(
   drone = false,
   variant: Variant = 'extrait',
   step = 0,
+  full = false,
 ) {
   const player = useMemo(() => {
     const notes = parseMelody(song.melody);
-    const events = variantSchedule(notes, song.bpm, variant, step, slow);
+    const events = full
+      ? schedule(notes, song.bpm * (slow ? SLOW_TEMPO : 1), Infinity)
+      : variantSchedule(notes, song.bpm, variant, step, slow);
     return new MelodyPlayer(events, extractLength(events), {
       timbre,
       drone: (drone && tonic(notes)) || undefined,
     });
-  }, [song, slow, timbre, drone, variant, step]);
+  }, [song, slow, timbre, drone, variant, step, full]);
   const [state, setState] = useState<PlayState>('idle');
   const [elapsed, setElapsed] = useState(0);
 
@@ -71,5 +75,12 @@ export function useMelody(
     }
   }
 
-  return { state, elapsed, length: player.length, toggle };
+  /** Arrête et revient au début. */
+  async function stop() {
+    await player.stop();
+    setState('idle');
+    setElapsed(0);
+  }
+
+  return { state, elapsed, length: player.length, toggle, stop };
 }

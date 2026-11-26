@@ -16,7 +16,10 @@ export interface Song {
   /** Phrase pour prolonger la discussion après la réponse (#124). */
   prolonger?: string;
   bpm: number;
+  /** Air noté en entier : l'extrait en joue le début, « Chanter ensemble » le tout (#117). */
   melody: string;
+  /** Paroles du premier couplet (domaine public), montrées pendant « Chanter ensemble ». */
+  lyrics?: string[];
   /** Niveau par âge (#40). */
   level: Level;
   /** Image de la chanson (emoji), montrée parmi les choix de « Répondre en montrant » (#123). */
@@ -36,6 +39,7 @@ export const SONGS: Song[] = getPack('chansons').items.map((item) => ({
   ...(item.prolonger && { prolonger: item.prolonger }),
   bpm: item.bpm!,
   melody: item.melody!,
+  ...(item.lyrics && { lyrics: item.lyrics }),
   level: item.level,
   ...(item.emoji && { emoji: item.emoji }),
 }));

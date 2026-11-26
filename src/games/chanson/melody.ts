@@ -57,6 +57,11 @@ export function schedule(notes: Note[], bpm: number, maxSeconds: number): NoteEv
   return events;
 }
 
+/** Durée de l'air complet en secondes, silences compris (« Chanter ensemble », #117). */
+export function melodySeconds(notes: Note[], bpm: number): number {
+  return (notes.reduce((sum, n) => sum + n.beats, 0) * 60) / bpm;
+}
+
 /** Durée totale de l'extrait en secondes. */
 export function extractLength(events: NoteEvent[]): number {
   const last = events[events.length - 1];

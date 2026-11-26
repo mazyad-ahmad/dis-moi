@@ -18,6 +18,7 @@ import { drawForLevel } from '../levels';
 import { drawForTurns } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
+import { SingAlong } from './SingAlong';
 import { EXTRACT_SECONDS, SONGS, type Song } from './songs';
 import { useMelody } from './useMelody';
 import { VariantPicker } from './VariantPicker';
@@ -133,6 +134,7 @@ const SLOW_HINT = 'l’air passe au ralenti, fais-le réécouter';
  * Une manche : lecteur (instrument tiré au hasard, accompagnement facultatif) et indices en
  * escalier (écrits, air ralenti, première lettre).
  * Avec `pool` et « Répondre en montrant » (#123), l'enfant touche la chanson parmi des images.
+ * Une fois la chanson trouvée ou la réponse vue : « Chanter ensemble » (#117).
  */
 export function SongRound({
   song,
@@ -156,27 +158,33 @@ export function SongRound({
   const [drawn] = useState(randomVariant);
   const [step, setStep] = useState(0);
   const variant = choice === 'hasard' ? drawn : choice;
+  const [found, setFound] = useState(false);
+  const [singing, setSinging] = useState(false);
   const slow = shown > written.length;
   return (
     <>
       {/* key : le lecteur repart de zéro au ralenti ou quand l'accompagnement change. */}
-      <Player
-        key={`${slow ? 'lent' : 'normal'}-${drone ? 'bourdon' : 'seul'}-${variant}-${step}`}
-        song={song}
-        slow={slow}
-        timbre={timbre}
-        drone={drone}
-        onDrone={setDrone}
-        variant={variant}
-        step={step}
-        onMore={() => setStep(step + 1)}
-      />
-      {choices && <ChoiceBoard options={choices} answer={song.id} />}
+      {!singing && (
+        <Player
+          key={`${slow ? 'lent' : 'normal'}-${drone ? 'bourdon' : 'seul'}-${variant}-${step}`}
+          song={song}
+          slow={slow}
+          timbre={timbre}
+          drone={drone}
+          onDrone={setDrone}
+          variant={variant}
+          step={step}
+          onMore={() => setStep(step + 1)}
+        />
+      )}
+      {found && <SingAlong song={song} timbre={timbre} drone={drone} onSinging={setSinging} />}
+      {choices && <ChoiceBoard options={choices} answer={song.id} onFound={() => setFound(true)} />}
       <ParentBlock
         hidden={song.title}
         hints={hints}
         openHints={1}
         onHint={setShown}
+        onReveal={() => setFound(true)}
         prolonger={song.prolonger}
       />
     </>

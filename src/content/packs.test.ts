@@ -71,7 +71,34 @@ describe('un pack invalide nomme la carte fautive', () => {
     [
       'source hors d’un pack d’airs',
       withItem(animals, 0, { source: 'Traditionnel' }),
-      'carte 1 (« La vache ») : « melody », « bpm » et « source »',
+      'carte 1 (« La vache ») : « melody », « bpm », « source » et « lyrics »',
+    ],
+    [
+      'paroles hors d’un pack d’airs',
+      withItem(animals, 0, { lyrics: ['Meuh, meuh', 'La vache'] }),
+      'carte 1 (« La vache ») : « melody », « bpm », « source » et « lyrics »',
+    ],
+    [
+      'paroles pas en liste',
+      withItem(songs, 0, { lyrics: 'Frère Jacques, dormez-vous ?' }),
+      'carte 1 (« Frère Jacques ») : paroles (« lyrics ») : liste de 2 à 12 vers',
+    ],
+    [
+      'vers trop long',
+      withItem(songs, 0, { lyrics: ['Frère Jacques', 'la '.repeat(30).trim()] }),
+      'carte 1 (« Frère Jacques ») : paroles (« lyrics ») : liste de 2 à 12 vers de 60 caractères',
+    ],
+    [
+      'paroles sans leur source',
+      withItem(songs, 1, {
+        source: 'Air traditionnel français (XVIIIe siècle), domaine public',
+      }),
+      'carte 2 (« Au clair de la lune ») : paroles (« lyrics ») : la source doit aussi dire',
+    ],
+    [
+      'air complet trop long',
+      withItem(songs, 5, { melody: 'C4:8 '.repeat(30).trim() }),
+      'carte 6 (« Douce nuit ») : air complet trop long',
     ],
     [
       'bruit manquant',

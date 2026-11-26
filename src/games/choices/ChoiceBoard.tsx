@@ -30,7 +30,16 @@ function Visual({ option }: { option: ChoiceOption }) {
  * Les choix en grand. Toucher la bonne réponse la met en valeur ; un autre choix ne fait
  * rien (ni son, ni message) : l'enfant peut réessayer. Le parent valide toujours la manche.
  */
-export function ChoiceBoard({ options, answer }: { options: ChoiceOption[]; answer: string }) {
+export function ChoiceBoard({
+  options,
+  answer,
+  onFound,
+}: {
+  options: ChoiceOption[];
+  answer: string;
+  /** Appelé quand l'enfant touche la bonne réponse. */
+  onFound?: () => void;
+}) {
   const [found, setFound] = useState(false);
   const right = options.find((o) => o.key === answer);
   return (
@@ -44,7 +53,11 @@ export function ChoiceBoard({ options, answer }: { options: ChoiceOption[]; answ
               type="button"
               className={`choice${shown ? ' is-right' : ''}`}
               aria-label={o.label}
-              onClick={() => o.key === answer && setFound(true)}
+              onClick={() => {
+                if (o.key !== answer) return;
+                setFound(true);
+                onFound?.();
+              }}
             >
               <span className="choice__visual" aria-hidden="true">
                 <Visual option={o} />

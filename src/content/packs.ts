@@ -1,6 +1,6 @@
 import { MAX_GAME_NAME, MAX_HINTS, MAX_PROLONGER, MAX_TEXT } from '../data/customGames';
 import { GAME_FILE_FORMAT, GAME_FILE_VERSION } from '../data/gameFile';
-import { parseMelody } from '../games/chanson/melody';
+import { melodySeconds, parseMelody } from '../games/chanson/melody';
 import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
 import { isLevel, LEVELS, type Level } from '../games/levels';
@@ -25,8 +25,10 @@ export interface PackItem extends Omit<DeckItem, 'image' | 'audio' | 'soundUrl' 
   melody?: string;
   /** Tempo de l'air, en battements par minute (pack « melody »). */
   bpm?: number;
-  /** Origine et statut de domaine public de l'air (pack « melody », #45). */
+  /** Origine et statut de domaine public de l'air (pack « melody », #45), et des paroles. */
   source?: string;
+  /** Paroles du premier couplet, un vers par ligne (pack « melody », #117). */
+  lyrics?: string[];
   /** Vrai son de la carte (pack « sound ») : fichier WAV de `src/content/media/`. */
   sound?: string;
   /** Photo montrée une fois la réponse donnée : fichier de `src/content/media/`. */
@@ -93,9 +95,16 @@ const ITEM_FIELDS = new Set([
   'melody',
   'bpm',
   'source',
+  'lyrics',
   'sound',
   'photo',
 ]);
+
+/** Paroles (#117) : vers par couplet et longueur d'un vers, lisibles à bout de bras. */
+export const MAX_LYRICS_LINES = 12;
+export const MAX_LYRICS_LINE = 60;
+/** Durée maximale de l'air complet joué par « Chanter ensemble » (#117), en secondes. */
+export const MAX_FULL_SECONDS = 60;
 
 /** Thèmes des airs (#45) : chaque air en a un, dans « tags ». */
 export const MELODY_THEMES = ['comptine', 'noel', 'classique'] as const;
@@ -162,14 +171,35 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
         return 'source (« source ») manquante : auteur ou origine, et statut de domaine public';
       if (!oneTheme(item.tags, MELODY_THEMES))
         return `thème (« tags ») : un seul parmi ${MELODY_THEMES.join(', ')}`;
+      let seconds: number;
       try {
-        parseMelody(item.melody);
+        seconds = melodySeconds(parseMelody(item.melody), item.bpm);
       } catch (e) {
         return `air illisible : ${(e as Error).message}`;
       }
-      return undefined;
+      if (seconds > MAX_FULL_SECONDS)
+        return `air complet trop long (${Math.round(seconds)} s, ${MAX_FULL_SECONDS} s max)`;
+      return lyricsProblem(item.lyrics, item.source);
     }
   }
+}
+
+/**
+ * Paroles d'un air (#117) : facultatives, une liste de vers, et seulement du domaine public.
+ * La source le dit (« air et paroles traditionnels… »), comme elle le dit déjà pour l'air.
+ */
+function lyricsProblem(lyrics: unknown, source: string): string | undefined {
+  if (lyrics === undefined) return undefined;
+  if (!(
+    Array.isArray(lyrics) &&
+    lyrics.length >= 2 &&
+    lyrics.length <= MAX_LYRICS_LINES &&
+    lyrics.every((line) => isText(line, MAX_LYRICS_LINE))
+  ))
+    return `paroles (« lyrics ») : liste de 2 à ${MAX_LYRICS_LINES} vers de ${MAX_LYRICS_LINE} caractères au plus`;
+  if (!/paroles/i.test(source))
+    return 'paroles (« lyrics ») : la source doit aussi dire d’où viennent les paroles';
+  return undefined;
 }
 
 /** Son et photo d'une carte (#118) : fichiers présents dans `media/`, au bon format. */
@@ -228,9 +258,12 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     return 'langue (« lang ») : code à deux lettres attendu';
   if (
     kind !== 'melody' &&
-    (item.melody !== undefined || item.bpm !== undefined || item.source !== undefined)
+    (item.melody !== undefined ||
+      item.bpm !== undefined ||
+      item.source !== undefined ||
+      item.lyrics !== undefined)
   )
-    return '« melody », « bpm » et « source » sont réservés aux packs d’airs';
+    return '« melody », « bpm », « source » et « lyrics » sont réservés aux packs d’airs';
   const media = mediaProblem(kind, item);
   if (media) return media;
   return kindRule(kind, item);
@@ -314,12 +347,13 @@ export function getPack(id: string): Pack {
 export function deckItems(pack: Pack): DeckItem[] {
   return pack.items.map((item) => {
     const copy: DeckItem &
-      Partial<Pick<PackItem, 'melody' | 'bpm' | 'source' | 'sound' | 'photo'>> = {
+      Partial<Pick<PackItem, 'melody' | 'bpm' | 'source' | 'lyrics' | 'sound' | 'photo'>> = {
       ...item,
     };
     delete copy.melody;
     delete copy.bpm;
     delete copy.source;
+    delete copy.lyrics;
     delete copy.sound;
     delete copy.photo;
     if (item.sound && MEDIA[item.sound]) copy.soundUrl = MEDIA[item.sound];

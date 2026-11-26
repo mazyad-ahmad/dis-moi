@@ -58,8 +58,9 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                        |
 | `prolonger`       | facultatif : phrase pour prolonger la discussion, montrée au parent après la réponse (100 caractères, pas `draw`)     |
 | `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules     |
-| `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                            |
+| `melody`, `bpm`   | air noté en entier (une minute au plus) et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`             |
 | `source`          | `melody` seulement, obligatoire : auteur ou origine de l'air et son statut (« …, domaine public »)                    |
+| `lyrics`          | facultatif (`melody`) : premier couplet du domaine public, 2 à 12 vers de 60 caractères ; `source` cite les paroles   |
 | `sound`           | facultatif (`sound` seulement) : vrai son, fichier WAV de `src/content/media/` (`"vache.wav"`)                        |
 | `photo`           | facultatif (jeux à cartes) : photo montrée après la réponse, `.webp` ou `.jpg` de `src/content/media/`                |
 | `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                                 |

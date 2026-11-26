@@ -1,5 +1,5 @@
-import { DRAW_THEMES, getPack, MELODY_THEMES } from '../content/packs';
-import { extractLength, noteFreq, parseMelody, schedule } from './chanson/melody';
+import { DRAW_THEMES, getPack, MAX_FULL_SECONDS, MELODY_THEMES } from '../content/packs';
+import { extractLength, melodySeconds, noteFreq, parseMelody, schedule } from './chanson/melody';
 import { EXTRACT_SECONDS, SONGS } from './chanson/songs';
 import { DRAW_WORDS } from './dessin/words';
 import { cleanItem } from '../data/customGames';
@@ -144,6 +144,45 @@ describe('mélodies', () => {
       for (const n of notes) expect(n.beats).toBeLessThanOrEqual(8);
     },
   );
+  it.each(SONGS.map((s) => [s.title, s] as const))(
+    '« %s » se joue en entier pour « Chanter ensemble » (#117), sans coupure',
+    (_, s) => {
+      const notes = parseMelody(s.melody);
+      const full = schedule(notes, s.bpm, Infinity);
+      // Toutes les notes, chacune entière : rien n'est coupé à la durée de l'extrait.
+      expect(full).toHaveLength(notes.filter((n) => n.freq !== null).length);
+      const seconds = melodySeconds(notes, s.bpm);
+      expect(extractLength(full)).toBeLessThanOrEqual(seconds + 1e-9);
+      expect(seconds).toBeLessThanOrEqual(MAX_FULL_SECONDS);
+      expect(seconds).toBeGreaterThanOrEqual(
+        extractLength(schedule(notes, s.bpm, EXTRACT_SECONDS)) - 1e-9,
+      );
+    },
+  );
+  describe('paroles (#117)', () => {
+    const sung = SONGS.filter((s) => s.lyrics);
+    /** Syllabes d'un vers, à peu près : les groupes de voyelles. */
+    const syllables = (line: string) =>
+      line.toLowerCase().match(/[aeiouyàâäéèêëîïôöùûüœ]+/g)?.length ?? 0;
+
+    it('« Une souris verte » et une dizaine d’airs ont leurs paroles', () => {
+      expect(sung.map((s) => s.id)).toContain('une-souris-verte');
+      expect(sung.length).toBeGreaterThanOrEqual(10);
+    });
+    it.each(sung.map((s) => [s.title, s] as const))(
+      '« %s » : paroles du domaine public, et l’air complet couvre tout le couplet',
+      (_, s) => {
+        const item = getPack('chansons').items.find((i) => i.id === s.id)!;
+        expect(item.source).toMatch(/paroles/);
+        expect(item.source).toMatch(/domaine public/);
+        // Une note par syllabe, à peu près : l'air noté va jusqu'au bout des paroles.
+        const notes = parseMelody(s.melody).filter((n) => n.freq !== null).length;
+        const words = s.lyrics!.reduce((sum, line) => sum + syllables(line), 0);
+        expect(notes / words).toBeGreaterThanOrEqual(0.85);
+        expect(notes / words).toBeLessThanOrEqual(1.2);
+      },
+    );
+  });
   it.each(SONGS.map((s) => [s.title, s] as const))(
     '« %s » donne un extrait de 6 à 10 s',
     (_, s) => {
