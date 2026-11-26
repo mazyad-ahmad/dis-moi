@@ -2,7 +2,7 @@
   "format": "dis-moi/jeu",
   "version": 1,
   "id": "couleur",
-  "revision": 1,
+  "revision": 2,
   "kind": "image",
   "name": "Quelle couleur ?",
   "lang": "fr",
@@ -11,16 +11,16 @@
   "mark": "Aa",
   "tint": "dawn",
   "items": [
-    {"id": "rouge", "answer": "Rouge", "color": "#d7263d", "hint": "Comme une fraise."},
-    {"id": "bleu", "answer": "Bleu", "color": "#1e5fbf", "hint": "Comme le ciel."},
-    {"id": "jaune", "answer": "Jaune", "color": "#f5d000", "hint": "Comme le soleil."},
-    {"id": "vert", "answer": "Vert", "color": "#2e9e44", "hint": "Comme l’herbe."},
-    {"id": "orange", "answer": "Orange", "color": "#f28c1b", "hint": "Comme une carotte."},
-    {"id": "violet", "answer": "Violet", "color": "#7b3fa0", "hint": "Comme une aubergine."},
-    {"id": "rose", "answer": "Rose", "color": "#f48fb1", "hint": "Comme un cochon."},
-    {"id": "marron", "answer": "Marron", "color": "#7a4a24", "hint": "Comme le chocolat."},
-    {"id": "noir", "answer": "Noir", "color": "#111111", "hint": "Comme la nuit."},
-    {"id": "blanc", "answer": "Blanc", "color": "#ffffff", "hint": "Comme la neige."},
-    {"id": "gris", "answer": "Gris", "color": "#8c8c8c", "hint": "Comme un éléphant."}
+    {"id": "rouge", "level": 1, "answer": "Rouge", "color": "#d7263d", "hint": "Comme une fraise."},
+    {"id": "bleu", "level": 1, "answer": "Bleu", "color": "#1e5fbf", "hint": "Comme le ciel."},
+    {"id": "jaune", "level": 1, "answer": "Jaune", "color": "#f5d000", "hint": "Comme le soleil."},
+    {"id": "vert", "level": 1, "answer": "Vert", "color": "#2e9e44", "hint": "Comme l’herbe."},
+    {"id": "orange", "level": 2, "answer": "Orange", "color": "#f28c1b", "hint": "Comme une carotte."},
+    {"id": "violet", "level": 2, "answer": "Violet", "color": "#7b3fa0", "hint": "Comme une aubergine."},
+    {"id": "rose", "level": 2, "answer": "Rose", "color": "#f48fb1", "hint": "Comme un cochon."},
+    {"id": "marron", "level": 3, "answer": "Marron", "color": "#7a4a24", "hint": "Comme le chocolat."},
+    {"id": "noir", "level": 2, "answer": "Noir", "color": "#111111", "hint": "Comme la nuit."},
+    {"id": "blanc", "level": 2, "answer": "Blanc", "color": "#ffffff", "hint": "Comme la neige."},
+    {"id": "gris", "level": 3, "answer": "Gris", "color": "#8c8c8c", "hint": "Comme un éléphant."}
   ]
 }

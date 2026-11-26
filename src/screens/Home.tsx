@@ -1,11 +1,13 @@
 import { href } from '../app/router';
 import { Avatar } from '../components/Avatar';
 import { Card } from '../components/Card';
+import { LevelChoice } from '../components/LevelChoice';
 import { Logo } from '../components/Logo';
 import { Mascot } from '../components/Mascot';
 import { useNightTheme } from '../components/useNightTheme';
 import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
 import { usePlayers } from '../data/players';
+import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
 import type { GameInfo } from '../games/registry';
 import { useHomeGames } from '../games/useGames';
@@ -30,6 +32,7 @@ export function Home() {
   const games = useHomeGames();
   const { over } = useSeance();
   const night = useNightTheme();
+  const { gameLevel } = useSettings();
 
   return (
     <main className="screen">
@@ -71,6 +74,17 @@ export function Home() {
         </span>
         <a href={href('/joueurs')}>{players?.length ? 'Modifier' : 'Ajouter'}</a>
       </Card>
+
+      {/* Niveaux par âge (#40) : le niveau de la partie se règle au lancement. */}
+      {!over && (
+        <LevelChoice
+          legend="Niveau de la partie"
+          name="niveau-partie"
+          value={gameLevel}
+          allLabel="Tous"
+          onChange={(level) => void setSetting('gameLevel', level)}
+        />
+      )}
 
       {over ? (
         <SeanceOverCard />

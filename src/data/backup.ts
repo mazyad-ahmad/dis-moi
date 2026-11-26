@@ -8,6 +8,7 @@ import {
   type Player,
 } from './db';
 import { decodeGame, encodeGame, shareFile, uniqueGameName, type GameFile } from './gameFile';
+import { isLevel } from '../games/levels';
 import { cleanName, isAnimal, isPlayerColor, MAX_PLAYERS, PlayerError } from './players';
 import {
   DEFAULT_SETTINGS,
@@ -138,6 +139,8 @@ function readPlayer(raw: unknown, index: number): Player {
     color,
     animal,
     createdAt: isNumber(raw.createdAt) ? raw.createdAt : 0,
+    // Niveau par âge (#40) : facultatif, ignoré s'il est inconnu.
+    ...(isLevel(raw.level) && { level: raw.level }),
   };
 }
 
@@ -195,6 +198,7 @@ function readSettings(raw: unknown): Partial<Settings> {
   if (typeof raw.praise === 'boolean') out.praise = raw.praise;
   if ((VOLUME_CHOICES as readonly unknown[]).includes(raw.volume))
     out.volume = raw.volume as Settings['volume'];
+  if (raw.gameLevel === null || isLevel(raw.gameLevel)) out.gameLevel = raw.gameLevel;
   return out;
 }
 
@@ -286,6 +290,7 @@ async function mergeInto(backup: Backup) {
         color: p.color,
         animal: p.animal,
         createdAt: p.createdAt,
+        ...(p.level && { level: p.level }),
       } as Player);
       byName.set(key(p.name), id);
     }

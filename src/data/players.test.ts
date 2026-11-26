@@ -6,6 +6,7 @@ import {
   MAX_PLAYERS,
   removePlayer,
   renamePlayer,
+  setPlayerLevel,
 } from './players';
 
 beforeEach(async () => {
@@ -19,6 +20,15 @@ describe('cleanName', () => {
 });
 
 describe('joueurs', () => {
+  it('ont un niveau facultatif, qu’on peut retirer', async () => {
+    const id = await addPlayer('Léa');
+    expect((await listPlayers())[0].level).toBeUndefined();
+    await setPlayerLevel(id, 2);
+    expect((await listPlayers())[0].level).toBe(2);
+    await setPlayerLevel(id, null);
+    expect((await listPlayers())[0]).not.toHaveProperty('level');
+  });
+
   it('ajoute dans l’ordre et alterne les couleurs', async () => {
     await addPlayer('Léa');
     await addPlayer('Sami');

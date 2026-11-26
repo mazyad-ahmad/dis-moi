@@ -1,5 +1,6 @@
 import { Dexie, type EntityTable } from 'dexie';
 import type { DeckItem, DeckKind } from '../games/deck/types';
+import type { Level } from '../games/levels';
 
 export interface Player {
   id: number;
@@ -8,6 +9,8 @@ export interface Player {
   /** Animal de l'avatar (#39), pour l'enfant qui ne lit pas encore son prénom. */
   animal: PlayerAnimal;
   createdAt: number;
+  /** Niveau par âge (#40), facultatif (champ non indexé : pas de migration). */
+  level?: Level;
 }
 
 export type PlayerColor = 'meadow' | 'sky' | 'dawn' | 'rose' | 'lilac' | 'ember';

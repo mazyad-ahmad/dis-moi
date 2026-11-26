@@ -2,20 +2,20 @@
   "format": "dis-moi/jeu",
   "version": 1,
   "id": "chiffres",
-  "revision": 1,
+  "revision": 2,
   "kind": "glyph",
   "name": "Quel chiffre ?",
   "lang": "fr",
   "items": [
-    {"id": "0", "answer": "0", "hint": "Demande combien de doigts on lève avec le poing fermé"},
-    {"id": "1", "answer": "1", "hint": "Demande de sauter 1 fois sur place"},
-    {"id": "2", "answer": "2", "hint": "Demande combien d’yeux on a"},
-    {"id": "3", "answer": "3", "hint": "Demande de montrer 3 doigts"},
-    {"id": "4", "answer": "4", "hint": "Demande combien de pattes a un chat"},
-    {"id": "5", "answer": "5", "hint": "Demande de taper 5 fois dans les mains"},
-    {"id": "6", "answer": "6", "hint": "Demande quel chiffre vient juste après 5"},
-    {"id": "7", "answer": "7", "hint": "Demande de compter jusqu’à 7"},
-    {"id": "8", "answer": "8", "hint": "Demande combien de pattes a une araignée"},
-    {"id": "9", "answer": "9", "hint": "Demande quel nombre vient juste après 9 (10)"}
+    {"id": "0", "level": 2, "answer": "0", "hint": "Demande combien de doigts on lève avec le poing fermé"},
+    {"id": "1", "level": 1, "answer": "1", "hint": "Demande de sauter 1 fois sur place"},
+    {"id": "2", "level": 1, "answer": "2", "hint": "Demande combien d’yeux on a"},
+    {"id": "3", "level": 1, "answer": "3", "hint": "Demande de montrer 3 doigts"},
+    {"id": "4", "level": 1, "answer": "4", "hint": "Demande combien de pattes a un chat"},
+    {"id": "5", "level": 1, "answer": "5", "hint": "Demande de taper 5 fois dans les mains"},
+    {"id": "6", "level": 2, "answer": "6", "hint": "Demande quel chiffre vient juste après 5"},
+    {"id": "7", "level": 2, "answer": "7", "hint": "Demande de compter jusqu’à 7"},
+    {"id": "8", "level": 2, "answer": "8", "hint": "Demande combien de pattes a une araignée"},
+    {"id": "9", "level": 2, "answer": "9", "hint": "Demande quel nombre vient juste après 9 (10)"}
   ]
 }

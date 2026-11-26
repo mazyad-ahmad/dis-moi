@@ -2,6 +2,7 @@ import { MAX_GAME_NAME, MAX_HINTS, MAX_TEXT } from '../data/customGames';
 import { GAME_FILE_FORMAT, GAME_FILE_VERSION } from '../data/gameFile';
 import { parseMelody } from '../games/chanson/melody';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
+import { isLevel, LEVELS, type Level } from '../games/levels';
 import type { Tint } from '../games/registry';
 
 /**
@@ -17,6 +18,8 @@ export const PACK_KINDS: PackKind[] = [...DECK_KINDS.map((k) => k.value), 'melod
 export interface PackItem extends Omit<DeckItem, 'image' | 'audio'> {
   /** Identifiant stable dans le pack (minuscules, chiffres et tirets). */
   id: string;
+  /** Niveau par âge, obligatoire pour le contenu intégré (#40). */
+  level: Level;
   /** Air noté (pack « melody ») : voir games/chanson/melody.ts. */
   melody?: string;
   /** Tempo de l'air, en battements par minute (pack « melody »). */
@@ -74,9 +77,6 @@ const ITEM_FIELDS = new Set([
   'melody',
   'bpm',
 ]);
-/** Âges couverts par l'appli : une carte peut dire à partir de quel âge elle convient. */
-export const MIN_LEVEL = 2;
-export const MAX_LEVEL = 10;
 
 const isText = (v: unknown, max = MAX_TEXT): v is string =>
   typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max;
@@ -136,12 +136,9 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
   )
     return `indices (« hints ») : liste de 1 à ${MAX_HINTS} textes attendue`;
   if (item.emoji !== undefined && !isText(item.emoji, 16)) return 'emoji invalide';
-  const level = item.level as number;
-  if (
-    item.level !== undefined &&
-    !(Number.isInteger(level) && level >= MIN_LEVEL && level <= MAX_LEVEL)
-  )
-    return `âge (« level ») entier de ${MIN_LEVEL} à ${MAX_LEVEL} attendu`;
+  // Niveaux par âge (#40) : chaque carte intégrée en a un.
+  if (!isLevel(item.level))
+    return `niveau (« level ») manquant : ${LEVELS.map((l) => `${l.value} (${l.name}, ${l.ages})`).join(', ')}`;
   if (
     item.tags !== undefined &&
     !(Array.isArray(item.tags) && item.tags.every((t) => typeof t === 'string' && ID.test(t)))

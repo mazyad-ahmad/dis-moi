@@ -5,7 +5,8 @@ import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
-import { shuffle } from '../shuffle';
+import { getSettings } from '../../data/settings';
+import { orderByLevel } from '../levels';
 import { useRounds } from '../useRounds';
 import { DIGITS, LETTERS, type GlyphCard } from './bank';
 
@@ -28,6 +29,10 @@ const START: Place = { mode: 'letters', pos: { letters: 0, digits: 0 } };
 
 const glyphOf = (card: GlyphCard) => card.glyph;
 
+/** Paquet mélangé, les glyphes du niveau de la partie d'abord (#40). */
+const byLevel = (cards: GlyphCard[]) =>
+  orderByLevel(cards, getSettings().gameLevel, (c) => c.level);
+
 function restorePlace(saved: unknown): Place | undefined {
   const p = saved as Partial<Place> | null;
   const n = (v: unknown) => Number.isInteger(v) && (v as number) >= 0;
@@ -40,8 +45,8 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
   // Un paquet mélangé par mode, parcouru sans répétition ; on recommence s'il est épuisé.
   // Tirage, mode et position sont retrouvés après un rafraîchissement.
   const decks = {
-    letters: useSavedDraw(GAME, 'letters', LETTERS, () => shuffle(LETTERS), glyphOf),
-    digits: useSavedDraw(GAME, 'digits', DIGITS, () => shuffle(DIGITS), glyphOf),
+    letters: useSavedDraw(GAME, 'letters', LETTERS, () => byLevel(LETTERS), glyphOf),
+    digits: useSavedDraw(GAME, 'digits', DIGITS, () => byLevel(DIGITS), glyphOf),
   };
   const [{ mode, pos }, setPlace] = useSaved<Place>(GAME, 'place', () => START, restorePlace);
   const { round, rounds, stars, finished, answer } = useRounds(GAME);

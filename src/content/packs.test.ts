@@ -69,7 +69,12 @@ describe('un pack invalide nomme la carte fautive', () => {
       withItem(animals, 0, { hints: 'Elle est noire et blanche' }),
       'carte 1 (« La vache ») : indices (« hints »)',
     ],
-    ['âge hors limites', withItem(animals, 0, { level: 12 }), 'carte 1 (« La vache ») : âge'],
+    ['niveau hors limites', withItem(animals, 0, { level: 4 }), 'carte 1 (« La vache ») : niveau'],
+    [
+      'niveau manquant',
+      withItem(animals, 1, { level: undefined }),
+      'carte 2 (« Le chat ») : niveau (« level ») manquant : 1 (Petits, 3-4 ans)',
+    ],
     [
       'couleur invalide',
       withItem(getPack('couleur'), 0, { color: 'red' }),
@@ -83,7 +88,7 @@ describe('un pack invalide nomme la carte fautive', () => {
     expect(() => validatePack(JSON.parse(JSON.stringify(pack)), 'test.json')).toThrow(message);
   });
 
-  it('accepte les champs facultatifs d’âge, de thèmes et de langue', () => {
+  it('accepte les champs facultatifs de thèmes et de langue', () => {
     const pack = withItem(animals, 0, { level: 3, tags: ['ferme'], lang: 'fr' });
     expect(() => validatePack(pack, 'test.json')).not.toThrow();
   });

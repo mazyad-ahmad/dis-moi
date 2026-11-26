@@ -11,7 +11,7 @@ import {
 import { addItem, createCustomGame } from './customGames';
 import { db } from './db';
 import { startRecord, updateRecord } from './history';
-import { addPlayer } from './players';
+import { addPlayer, setPlayerLevel } from './players';
 import { getSettings, loadSettings, setSetting } from './settings';
 
 const TABLES = [db.players, db.games, db.customGames, db.settings];
@@ -28,7 +28,7 @@ async function snapshot() {
 
 /** Un téléphone avec joueurs, parties, réglages et un jeu créé (médias : voir e2e). */
 async function fillPhone() {
-  await addPlayer('Léa');
+  await setPlayerLevel(await addPlayer('Léa'), 1);
   await addPlayer('Sami');
   const r = await startRecord({ gameId: 'lettres', rounds: 5, played: 1, stars: 1 });
   await updateRecord(r, { played: 5, stars: 4 });
@@ -36,6 +36,7 @@ async function fillPhone() {
   await setSetting('theme', 'night');
   await setSetting('rounds', 15);
   await setSetting('catalogue', ['devinette']);
+  await setSetting('gameLevel', 3);
   const id = await createCustomGame('Devinettes de Léa', 'question');
   await addItem(id, { answer: 'Un chat', text: 'Il miaule', hint: 'Il a des moustaches' });
 }
@@ -73,6 +74,7 @@ describe('Sauvegarde complète', () => {
       theme: 'night',
       rounds: 15,
       catalogue: ['devinette'],
+      gameLevel: 3,
       lastBackupAt: createdAt,
     });
   });

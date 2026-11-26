@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { LevelChoice } from '../components/LevelChoice';
 import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { IconPlus, IconTrash } from '../components/icons';
@@ -16,6 +17,7 @@ import {
   removePlayer,
   renamePlayer,
   setPlayerAvatar,
+  setPlayerLevel,
   usePlayers,
   type Avatar as AvatarValue,
 } from '../data/players';
@@ -72,6 +74,13 @@ function PlayerRow({ player, onError }: { player: Player; onError: (m: string) =
           <IconTrash />
         </button>
       </Card>
+      <LevelChoice
+        legend={`Niveau de ${player.name}`}
+        hideLegend
+        name={`niveau-${player.id}`}
+        value={player.level}
+        onChange={(level) => setPlayerLevel(player.id, level)}
+      />
       {confirmDialog}
       {picking && (
         <AvatarPicker
@@ -112,8 +121,8 @@ export function Players() {
     <main className="screen">
       <ScreenHeader title="Joueurs" back="/" />
       <p className="lead">
-        Seuls le prénom et l’avatar sont enregistrés, uniquement sur ce téléphone. Touche l’animal
-        pour le changer, ou changer sa couleur.
+        Seuls le prénom, l’avatar et le niveau sont enregistrés, uniquement sur ce téléphone. Touche
+        l’animal pour le changer, ou changer sa couleur.
       </p>
 
       {players && players.length > 0 && (

@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import type { Level } from '../games/levels';
 import {
   db,
   PLAYER_ANIMALS,
@@ -94,6 +95,11 @@ export async function removePlayer(id: number): Promise<void> {
 
 export async function setPlayerAvatar(id: number, avatar: Partial<Avatar>): Promise<void> {
   await db.players.update(id, avatar);
+}
+
+/** Niveau par âge du joueur (#40) ; `null` le retire. */
+export async function setPlayerLevel(id: number, level: Level | null): Promise<void> {
+  await db.players.update(id, { level: level ?? undefined });
 }
 
 /** `undefined` tant que la base n'a pas répondu. */

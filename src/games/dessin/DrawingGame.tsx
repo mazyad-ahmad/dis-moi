@@ -10,11 +10,11 @@ import { vibrate } from '../../pwa/haptics';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
-import { shuffle } from '../shuffle';
+import { orderByLevel, type Level } from '../levels';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { DrawingCanvas, type DrawingCanvasHandle } from './DrawingCanvas';
 import { useCountdown } from './useCountdown';
-import { DRAW_WORDS } from './words';
+import { DRAW_LEVELS, DRAW_WORDS } from './words';
 
 const PENS = [
   { label: 'Noir', color: 'var(--ink)' },
@@ -30,6 +30,8 @@ interface DrawingProps {
   title?: string;
   /** Banque de mots (par défaut celle de « Dessine ça »). */
   words?: readonly string[];
+  /** Niveau par âge d'un mot (#40) ; sans niveau, le mot convient à tous. */
+  levelOf?: (word: string) => Level | undefined;
 }
 
 function DrawingSession({
@@ -38,6 +40,7 @@ function DrawingSession({
   category = 'Dessin',
   title = 'Dessine ça',
   words: bank = DRAW_WORDS,
+  levelOf = (word) => DRAW_LEVELS.get(word),
 }: DrawingProps & { onReplay: () => void }) {
   // Tirage figé pour la partie (la banque peut venir d'une requête qui se met à jour),
   // retrouvé après un rafraîchissement.
@@ -45,7 +48,7 @@ function DrawingSession({
     gameId,
     'draw',
     bank,
-    () => shuffle(bank),
+    () => orderByLevel(bank, getSettings().gameLevel, levelOf),
     (w) => w,
   );
   const setting = useRoundSetting();

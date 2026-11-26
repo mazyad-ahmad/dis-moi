@@ -1,4 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react';
+import type { Level } from '../games/levels';
 import type { SpeechSpeed } from '../voice/speech';
 import { db, type Theme } from './db';
 
@@ -26,6 +27,8 @@ export interface Settings {
   praise: boolean;
   /** Volume de l'appli (#121) : doux par défaut. */
   volume: Volume;
+  /** Niveau de la partie en équipe (#40), choisi sur l'accueil ; `null` : tous niveaux. */
+  gameLevel: Level | null;
 }
 
 export type Volume = 'soft' | 'normal';
@@ -47,6 +50,7 @@ export const DEFAULT_SETTINGS: Settings = {
   sounds: true,
   praise: true,
   volume: 'soft',
+  gameLevel: null,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

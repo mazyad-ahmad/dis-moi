@@ -1257,3 +1257,15 @@ a.pill {
 .word-card .read-aloud {
   margin-top: 6px;
 }
+
+/* ---------- Niveaux par âge (#40) ---------- */
+.segmented--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.level-choice {
+  gap: 4px;
+}
+.level-choice__ages {
+  margin: 0;
+  font-size: 14px;
+}

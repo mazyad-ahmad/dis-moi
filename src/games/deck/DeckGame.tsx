@@ -10,7 +10,8 @@ import { DrawingGame } from '../dessin/DrawingGame';
 import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
-import { shuffle } from '../shuffle';
+import { getSettings } from '../../data/settings';
+import { cardLevel, drawForLevel } from '../levels';
 import { useRoundSetting, useRounds } from '../useRounds';
 import type { Deck, DeckItem } from './types';
 import { useObjectUrl } from './useObjectUrl';
@@ -103,7 +104,7 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
     deck.id,
     'draw',
     deck.items,
-    () => shuffle(deck.items).slice(0, setting),
+    () => drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel),
     cardKey,
   );
   const { round, rounds, stars, finished, answer } = useRounds(deck.id, items.length);
@@ -172,6 +173,7 @@ export function DeckGame({ deck }: { deck: Deck }) {
         category={deck.category}
         title={deck.name}
         words={deck.items.map((i) => i.answer)}
+        levelOf={(word) => cardLevel(deck.items.find((i) => i.answer === word) ?? {})}
       />
     );
   return <Replayable>{(replay) => <DeckSession deck={deck} onReplay={replay} />}</Replayable>;

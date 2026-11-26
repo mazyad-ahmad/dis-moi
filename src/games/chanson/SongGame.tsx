@@ -8,7 +8,8 @@ import { clock } from '../format';
 import { firstLetterHint, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
-import { draw } from '../shuffle';
+import { getSettings } from '../../data/settings';
+import { drawForLevel } from '../levels';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { EXTRACT_SECONDS, SONGS, type Song } from './songs';
 import { useMelody } from './useMelody';
@@ -83,7 +84,7 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
     'chanson',
     'draw',
     SONGS,
-    () => draw(SONGS, wanted),
+    () => drawForLevel(SONGS, wanted, getSettings().gameLevel, (s) => s.level),
     (s) => s.id,
   );
   const { round, rounds, stars, finished, answer } = useRounds('chanson', songs.length);

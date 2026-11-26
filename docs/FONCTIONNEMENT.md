@@ -211,7 +211,16 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 ## Public visé (proposition)
 
-- **3 à 7 ans**. Niveaux de difficulté reportés après la v1.
+- **3 à 7 ans**, en trois **niveaux par âge** (#40) : **Petits** (3-4 ans), **Moyens** (5-6 ans),
+  **Grands** (7 ans et plus). Module `src/games/levels.ts`.
+- Chaque carte du contenu intégré a un niveau (champ `level` des packs, vérifié par les tests) ;
+  les cartes des jeux créés par le parent n'en ont pas et conviennent à tous.
+- Chaque joueur peut avoir un niveau (écran Joueurs, facultatif). En équipe, le **niveau de la
+  partie** se choisit sur l'accueil : **Tous** (par défaut, toutes les cartes comme avant),
+  Petits, Moyens ou Grands. Il s'applique à la partie suivante.
+- Un tirage ne manque jamais de cartes : les cartes du niveau choisi passent d'abord, puis celles
+  du niveau voisin (le plus facile d'abord à égale distance), puis les autres.
+- Tour par tour (à venir) : `pickForLevel` tire une carte au niveau de l'enfant dont c'est le tour.
 - Interface en **français uniquement** pour la v1.
 
 ## Espace Parent (proposition)
