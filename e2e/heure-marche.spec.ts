@@ -22,11 +22,15 @@ function contrast(a: string, b: string): number {
 const style = (el: Locator, prop: 'fill' | 'stroke') =>
   el.evaluate((node, p) => getComputedStyle(node).getPropertyValue(p), prop);
 
+// La manche glisse depuis la droite en arrivant (240 ms) : on mesure une fois posée.
 async function inScreen(page: import('@playwright/test').Page, el: Locator) {
-  const box = (await el.boundingBox())!;
   const width = page.viewportSize()!.width;
-  expect(box.x).toBeGreaterThanOrEqual(0);
-  expect(box.x + box.width).toBeLessThanOrEqual(width);
+  await expect
+    .poll(async () => {
+      const box = (await el.boundingBox())!;
+      return box.x >= 0 && box.x + box.width <= width;
+    })
+    .toBe(true);
 }
 
 test('quelle heure est-il : une horloge lisible en mode sombre, le parent valide', async ({
