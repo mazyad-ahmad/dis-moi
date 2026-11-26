@@ -17,6 +17,8 @@ export interface Song {
   melody: string;
   /** Niveau par âge (#40). */
   level: Level;
+  /** Image de la chanson (emoji), montrée parmi les choix de « Répondre en montrant » (#123). */
+  emoji?: string;
 }
 
 export const EXTRACT_SECONDS = 10;
@@ -32,4 +34,5 @@ export const SONGS: Song[] = getPack('chansons').items.map((item) => ({
   bpm: item.bpm!,
   melody: item.melody!,
   level: item.level,
+  ...(item.emoji && { emoji: item.emoji }),
 }));

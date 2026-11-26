@@ -6,6 +6,9 @@ import { Mascot } from '../../components/Mascot';
 import { IconEar, IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
+import { ChoiceBoard } from '../choices/ChoiceBoard';
+import { useChoices } from '../choices/useChoices';
+import { deckChoicePool, deckOption, showsAnswer } from '../choices/choices';
 import { DrawingGame } from '../dessin/DrawingGame';
 import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
@@ -90,26 +93,47 @@ function answerOf(item: DeckItem) {
   return item.emoji && !item.color ? `${item.emoji} ${item.answer}` : item.answer;
 }
 
-/** Une manche : la carte et la zone du parent (aussi jouée dans le Grand Jeu). */
-export function DeckRound({ kind, item }: { kind: DeckKind; item: DeckItem }) {
+/**
+ * Une manche : la carte et la zone du parent (aussi jouée dans le Grand Jeu).
+ * `pool` : cartes du jeu où tirer les choix de « Répondre en montrant » (#123).
+ */
+export function DeckRound({
+  kind,
+  item,
+  pool,
+}: {
+  kind: DeckKind;
+  item: DeckItem;
+  pool?: readonly DeckItem[];
+}) {
   const soundToImitate = kind === 'sound' && !item.audio && item.text;
+  const choices = useChoices(pool && deckOption(item), pool?.map(deckOption));
+  // L'enfant verrait la réponse (couleur, photo) : les choix la remplacent, le parent la demande.
+  const showMe = !!choices && showsAnswer(kind);
   return (
     <div className="deck-round round-in">
       {kind === 'sound' && <SoundCard item={item} />}
-      {kind === 'image' && <ImageCard item={item} />}
+      {kind === 'image' && !showMe && <ImageCard item={item} />}
       {kind === 'question' && <QuestionCard item={item} />}
-      {/* Premier indice écrit visible d'emblée, les suivants à la demande. */}
-      <ParentBlock
-        hidden={answerOf(item)}
-        hints={hintLadder(item)}
-        openHints={writtenHints(item).length ? 1 : 0}
-      >
-        {soundToImitate && (
-          <>
-            À imiter : <strong>{item.text}</strong>
-          </>
-        )}
-      </ParentBlock>
+      {choices && <ChoiceBoard options={choices} answer={deckOption(item).key} />}
+      {showMe ? (
+        <ParentBlock>
+          Demande à l’enfant de montrer : <strong>{item.answer}</strong>
+        </ParentBlock>
+      ) : (
+        /* Premier indice écrit visible d'emblée, les suivants à la demande. */
+        <ParentBlock
+          hidden={answerOf(item)}
+          hints={hintLadder(item)}
+          openHints={writtenHints(item).length ? 1 : 0}
+        >
+          {soundToImitate && (
+            <>
+              À imiter : <strong>{item.text}</strong>
+            </>
+          )}
+        </ParentBlock>
+      )}
     </div>
   );
 }
@@ -139,7 +163,7 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         title={deck.name}
       />
       {/* key : nouvelle manche = carte et réponse remises à zéro. */}
-      <DeckRound key={round} kind={deck.kind} item={item} />
+      <DeckRound key={round} kind={deck.kind} item={item} pool={deckChoicePool(deck)} />
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}

@@ -200,6 +200,7 @@ function readSettings(raw: unknown): Partial<Settings> {
   if (typeof raw.sounds === 'boolean') out.sounds = raw.sounds;
   if (typeof raw.praise === 'boolean') out.praise = raw.praise;
   if (typeof raw.dailyChallenge === 'boolean') out.dailyChallenge = raw.dailyChallenge;
+  if (typeof raw.showChoices === 'boolean') out.showChoices = raw.showChoices;
   if ((VOLUME_CHOICES as readonly unknown[]).includes(raw.volume))
     out.volume = raw.volume as Settings['volume'];
   if (raw.gameLevel === null || isLevel(raw.gameLevel)) out.gameLevel = raw.gameLevel;

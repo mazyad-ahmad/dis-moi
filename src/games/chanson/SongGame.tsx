@@ -6,6 +6,9 @@ import { IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { clock } from '../format';
 import { firstLetterHint, writtenHints } from '../hints';
+import { ChoiceBoard } from '../choices/ChoiceBoard';
+import { useChoices } from '../choices/useChoices';
+import { songOption } from '../choices/choices';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
 import { getSettings } from '../../data/settings';
@@ -62,8 +65,12 @@ function Player({ song, slow }: { song: Song; slow: boolean }) {
 /** Indice « air ralenti » : le parent fait réécouter l'extrait plus lentement. */
 const SLOW_HINT = 'l’air passe au ralenti, fais-le réécouter';
 
-/** Une manche : lecteur et indices en escalier (écrits, air ralenti, première lettre). */
-export function SongRound({ song }: { song: Song }) {
+/**
+ * Une manche : lecteur et indices en escalier (écrits, air ralenti, première lettre).
+ * Avec `pool` et « Répondre en montrant » (#123), l'enfant touche la chanson parmi des images.
+ */
+export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }) {
+  const choices = useChoices(pool && songOption(song), pool?.map(songOption));
   const written = writtenHints(song);
   const letter = firstLetterHint(song.title);
   const hints = [...written, SLOW_HINT, ...(letter ? [letter] : [])];
@@ -73,6 +80,7 @@ export function SongRound({ song }: { song: Song }) {
     <>
       {/* key : le lecteur repart de zéro quand il passe au ralenti. */}
       <Player key={slow ? 'lent' : 'normal'} song={song} slow={slow} />
+      {choices && <ChoiceBoard options={choices} answer={song.id} />}
       <ParentBlock hidden={song.title} hints={hints} openHints={1} onHint={setShown} />
     </>
   );
@@ -102,7 +110,7 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
         title="Quelle chanson ?"
       />
       {/* key : nouvelle manche = lecteur, indices et réponse remis à zéro. */}
-      <SongRound key={song.id} song={song} />
+      <SongRound key={song.id} song={song} pool={SONGS} />
       <div className="spacer" />
       <AnswerBar onSkip={() => answer(false)} onFound={() => answer(true)} skipLabel="Pas encore" />
     </main>

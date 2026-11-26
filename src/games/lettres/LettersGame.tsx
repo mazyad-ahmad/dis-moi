@@ -3,6 +3,9 @@ import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
+import { ChoiceBoard } from '../choices/ChoiceBoard';
+import { useChoices } from '../choices/useChoices';
+import { glyphOption } from '../choices/choices';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
 import { getSettings } from '../../data/settings';
@@ -41,18 +44,35 @@ function restorePlace(saved: unknown): Place | undefined {
     : undefined;
 }
 
-/** Une manche : le glyphe en grand et la consigne du parent (aussi jouée dans le Grand Jeu). */
-export function GlyphRound({ card }: { card: GlyphCard }) {
+/**
+ * Une manche : le glyphe en grand et la consigne du parent (aussi jouée dans le Grand Jeu).
+ * Avec `pool` et « Répondre en montrant » (#123), des glyphes au choix remplacent le glyphe :
+ * le parent demande, l'enfant montre.
+ */
+export function GlyphRound({ card, pool }: { card: GlyphCard; pool?: readonly GlyphCard[] }) {
+  const choices = useChoices(pool && glyphOption(card), pool?.map(glyphOption));
   return (
     <>
-      <figure className="glyph-card round-in">
-        <span className="glyph-card__glyph" data-testid="glyph">
-          {card.glyph}
-        </span>
-        <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
-      </figure>
+      {choices ? (
+        <ChoiceBoard options={choices} answer={card.glyph} />
+      ) : (
+        <figure className="glyph-card round-in">
+          <span className="glyph-card__glyph" data-testid="glyph">
+            {card.glyph}
+          </span>
+          <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
+        </figure>
+      )}
 
       <ParentBlock>
+        {choices && (
+          <p>
+            Demande à l’enfant de montrer :{' '}
+            <strong>
+              {/^\d$/.test(card.glyph) ? 'le chiffre' : 'la lettre'} {card.glyph}
+            </strong>
+          </p>
+        )}
         {card.hint}
         <ReadAloud text={card.hint} />
       </ParentBlock>
@@ -105,8 +125,8 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
         ))}
       </div>
 
-      {/* key : chaque manche entre en douceur. */}
-      <GlyphRound key={round} card={card} />
+      {/* key : chaque manche (ou changement de paquet) entre en douceur, choix retirés. */}
+      <GlyphRound key={`${round}:${mode}`} card={card} pool={deck} />
 
       <div className="spacer" />
       <AnswerBar onSkip={() => next(false)} onFound={() => next(true)} />

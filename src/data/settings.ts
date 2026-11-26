@@ -38,6 +38,8 @@ export interface Settings {
   dailyChallenge: boolean;
   /** Façon de jouer (#42), choisie sur l'accueil : Normal, Express, Coucher ou Voiture. */
   gameMode: GameMode;
+  /** « Répondre en montrant » (#123), choisi sur l'accueil : l'enfant touche la réponse parmi des choix. */
+  showChoices: boolean;
 }
 
 export type Volume = 'soft' | 'normal';
@@ -64,6 +66,7 @@ export const DEFAULT_SETTINGS: Settings = {
   grandExcluded: [],
   dailyChallenge: true,
   gameMode: DEFAULT_MODE,
+  showChoices: false,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

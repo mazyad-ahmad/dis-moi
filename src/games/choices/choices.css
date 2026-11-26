@@ -1,0 +1,110 @@
+/* ---------- Répondre en montrant (#123) ---------- */
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.choices__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.choices__grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+/* Cible d'au moins 64 px pour un doigt d'enfant (bien plus en pratique). */
+.choice {
+  position: relative;
+  min-width: 64px;
+  min-height: 112px;
+  padding: 10px 6px;
+  border-radius: 20px;
+  border: 2px solid var(--stone);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.choice:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+}
+.choice.is-right {
+  border-color: var(--forest);
+  background: var(--meadow);
+  box-shadow: 0 0 0 3px var(--forest);
+}
+.choice__visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.choice__glyph {
+  font-family: var(--font-serif);
+  font-size: 72px;
+  line-height: 80px;
+  font-weight: 600;
+  color: var(--river);
+}
+.choice__swatch {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--stone);
+}
+.choice__emoji {
+  font-size: 56px;
+  line-height: 1.1;
+}
+.choice__caption {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.choice__text {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.choice__photo {
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 12px;
+  object-fit: contain;
+}
+.choice__mark {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--on-forest);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+.choices__status {
+  margin: 0;
+  min-height: 22px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--forest);
+}
+.answer-mode__hint {
+  margin: 0;
+  font-size: 14px;
+}

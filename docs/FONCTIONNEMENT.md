@@ -96,6 +96,26 @@
 - Le mode est noté dans la partie enregistrée (champ `mode`) et rappelé dans l'historique
   (« · Voiture »).
 
+## Répondre en montrant (#123)
+
+- Pour un enfant qui ne parle pas encore bien, timide ou qui joue dans une autre langue : sur
+  l'accueil, **L'enfant répond** « À voix haute » (par défaut) ou « **En montrant** » (réglage
+  `showChoices`, pour les parties suivantes).
+- La carte propose alors des **choix en grand** : la bonne réponse et des cartes voisines du même
+  jeu (du même niveau d'abord). **Petits : 2 choix, Moyens : 3, Grands : 4** ; le niveau est celui
+  de la partie, sinon celui du plus jeune des joueurs du jour qui en a un, sinon 3 choix.
+- Toucher la bonne réponse la met en valeur (contour, coche, « Oui, c'est ça : … ! ») ; un autre
+  choix ne fait **rien** : ni son, ni message, on peut réessayer. Le parent valide toujours avec
+  **Trouvé** / **Passer**.
+- Animaux, chansons, devinettes et jeux créés de type Son ou Question : les choix s'ajoutent sous
+  la carte (emoji et nom ; une chanson a son emoji ; sans image, le texte de la réponse).
+- Couleurs, lettres et chiffres, jeux créés de type Image : l'enfant verrait la réponse, donc les
+  choix (pastilles, glyphes, photos) **remplacent** l'image et le parent demande « Montre-moi… ».
+- Pas de choix dans les jeux de dessin ni dans Mime ça, ni dans le Défi du jour. Ils marchent
+  aussi dans le Grand Jeu.
+- Chaque choix est un bouton d'au moins 64 px, nommé pour le lecteur d'écran (« La vache »,
+  « Lettre A », « Rouge »). Images : emoji dessinés par la police du téléphone, aucun fichier.
+
 ## Mascotte (proposition)
 
 - Une petite bulle qui parle, dessinée pour l'appli en SVG dans le code (pas d'image à charger,

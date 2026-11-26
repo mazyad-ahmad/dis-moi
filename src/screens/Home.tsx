@@ -10,6 +10,7 @@ import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons
 import { setPlayerActive, usePlayers } from '../data/players';
 import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
+import { AnswerModeChoice } from '../games/choices/AnswerModeChoice';
 import { GrandTile } from '../games/grand/GrandTile';
 import type { GameInfo } from '../games/registry';
 import { usePlayableGames } from '../games/useGames';
@@ -111,6 +112,8 @@ export function Home() {
           onChange={(level) => void setSetting('gameLevel', level)}
         />
       )}
+      {/* Répondre en montrant (#123), réglé lui aussi au lancement. */}
+      {!over && <AnswerModeChoice />}
 
       {/* Façons de jouer (#42) : Normal par défaut, choisie au lancement. */}
       {!over && (

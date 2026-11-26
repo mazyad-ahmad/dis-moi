@@ -6,8 +6,11 @@ import { Mascot } from '../../components/Mascot';
 import { getSettings } from '../../data/settings';
 import { TileIcon } from '../../screens/Home';
 import { SongRound } from '../chanson/SongGame';
+import { SONGS } from '../chanson/songs';
+import { deckChoicePool } from '../choices/choices';
 import { DeckRound } from '../deck/DeckGame';
 import { DrawingBoard } from '../dessin/DrawingGame';
+import { glyphPool } from '../lettres/bank';
 import { GlyphRound } from '../lettres/LettersGame';
 import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
@@ -34,6 +37,13 @@ type Heading = Omit<ComponentProps<typeof GameHeader>, 'aside'>;
 /** Titre de la manche : « Quel chiffre ? » pour un chiffre tiré dans « Quelle lettre ? ». */
 function titleOf({ game, card }: GrandRound): string {
   return card.type === 'glyph' && /^\d$/.test(card.glyph.glyph) ? 'Quel chiffre ?' : game.name;
+}
+
+/** Cartes du jeu de la manche où tirer les choix de « Répondre en montrant » (#123). */
+function deckPool(game: Game) {
+  const items = game.cards.flatMap((c) => (c.type === 'deck' ? [c.item] : []));
+  const kind = game.cards.find((c) => c.type === 'deck')?.kind;
+  return kind ? deckChoicePool({ id: game.id, kind, items }) : undefined;
 }
 
 /** Écran-éclair : annonce le jeu de la manche, puis laisse place à la manche. */
@@ -132,9 +142,13 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
     <main className="screen">
       <GameHeader {...heading} />
       {/* key : nouvelle manche = carte, indices et réponse remis à zéro. */}
-      {card.type === 'song' && <SongRound key={round} song={card.song} />}
-      {card.type === 'glyph' && <GlyphRound key={round} card={card.glyph} />}
-      {card.type === 'deck' && <DeckRound key={round} kind={card.kind} item={card.item} />}
+      {card.type === 'song' && <SongRound key={round} song={card.song} pool={SONGS} />}
+      {card.type === 'glyph' && (
+        <GlyphRound key={round} card={card.glyph} pool={glyphPool(card.glyph)} />
+      )}
+      {card.type === 'deck' && (
+        <DeckRound key={round} kind={card.kind} item={card.item} pool={deckPool(game)} />
+      )}
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}
