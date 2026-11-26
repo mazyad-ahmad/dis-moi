@@ -5,6 +5,7 @@ import { Card } from '../components/Card';
 import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { BackupSection } from './BackupSection';
+import { PraiseSection } from './PraiseSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
@@ -125,13 +126,9 @@ function LinkRow({ path, title, detail }: { path: string; title: string; detail:
 }
 
 async function eraseEverything() {
-  await db.transaction('rw', [db.players, db.games, db.customGames, db.settings], async () => {
-    await Promise.all([
-      db.players.clear(),
-      db.games.clear(),
-      db.customGames.clear(),
-      db.settings.clear(),
-    ]);
+  const tables = [db.players, db.games, db.customGames, db.settings, db.praises];
+  await db.transaction('rw', tables, async () => {
+    await Promise.all(tables.map((t) => t.clear()));
   });
   resetSeance();
   await loadSettings();
@@ -244,6 +241,8 @@ export function Parent() {
         hint="Petits sons quand on gagne une étoile, qu’on passe ou que la partie se termine."
       />
 
+      <PraiseSection />
+
       <Choice
         legend="Verrou parent"
         name="parent-lock"
@@ -304,7 +303,8 @@ export function Parent() {
           onClick={async () => {
             const ok = await confirm({
               title: 'Tout effacer ?',
-              message: 'Joueurs, étoiles, jeux créés et réglages seront supprimés de ce téléphone.',
+              message:
+                'Joueurs, étoiles, jeux créés, félicitations enregistrées et réglages seront supprimés de ce téléphone.',
               confirmLabel: 'Tout effacer',
               danger: true,
             });

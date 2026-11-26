@@ -16,6 +16,7 @@ export function Privacy() {
           <li>les prénoms des joueurs ;</li>
           <li>les parties jouées et les étoiles gagnées ;</li>
           <li>les jeux créés, avec leurs photos et les sons enregistrés ;</li>
+          <li>les félicitations enregistrées par le parent ;</li>
           <li>les réglages de l'espace Parent.</li>
         </ul>
         <p>
@@ -40,13 +41,20 @@ export function Privacy() {
       <Card>
         <h2 className="h3">Micro, photos et voix</h2>
         <p>
-          Le micro et les photos ne servent qu'à « Créer mon propre jeu », quand le parent ajoute un
-          son ou une image à une carte. Android demande alors l'autorisation ; on peut la refuser et
-          créer des cartes sans son ni photo.
+          Les photos ne servent qu'à « Créer mon propre jeu », quand le parent ajoute une image à
+          une carte. Le micro sert à deux choses : enregistrer le son d'une carte, et enregistrer
+          les félicitations du parent (« Bravo ! »), dans l'espace Parent. Android demande alors
+          l'autorisation ; on peut la refuser et jouer sans enregistrement.
+        </p>
+        <p>
+          Les félicitations enregistrées restent sur ce téléphone : elles ne sont jamais envoyées,
+          ni mises dans la sauvegarde ou dans un jeu partagé. « Effacer toutes les données » les
+          supprime.
         </p>
         <p>
           Le bouton « Lire » utilise seulement une voix française installée sur le téléphone : le
-          texte lu n’est envoyé nulle part. Sans voix installée, le bouton n’apparaît pas.
+          texte lu n’est envoyé nulle part. Sans voix installée, le bouton n’apparaît pas. Les
+          félicitations parlées (« Bravo ! ») utilisent la même voix, ou celles du parent.
         </p>
       </Card>
 

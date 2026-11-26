@@ -71,9 +71,15 @@ export function registerAudioSource(isPlaying: () => boolean): () => void {
   };
 }
 
-/** Une mélodie, un son enregistré ou une lecture à voix haute est-il en cours ? */
-export function audioBusy(): boolean {
-  for (const playing of sources) if (playing()) return true;
+/** Une source déclarée (mélodie, son enregistré), autre que `except`, joue-t-elle ? */
+export function sourcePlaying(except?: () => boolean): boolean {
+  for (const playing of sources) if (playing !== except && playing()) return true;
+  return false;
+}
+
+/** Une mélodie, un son enregistré ou une lecture à voix haute (autre que `except`) est-il en cours ? */
+export function audioBusy(except?: () => boolean): boolean {
+  if (sourcePlaying(except)) return true;
   return typeof speechSynthesis !== 'undefined' && speechSynthesis.speaking;
 }
 

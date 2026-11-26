@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { answerSound, playSound } from '../audio/sounds';
+import { answerSound, playSound, soundLength } from '../audio/sounds';
 import { listRecords, REWARDS, startRecord, totalStars, updateRecord } from '../data/history';
 import { beginGame, endGame, touch } from '../data/seance';
 import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
 import { vibrate } from '../pwa/haptics';
 import { useWakeLock } from '../pwa/useWakeLock';
+import { cancelPraise, praise } from '../voice/praise';
 import { clearSaved, readSaved, useClearSavedOnLeave, useSaved, writeSaved } from './session';
 
 /** Nombre de manches par défaut (docs/FONCTIONNEMENT.md), réglable dans l'espace Parent. */
@@ -88,8 +89,16 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
       const data = { played: played + 1, stars: stars + (found ? 1 : 0) };
       setProgress(data);
       const total = others.current === null ? null : others.current + data.stars;
-      void playSound(answerSound(found, data.played >= rounds, total, REWARDS));
-      if (data.played >= rounds) {
+      const finished = data.played >= rounds;
+      const sound = answerSound(found, finished, total, REWARDS);
+      void playSound(sound);
+      // Félicitation parlée (#116), après le son : jamais sur « Passer », toujours en fin de partie.
+      if (found || finished)
+        praise({
+          stars: finished ? data.stars : undefined,
+          afterMs: getSettings().sounds ? soundLength(sound) * 1000 + 150 : 0,
+        });
+      if (finished) {
         clearSaved(gameId);
         endGame();
         vibrate('party');
@@ -104,6 +113,9 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
     },
     [gameId, played, rounds, setProgress, stars],
   );
+
+  // Quitter ou rejouer la partie coupe la félicitation en cours.
+  useEffect(() => cancelPraise, []);
 
   // L'enfant réfléchit, le parent attend : l'écran ne doit pas s'éteindre en pleine partie.
   useWakeLock(played < rounds);

@@ -154,6 +154,27 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   voix haute en cours : il n'est alors pas joué.
 - Réglage **Sons** (activés par défaut) dans l'espace Parent ; coupés, aucun son d'interface.
 
+## Félicitations parlées
+
+- Au **Trouvé**, une félicitation dite à voix haute, tirée au hasard sans redire la précédente
+  (« Bravo ! », « Super ! », « Bien joué ! », « Génial ! », « Trop fort ! ») ; en **fin de
+  partie**, une phrase de fête : « Vous avez gagné 7 étoiles ensemble ! » (« Bravo d’avoir joué
+  ensemble ! » sans étoile). Jamais rien sur **Pas encore / Passer**.
+- Dites par la même voix française **installée sur le téléphone** que la lecture à voix haute
+  (module `src/voice/praise.ts`), sans réseau.
+- Le parent peut **enregistrer ses propres félicitations** au micro dans l’espace Parent
+  (5 maximum, 10 s chacune) : elles remplacent alors la voix du téléphone. Elles sont jouées par
+  le contexte audio partagé (`src/audio/clip.ts`, sortie commune `audioOutput()`), restent dans
+  le téléphone (IndexedDB, table `praises`), ne vont ni dans la sauvegarde ni dans un jeu
+  partagé, et partent avec « Effacer toutes les données ».
+- Sans voix française locale ni enregistrement, la fonction n’est pas proposée : l’espace Parent
+  propose seulement d’enregistrer (si le micro existe).
+- La félicitation ne retarde rien : elle part après le son d’interface, la manche suivante déjà
+  affichée. Elle n’est pas dite si une mélodie, un son de carte ou une lecture est en cours, et
+  s’arrête si l’un d’eux démarre. Quitter ou rejouer la partie la coupe.
+- Réglage **Félicitations parlées** (activées par défaut) dans l’espace Parent, indépendant du
+  réglage **Sons**. Ton unique pour l’instant (l’adaptation à l’âge viendra avec les niveaux).
+
 ## Public visé (proposition)
 
 - **3 à 7 ans**. Niveaux de difficulté reportés après la v1.
@@ -162,7 +183,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **vibrations**, remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :

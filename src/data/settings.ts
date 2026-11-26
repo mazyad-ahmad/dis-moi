@@ -22,6 +22,8 @@ export interface Settings {
   readAloud: ReadAloud;
   /** Sons d'interface (étoile, passer, minuteur, fin de partie) (#30). */
   sounds: boolean;
+  /** Félicitations parlées au « Trouvé » et en fin de partie (#116). */
+  praise: boolean;
 }
 
 export type ReadAloud = 'off' | SpeechSpeed;
@@ -38,6 +40,7 @@ export const DEFAULT_SETTINGS: Settings = {
   vibrations: true,
   readAloud: 'normal',
   sounds: true,
+  praise: true,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;
