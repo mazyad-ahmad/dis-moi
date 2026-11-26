@@ -1,6 +1,7 @@
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
+import { IconPencil } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
 import { ChoiceBoard } from '../choices/ChoiceBoard';
@@ -29,6 +30,8 @@ import {
   type GlyphCard,
 } from './bank';
 import { GlyphView } from './Glyph';
+import { TracePad } from './TracePad';
+import { traceOf } from './trace';
 
 type Mode = 'letters' | 'lower' | 'cursive' | 'digits' | 'numbers' | 'constellations' | 'mix';
 
@@ -71,6 +74,11 @@ const byLevel = (cards: GlyphCard[], turns: Turns | null, rounds: number) => {
     : orderByLevel(cards, getSettings().gameLevel, (c) => c.level, undefined, seen);
 };
 
+/** Familles où l'enfant peut repasser le glyphe au doigt (#49). */
+const TRACE_MODES: readonly Mode[] = ['letters', 'digits'];
+
+const restoreTrace = (saved: unknown) => (typeof saved === 'boolean' ? saved : undefined);
+
 /** Partie retrouvée ; un paquet sans position (partie d'avant le #48) repart du début. */
 function restorePlace(saved: unknown): Place | undefined {
   const p = saved as Partial<Place> | null;
@@ -89,13 +97,25 @@ function restorePlace(saved: unknown): Place | undefined {
 /**
  * Une manche : le glyphe en grand et la consigne du parent (aussi jouée dans le Grand Jeu).
  * Avec `pool` et « Répondre en montrant » (#123), des glyphes au choix remplacent le glyphe :
- * le parent demande, l'enfant montre.
+ * le parent demande, l'enfant montre. Avec `trace` (#49), une majuscule ou un chiffre
+ * s'affiche en pointillés et l'enfant le repasse du doigt.
  */
-export function GlyphRound({ card, pool }: { card: GlyphCard; pool?: readonly GlyphCard[] }) {
+export function GlyphRound({
+  card,
+  pool,
+  trace,
+}: {
+  card: GlyphCard;
+  pool?: readonly GlyphCard[];
+  trace?: boolean;
+}) {
   const choices = useChoices(pool && glyphOption(card), pool?.map(glyphOption));
+  const model = trace ? traceOf(card) : undefined;
   return (
     <>
-      {choices ? (
+      {model ? (
+        <TracePad strokes={model} label={glyphLabel(card)} />
+      ) : choices ? (
         <ChoiceBoard options={choices} answer={card.glyph} />
       ) : (
         <figure className="glyph-card round-in">
@@ -110,7 +130,13 @@ export function GlyphRound({ card, pool }: { card: GlyphCard; pool?: readonly Gl
       )}
 
       <ParentBlock>
-        {choices && (
+        {model && (
+          <p>
+            L’enfant repasse <strong>{glyphName(card)}</strong> du doigt.{' '}
+            <strong>Voir le tracé</strong> le montre en mouvement.
+          </p>
+        )}
+        {!model && choices && (
           <p>
             Demande à l’enfant de montrer : <strong>{glyphName(card)}</strong>
           </p>
@@ -150,6 +176,9 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
     turns?.order,
   );
   const setMode = (m: Mode) => setPlace({ mode: m, pos });
+  // Tracé au doigt (#49) : choix gardé d'une manche à l'autre, et après un rafraîchissement.
+  const [trace, setTrace] = useSaved(GAME, 'trace', () => false, restoreTrace);
+  const canTrace = TRACE_MODES.includes(mode);
 
   const deck = decks[mode];
   // Chacun son tour : la carte de la manche, au niveau de l'enfant, quel que soit le paquet.
@@ -159,6 +188,7 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
   if (finished)
     return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
+  const tracing = canTrace && trace && !!traceOf(card);
   const next = (found: boolean) => {
     setPlace({ mode, pos: { ...pos, [mode]: pos[mode] + 1 } });
     answer(found);
@@ -191,13 +221,34 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
         ))}
       </div>
 
+      {canTrace && (
+        <button
+          type="button"
+          className="btn btn--secondary trace-toggle"
+          aria-pressed={trace}
+          onClick={() => setTrace(!trace)}
+        >
+          <IconPencil size={20} />
+          Tracer au doigt
+        </button>
+      )}
+
       {/* key : chaque manche (ou changement de paquet) entre en douceur, choix retirés. */}
       <TurnPlayer.Provider value={turns?.playerAt(round)}>
-        <GlyphRound key={`${round}:${mode}`} card={card} pool={glyphPool(card)} />
+        <GlyphRound
+          key={`${round}:${mode}:${tracing}`}
+          card={card}
+          pool={glyphPool(card)}
+          trace={tracing}
+        />
       </TurnPlayer.Provider>
 
       <div className="spacer" />
-      <AnswerBar onSkip={() => next(false)} onFound={() => next(true)} />
+      <AnswerBar
+        onSkip={() => next(false)}
+        onFound={() => next(true)}
+        foundLabel={tracing ? 'C’est tracé' : undefined}
+      />
     </main>
   );
 }

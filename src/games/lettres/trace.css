@@ -1,0 +1,93 @@
+/* ---------- Tracé au doigt (#49) ---------- */
+.trace {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* Consigne et boutons au-dessus du dessin, centrés : la main qui trace (droite ou gauche)
+   ne les cache pas. */
+.trace__help {
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+}
+.trace__tools {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.trace__area {
+  flex: none;
+  height: min(86vw, 380px);
+  min-height: 260px;
+}
+/* Le modèle est posé sur le dessin sans le gêner : il reste visible sous le doigt et
+   par-dessus le trait de l'enfant, et laisse passer le toucher. */
+.trace__model {
+  position: absolute;
+  inset: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  pointer-events: none;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trace__guide {
+  stroke: color-mix(in srgb, var(--river) 16%, transparent);
+  stroke-width: 14;
+}
+.trace__dots {
+  stroke: var(--river);
+  stroke-width: 2.6;
+  stroke-dasharray: 0 5.5;
+}
+.trace__demo {
+  stroke: var(--sun);
+  stroke-width: 6;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation-name: trace-draw;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+@keyframes trace-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.trace__start {
+  fill: var(--forest);
+  stroke: none;
+}
+.trace__arrow {
+  fill: var(--forest);
+  stroke: none;
+}
+.trace__badge {
+  fill: var(--forest);
+  stroke: var(--paper);
+  stroke-width: 1;
+}
+.trace__number {
+  fill: var(--on-forest);
+  stroke: none;
+  font: 700 6.5px var(--font-sans);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+/* Sans animation, la démonstration montre tout le tracé d'un coup. */
+@media (prefers-reduced-motion: reduce) {
+  .trace__demo {
+    stroke-dashoffset: 0;
+  }
+}
+.trace-toggle {
+  align-self: center;
+}
+.trace-toggle[aria-pressed='true'] {
+  background: var(--sky);
+  border-color: var(--river);
+  box-shadow: 0 0 0 2px var(--river);
+}

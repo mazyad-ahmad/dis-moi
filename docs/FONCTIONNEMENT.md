@@ -229,6 +229,28 @@
   le service worker : elle marche hors ligne, aucune requête vers Google.
 - Le Défi du jour et le Grand Jeu gardent les majuscules et les chiffres.
 
+### Tracer au doigt (#49)
+
+- Avec **Majuscules** ou **Chiffres**, le bouton **Tracer au doigt** (appuyé / non appuyé)
+  remplace le glyphe par son modèle en **pointillés**, que l'enfant repasse du doigt. Le choix
+  est gardé d'une manche à l'autre et après un rafraîchissement (pas dans le Mélange, ni pour
+  les minuscules, l'attaché, les nombres et les constellations).
+- Chaque trait a son **point de départ** (pastille numérotée 1, 2, 3 dans l'ordre d'écriture)
+  et une **flèche** qui donne le sens. **Voir le tracé** anime les traits l'un après l'autre
+  (tout d'un coup avec « réduire les animations ») ; la démonstration s'efface dès que
+  l'enfant touche le dessin.
+- Trait **large** (22 px), sans contrôle de précision : **pas de note automatique**. Le parent
+  regarde et valide (**C'est tracé** = +1 étoile, ou **Passer**). Annuler le dernier trait et
+  Tout effacer, comme dans Dessine ça ; le tracé n'est jamais enregistré.
+- Le modèle est posé **par-dessus** le dessin et laisse passer le doigt : il reste visible
+  sous le doigt et au-dessus du trait de l'enfant.
+- **Gauchers** : consigne et boutons sont **au-dessus** de la zone de dessin, centrés ; rien
+  n'est placé à côté ni en dessous, là où une main droite ou gauche se pose.
+- Modèles dessinés pour l'appli (`src/games/lettres/trace.ts`) : un chemin SVG par trait, dans
+  l'ordre des lettres bâton de l'école (de haut en bas, de gauche à droite, les ronds dans le
+  sens inverse des aiguilles d'une montre). Aucun fichier, aucune police, aucun droit tiers.
+  La zone de dessin est celle de Dessine ça (`DrawingCanvas`, #51).
+
 ### Outils de dessin (#51)
 
 - Sous le dessin, **une seule ligne de cinq boutons** de 48 px (tient sur un écran de 320 px) :
