@@ -79,7 +79,7 @@ it('formate les étoiles et le minuteur', () => {
 });
 
 describe('catalogue', () => {
-  it('a 11 jeux avec assez de cartes et des réponses uniques', () => {
+  it('a 12 jeux avec assez de cartes et des réponses uniques', () => {
     expect(CATALOGUE.map((g) => g.id)).toEqual([
       'animal',
       'couleur',
@@ -92,6 +92,7 @@ describe('catalogue', () => {
       'jacques',
       'rime',
       'contraire',
+      'ombre',
     ]);
     for (const g of CATALOGUE) {
       expect(g.items.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);

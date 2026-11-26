@@ -8,7 +8,7 @@ test('Ajouter un jeu : filtres cumulés, retirés d’un geste', async ({ page }
   const catalogue = page.getByRole('region', { name: 'Catalogue' });
   await expect(catalogue.getByRole('heading', { name: 'Bouger' })).toBeVisible();
   const add = catalogue.getByRole('button', { name: /^Ajouter / });
-  await expect(add).toHaveCount(11);
+  await expect(add).toHaveCount(12);
 
   const parler = page.getByRole('group', { name: 'Type' }).getByRole('button', { name: 'Parler' });
   await parler.click();
@@ -17,13 +17,13 @@ test('Ajouter un jeu : filtres cumulés, retirés d’un geste', async ({ page }
     .getByRole('group', { name: 'Moment' })
     .getByRole('button', { name: 'Pour la voiture' })
     .click();
-  await expect(catalogue.getByRole('status')).toHaveText('5 jeux sur 11');
+  await expect(catalogue.getByRole('status')).toHaveText('5 jeux sur 12');
   await expect(catalogue.getByRole('button', { name: 'Ajouter Quelle couleur ?' })).toHaveCount(0);
 
   await parler.click();
   await expect(parler).toHaveAttribute('aria-pressed', 'false');
   await page.getByRole('button', { name: 'Retirer les filtres' }).click();
-  await expect(add).toHaveCount(11);
+  await expect(add).toHaveCount(12);
 });
 
 test('jeu créé pour les grands : rangé sous « Pour d’autres âges » quand Léa a 3 ans', async ({

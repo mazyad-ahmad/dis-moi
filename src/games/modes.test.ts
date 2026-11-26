@@ -51,6 +51,7 @@ describe('façons de jouer', () => {
       'vrai-faux',
       'rime',
       'contraire',
+      'ombre',
     ]);
   });
 

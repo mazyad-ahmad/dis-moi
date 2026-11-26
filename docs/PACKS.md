@@ -48,6 +48,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS`                                                                                     |
 | `moves`                            | facultatif : `true` si le jeu fait bouger l'enfant (mime) ; écarté au Coucher                                                                                       |
 | `still`                            | facultatif, avec `moves` : `true` si le jeu a une version sans bouger (chasse au trésor), jouée au Coucher et en Voiture                                            |
+| `shadow`                           | facultatif, jeux `image` : `true` pour montrer les emoji en silhouette, révélés avec la réponse (Ombres)                                                            |
 | `activities`, `skill`              | jeux du catalogue : types (`ecouter`, `parler`, `lire-compter`, `dessiner`, `bouger`, `calme` ; le premier range le jeu) et ce qu'il fait travailler, en une phrase |
 
 | Champ d'une carte | Rôle                                                                                                              |
@@ -87,6 +88,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-jacques.json`      | Jacques a dit              | `question` |
 | `catalogue-rime.json`         | Ça rime avec…              | `question` |
 | `catalogue-contraire.json`    | Les contraires             | `question` |
+| `catalogue-ombre.json`        | Ombres                     | `image`    |
 
 ## Cartes « vrai ou faux »
 

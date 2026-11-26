@@ -63,6 +63,8 @@ function DrawCard({ word }: { word: string }) {
 }
 
 function CardBody({ card }: { card: DailyCard }) {
+  // Ombres (#61) : l'image passe en couleur avec la réponse.
+  const [revealed, setRevealed] = useState(false);
   switch (card.kind) {
     case 'melody':
       return <SongRound song={card.song} />;
@@ -89,7 +91,7 @@ function CardBody({ card }: { card: DailyCard }) {
       return (
         <div className="deck-round">
           {card.kind === 'sound' && <SoundCard item={item} />}
-          {card.kind === 'image' && <ImageCard item={item} />}
+          {card.kind === 'image' && <ImageCard item={item} revealed={revealed} />}
           {card.kind === 'question' && <QuestionCard item={item} />}
           {consigne ? (
             <JacquesCue consigne={consigne} />
@@ -98,6 +100,7 @@ function CardBody({ card }: { card: DailyCard }) {
               hidden={<DeckAnswer item={item} />}
               hints={hintLadder(item)}
               openHints={writtenHints(item).length ? 1 : 0}
+              onReveal={() => setRevealed(true)}
             >
               {card.kind === 'sound' && item.text && (
                 <>

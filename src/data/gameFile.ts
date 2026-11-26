@@ -34,11 +34,16 @@ export interface GameFile {
   /** Type et âge choisis à la création (#137), facultatifs : un fichier plus ancien n'en a pas. */
   activity?: Activity;
   level?: Level;
+  /** Ombres (#61), jeux Image : facultatif. */
+  shadow?: boolean;
   items: FileItem[];
 }
 
 /** Ce qu'un fichier de jeu (ou une sauvegarde) garde d'un jeu créé. */
-export type SharedGame = Pick<CustomGame, 'name' | 'kind' | 'items' | 'activity' | 'level'>;
+export type SharedGame = Pick<
+  CustomGame,
+  'name' | 'kind' | 'items' | 'activity' | 'level' | 'shadow'
+>;
 
 async function blobToDataUrl(blob: Blob): Promise<string> {
   const bytes = new Uint8Array(await blob.arrayBuffer());
@@ -104,6 +109,7 @@ export async function encodeGame(game: SharedGame): Promise<GameFile> {
     kind: game.kind,
     ...(game.activity && { activity: game.activity }),
     ...(game.level && { level: game.level }),
+    ...(game.shadow && { shadow: true }),
     items,
   };
 }
@@ -174,6 +180,8 @@ export function decodeGame(data: unknown): SharedGame {
     // Type et âge (#137) : facultatifs, ignorés s'ils sont inconnus.
     ...(isActivity(raw.activity) && { activity: raw.activity }),
     ...(isLevel(raw.level) && { level: raw.level }),
+    // Ombres (#61) : seulement pour un jeu Image.
+    ...(raw.shadow === true && kind === 'image' && { shadow: true }),
   };
 }
 

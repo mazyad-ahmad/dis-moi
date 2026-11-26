@@ -94,6 +94,11 @@ export function renameCustomGame(id: number, rawName: string) {
   return mutate(id, () => ({ name }));
 }
 
+/** Ombres (#61) : jouer un jeu Image en silhouettes (emoji) ou photos dans l'ombre. */
+export function setCustomGameShadow(id: number, shadow: boolean) {
+  return mutate(id, () => ({ shadow: shadow || undefined }));
+}
+
 export function addItem(id: number, raw: DeckItem) {
   return mutate(id, (g) => {
     if (g.items.length >= MAX_ITEMS) throw new CustomGameError(`${MAX_ITEMS} cartes maximum.`);
@@ -149,6 +154,9 @@ export function customDeck(game: CustomGame): Deck {
     kind: game.kind,
     tint: TINTS[game.id % TINTS.length],
     mark: game.name.charAt(0).toLocaleUpperCase('fr'),
-    items: game.items,
+    items:
+      game.shadow && game.kind === 'image'
+        ? game.items.map((item) => ({ ...item, shadow: true }))
+        : game.items,
   };
 }

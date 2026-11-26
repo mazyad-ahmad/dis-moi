@@ -25,7 +25,7 @@ export const PACK_KINDS: PackKind[] = [
   'chat',
 ];
 
-export interface PackItem extends Omit<DeckItem, 'image' | 'audio'> {
+export interface PackItem extends Omit<DeckItem, 'image' | 'audio' | 'shadow'> {
   /** Identifiant stable dans le pack (minuscules, chiffres et tirets). */
   id: string;
   /** Niveau par âge, obligatoire pour le contenu intégré (#40). */
@@ -55,6 +55,8 @@ export interface Pack {
   moves?: boolean;
   /** Le jeu qui fait bouger a une version sans bouger, jouée au Coucher et en Voiture. */
   still?: boolean;
+  /** Ombres (#61) : les images (emoji) sont montrées en silhouette, révélées avec la réponse. */
+  shadow?: boolean;
   /** Jeux du catalogue (#137) : types du jeu (le premier le range) et ce qu'il fait travailler. */
   activities?: Activity[];
   skill?: string;
@@ -80,6 +82,7 @@ const PACK_FIELDS = new Set([
   'tint',
   'moves',
   'still',
+  'shadow',
   'activities',
   'skill',
   'items',
@@ -203,6 +206,8 @@ export function validatePack(raw: unknown, file: string): Pack {
     fail('« moves » : true ou false attendu');
   if (pack.still !== undefined && !(pack.still === true && pack.moves === true))
     fail('« still » : true, seulement pour un jeu qui fait bouger (« moves »)');
+  if (pack.shadow !== undefined && !(pack.shadow === true && pack.kind === 'image'))
+    fail('« shadow » : true, seulement pour un jeu d’images (« image »)');
   if (
     pack.activities !== undefined &&
     !(
@@ -260,6 +265,7 @@ export function deckItems(pack: Pack): DeckItem[] {
     const copy: DeckItem & Partial<Pick<PackItem, 'melody' | 'bpm'>> = { ...item };
     delete copy.melody;
     delete copy.bpm;
+    if (pack.shadow) copy.shadow = true;
     return copy;
   });
 }

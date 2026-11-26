@@ -1055,6 +1055,29 @@ a.pill {
   border-radius: 16px;
   object-fit: contain;
 }
+/*
+ * Ombres (#61) : silhouette d'un emoji (noire le jour, claire la nuit, pour garder le contraste
+ * sur le fond de la carte), photo assombrie et floutée (pas de détourage). « Voir la réponse »
+ * la passe en couleur en fondu ; « réduire les animations » coupe le fondu (global.css).
+ */
+.shadow-reveal {
+  --silhouette-invert: 0;
+  transition: filter 0.8s ease;
+}
+:root[data-theme='night'] .shadow-reveal {
+  --silhouette-invert: 0.92;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .shadow-reveal {
+    --silhouette-invert: 0.92;
+  }
+}
+.deck-card__emoji.is-shadow {
+  filter: brightness(0) invert(var(--silhouette-invert));
+}
+.deck-card__photo.is-shadow {
+  filter: brightness(0.25) blur(12px);
+}
 .deck-card__text {
   font-family: var(--font-serif);
   font-size: 26px;

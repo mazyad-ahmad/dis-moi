@@ -46,6 +46,11 @@ export interface DeckItem {
   /** Visuels intégrés (catalogue) : emoji ou couleur montrés en grand. */
   emoji?: string;
   color?: string;
+  /**
+   * Ombres (#61) : la carte est montrée en silhouette (emoji) ou dans l'ombre (photo), puis en
+   * couleur après « Voir la réponse ». Posé d'après le jeu (pack ou jeu créé), jamais enregistré.
+   */
+  shadow?: boolean;
   /** Médias du parent, gardés dans IndexedDB. */
   image?: Blob;
   audio?: Blob;

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRecording } from '../../audio/recording';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
@@ -64,12 +65,18 @@ export function SoundCard({ item }: { item: DeckItem }) {
   );
 }
 
-export function ImageCard({ item }: { item: DeckItem }) {
+/**
+ * Image montrée à l'enfant. Ombres (#61) : tant que la réponse n'est pas vue (`revealed`),
+ * l'emoji est une silhouette et la photo reste dans l'ombre ; elles passent en couleur ensuite.
+ */
+export function ImageCard({ item, revealed = false }: { item: DeckItem; revealed?: boolean }) {
   const url = useObjectUrl(item.image);
+  const shadow = item.shadow ? (revealed ? ' shadow-reveal' : ' shadow-reveal is-shadow') : '';
+  const label = item.shadow && !revealed ? 'Ombre à deviner' : 'Image à montrer';
   return (
     <figure className="deck-card deck-card--image">
       {item.image ? (
-        url && <img className="deck-card__photo" src={url} alt="Image à montrer" />
+        url && <img className={`deck-card__photo${shadow}`} src={url} alt={label} />
       ) : item.color ? (
         <span
           className="deck-card__swatch"
@@ -78,12 +85,16 @@ export function ImageCard({ item }: { item: DeckItem }) {
           style={{ background: item.color }}
         />
       ) : item.emoji ? (
-        <span className="deck-card__emoji" role="img" aria-label="Image à montrer">
+        <span className={`deck-card__emoji${shadow}`} role="img" aria-label={label}>
           {item.emoji}
         </span>
       ) : null}
       {item.text && <strong className="deck-card__text">{item.text}</strong>}
-      <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
+      <figcaption className="muted">
+        {item.shadow && !revealed
+          ? 'Montre l’ombre à l’enfant : qui se cache ?'
+          : "Montre l'écran à l'enfant"}
+      </figcaption>
     </figure>
   );
 }
@@ -145,11 +156,13 @@ export function DeckRound({
   );
   const choices = drawn && verdict ? [...VERDICT_OPTIONS] : drawn;
   // L'enfant verrait la réponse (couleur, photo) : les choix la remplacent, le parent la demande.
-  const showMe = !!choices && showsAnswer(kind);
+  // Une ombre (#61) ne la donne pas : les choix, en couleur, s'ajoutent sous la silhouette.
+  const showMe = !!choices && showsAnswer(kind) && !item.shadow;
+  const [revealed, setRevealed] = useState(false);
   return (
     <div className="deck-round round-in">
       {kind === 'sound' && <SoundCard item={item} />}
-      {kind === 'image' && !showMe && <ImageCard item={item} />}
+      {kind === 'image' && !showMe && <ImageCard item={item} revealed={revealed} />}
       {kind === 'question' && <QuestionCard item={item} />}
       {choices && <ChoiceBoard options={choices} answer={verdict ?? deckOption(item).key} />}
       {consigne ? (
@@ -165,6 +178,7 @@ export function DeckRound({
           hidden={<DeckAnswer item={item} />}
           hints={hintLadder(item)}
           openHints={writtenHints(item).length ? 1 : 0}
+          onReveal={() => setRevealed(true)}
         >
           {soundToImitate && (
             <>

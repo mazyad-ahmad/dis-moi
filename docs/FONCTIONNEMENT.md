@@ -286,6 +286,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Jacques a dit**       | Le parent lit une consigne ; sans « Jacques a dit », c'est un piège et l'enfant ne bouge pas. Voir ci-dessous.                             |
 | **Ça rime avec…**       | « Trouve un mot qui rime avec _chat_ » : l'enfant cherche, le parent a des exemples. Voir ci-dessous.                                      |
 | **Les contraires**      | « Le contraire de _grand_ ? » : l'enfant répond, le parent a les réponses acceptées. Voir ci-dessous.                                      |
+| **Ombres**              | Une silhouette noire, l'enfant devine ; « Voir la réponse » la montre en couleur. Voir ci-dessous.                                         |
 
 ### Les émotions (#58)
 
@@ -365,6 +366,24 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   la liste n'est qu'un exemple : tout mot qui rime compte, le parent juge.
 - En montrant : l'emoji de la première réponse (🐀 Rat…) parmi les réponses d'autres cartes.
 
+### Ombres (#61)
+
+- Jeu du catalogue : l'image apparaît **en silhouette**, l'enfant devine qui se cache ; « Voir la
+  réponse » la montre **en couleur**, en fondu (0,8 s). Avec « réduire les animations », elle
+  passe en couleur d'un coup.
+- Silhouette noire en thème jour, claire en thème nuit : toujours contrastée avec le fond de la
+  carte. Simple filtre CSS sur l'emoji, aucun fichier.
+- 36 emoji (`src/content/catalogue-ombre.json`), 12 par niveau, retenus pour leur forme
+  reconnaissable de profil (trompe, long cou, pinces, ailes…) : pas de visage rond ni de fruit
+  en boule. Chaque carte donne au parent un indice sur la forme. Liste à relire par un humain.
+- En montrant : la silhouette reste, les choix en couleur s'ajoutent dessous (retrouver l'image
+  de l'ombre). Convient au Coucher, pas en Voiture (il faut regarder l'écran).
+- **Jeux créés** de type Image : « Montrer les images » **Telles quelles** (par défaut) ou
+  **En ombres**, dans la page du jeu. Un emoji y devient une silhouette ; une photo, faute de
+  détourage, est assombrie et floutée, puis montrée nette avec la réponse. Le choix est gardé
+  dans le fichier de jeu partagé et la sauvegarde (champ facultatif `shadow`).
+- Dans le Grand Jeu et le Défi du jour, la carte se joue aussi en ombre.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -390,7 +409,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Cartes (50 maximum) : réponse et indice facultatif, plus selon le type :
   - Son : un **enregistrement** au micro (10 s maximum), que le parent fait écouter à chaque
     manche (« Écouter le son »), ou un bruit à imiter par le parent ;
-  - Image : une **photo** de l'appareil (réduite à 1280 px) ou un texte à montrer ;
+  - Image : une **photo** de l'appareil (réduite à 1280 px) ou un texte à montrer ; le jeu
+    peut se jouer « En ombres » (voir « Ombres ») ;
     « Ajouter une photo » ouvre le choix d'Android (galerie ou appareil photo). La photo est
     réduite à 1280 px et recopiée en JPEG dans la base (jamais le fichier d'origine, qui peut
     devenir illisible). Une même photo peut être reprise. Si elle ne peut pas être lue (format
@@ -572,7 +592,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
-   Ça rime avec…, Les contraires)
+   Ça rime avec…, Les contraires, Ombres)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

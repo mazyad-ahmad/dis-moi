@@ -71,6 +71,8 @@ export interface CustomGame {
   activity?: Activity;
   /** Âge facultatif (#137) : niveau visé ; absent : tous les âges. */
   level?: Level;
+  /** Ombres (#61), jeux Image : cartes montrées dans l'ombre, révélées avec la réponse. */
+  shadow?: boolean;
   createdAt: number;
   updatedAt: number;
 }
