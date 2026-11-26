@@ -59,6 +59,7 @@ export class FakeBuffer {
 
 export class FakeBufferSource extends FakeNode {
   buffer: FakeBuffer | null = null;
+  playbackRate = new FakeParam();
   onended: (() => void) | null = null;
   started = false;
   stopped = false;
@@ -72,6 +73,11 @@ export class FakeBufferSource extends FakeNode {
   end() {
     this.onended?.();
   }
+}
+
+/** Retard (écho). */
+export class FakeDelay extends FakeNode {
+  delayTime = new FakeParam();
 }
 
 /** Nœud qui lit un élément <audio> (`createMediaElementSource`). */
@@ -95,6 +101,7 @@ export class FakeContext {
   shapers: FakeShaper[] = [];
   sources: FakeBufferSource[] = [];
   mediaSources: FakeMediaSource[] = [];
+  delays: FakeDelay[] = [];
   constructor() {
     contexts.push(this);
   }
@@ -112,6 +119,11 @@ export class FakeContext {
     const s = new FakeShaper();
     this.shapers.push(s);
     return s;
+  }
+  createDelay() {
+    const d = new FakeDelay();
+    this.delays.push(d);
+    return d;
   }
   createBufferSource() {
     const s = new FakeBufferSource();

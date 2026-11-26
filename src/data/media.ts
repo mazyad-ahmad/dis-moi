@@ -120,8 +120,8 @@ export function recordedBlob(chunks: Blob[], mimeType: string | undefined): Blob
 
 export type RecorderState = 'idle' | 'recording' | 'denied';
 
-/** Enregistrement au micro, arrêté automatiquement après MAX_RECORD_SECONDS. */
-export function useRecorder(onDone: (audio: Blob) => void) {
+/** Enregistrement au micro, arrêté automatiquement après `maxSeconds` (MAX_RECORD_SECONDS). */
+export function useRecorder(onDone: (audio: Blob) => void, maxSeconds = MAX_RECORD_SECONDS) {
   const [state, setState] = useState<RecorderState>('idle');
   const recorder = useRef<MediaRecorder | null>(null);
   const done = useRef(onDone);
@@ -162,7 +162,7 @@ export function useRecorder(onDone: (audio: Blob) => void) {
     setState('recording');
     window.setTimeout(() => {
       if (rec.state === 'recording') rec.stop();
-    }, MAX_RECORD_SECONDS * 1000);
+    }, maxSeconds * 1000);
   }
 
   function stop() {

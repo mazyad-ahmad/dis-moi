@@ -13,6 +13,9 @@ export function SeanceOverCard() {
         Revenir plus tard
       </h2>
       <p className="lead">On a bien joué ! Les jeux se reposent, eux aussi.</p>
+      <a className="btn btn--secondary" href={href('/respire')}>
+        Respirer ensemble
+      </a>
       <p className="muted">
         Pour prolonger, le parent passe par l’<a href={href('/parent')}>espace parent</a>.
       </p>

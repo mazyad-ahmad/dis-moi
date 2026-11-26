@@ -1,0 +1,64 @@
+/* ---------- Devine avec tes mains (#134) ---------- */
+
+.mains-intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.mains-intro__title {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.mains-intro ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.mains-safety {
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--sun);
+  background: var(--paper);
+  font-weight: 600;
+}
+.mains-list ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 4px 12px;
+}
+.mains-list p {
+  margin: 8px 0 0;
+}
+.mains-intro__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mains-card {
+  min-height: 0;
+}
+.mains-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 700;
+}
+.mains-steps li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mains-steps__emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+.mains-questions {
+  margin: 8px 0 0;
+  padding-left: 1.2em;
+}

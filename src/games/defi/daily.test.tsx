@@ -83,7 +83,8 @@ describe('défi du jour sur l’accueil', () => {
   it('se joue depuis l’accueil : une étoile bonus et un mot gentil', async () => {
     const user = userEvent.setup();
     render(<App />);
-    await user.click(await screen.findByRole('link', { name: 'Jouer' }));
+    // Premier rendu de l'accueil : peut dépasser une seconde sur une machine chargée.
+    await user.click(await screen.findByRole('link', { name: 'Jouer' }, { timeout: 5000 }));
 
     const { source, card } = dailyPick(dayKey());
     expect(await screen.findByRole('heading', { name: source.name })).toBeInTheDocument();

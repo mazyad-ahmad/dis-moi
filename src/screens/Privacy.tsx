@@ -23,6 +23,7 @@ export function Privacy() {
           <li>les parties jouées et les étoiles gagnées ;</li>
           <li>les jeux créés, avec leurs photos et les sons enregistrés ;</li>
           <li>les félicitations enregistrées par le parent ;</li>
+          <li>les histoires enregistrées dans le Livre d’histoires ;</li>
           <li>les réglages de l'espace Parent.</li>
         </ul>
         <p>
@@ -48,14 +49,22 @@ export function Privacy() {
         <h2 className="h3">Micro, photos et voix</h2>
         <p>
           Les photos ne servent qu'à « Créer mon propre jeu », quand le parent ajoute une image à
-          une carte. Le micro sert à deux choses : enregistrer le son d'une carte, et enregistrer
-          les félicitations du parent (« Bravo ! »), dans l'espace Parent. Android demande alors
-          l'autorisation ; on peut la refuser et jouer sans enregistrement.
+          une carte. Le micro sert à quatre choses : enregistrer le son d'une carte, enregistrer les
+          félicitations du parent (« Bravo ! »), dans l'espace Parent, rejouer une phrase avec une
+          voix rigolote dans « Voix rigolotes » et, si le parent appuie sur « Enregistrer l’histoire
+          », garder une histoire inventée dans « Histoire à inventer ». Il ne s’allume jamais tout
+          seul. Android demande alors l'autorisation ; on peut la refuser et jouer sans
+          enregistrement.
         </p>
         <p>
-          Les félicitations enregistrées restent sur ce téléphone : elles ne sont jamais envoyées,
-          ni mises dans la sauvegarde ou dans un jeu partagé. « Effacer toutes les données » les
-          supprime.
+          Dans « Voix rigolotes », la voix est transformée sur le téléphone et l'enregistrement
+          n'est jamais gardé : il est oublié à la fin de chaque manche.
+        </p>
+        <p>
+          Les félicitations et les histoires enregistrées restent sur ce téléphone : elles ne sont
+          jamais envoyées, ni mises dans la sauvegarde ou dans un jeu partagé. Les histoires se
+          réécoutent et se suppriment dans le Livre d’histoires (espace Parent). « Effacer toutes
+          les données » les supprime toutes.
         </p>
         <p>
           Le bouton « Lire » utilise seulement une voix française installée sur le téléphone : le

@@ -28,6 +28,8 @@ interface Props {
   /** En équipes (#44) : les étoiles de chaque équipe ; toutes sont fêtées, sans classement. */
   teams?: TeamScore[];
   onReplay: () => void;
+  /** Message propre au jeu, à la place du message selon le score (Raconte-moi, #125). */
+  message?: string;
 }
 
 /** En équipes (#44) : chaque équipe est fêtée, dans l'ordre de l'écran des équipes. */
@@ -69,6 +71,9 @@ function SeanceEnd({ stars }: { stars: number }) {
       </p>
       <p className="lead">On range le téléphone ?</p>
       <div className="spacer" />
+      <a className="btn btn--secondary btn--block" href={href('/respire')}>
+        Respirer ensemble
+      </a>
       <a className="btn btn--primary btn--block" href={href('/')}>
         À plus tard
       </a>
@@ -94,7 +99,7 @@ function useStarCount(stars: number) {
 }
 
 /** Écran de fin de partie : étoiles gagnées ensemble, récompenses, Rejouer ou un autre jeu. */
-export function GameResult({ stars, rounds, teams, onReplay }: Props) {
+export function GameResult({ stars, rounds, teams, onReplay, message: own }: Props) {
   const seance = useSeance();
   const route = useRoute();
   const records = useRecords();
@@ -104,7 +109,7 @@ export function GameResult({ stars, rounds, teams, onReplay }: Props) {
   const other = gentle
     ? undefined
     : nextGame(playable, route.name === 'game' ? route.id : undefined);
-  const [message] = useState(() => resultMessage(stars, rounds));
+  const [message] = useState(() => own ?? resultMessage(stars, rounds));
   useStarCount(seance.over ? 0 : stars);
   if (seance.over) return <SeanceEnd stars={stars} />;
   const rewards = records?.length ? resultRewards(records, stars) : undefined;
@@ -152,6 +157,11 @@ export function GameResult({ stars, rounds, teams, onReplay }: Props) {
       {gentle && <p className="lead">C’est l’heure de dormir. Bonne nuit !</p>}
       {seance.nextIsLast && <p className="seance-notice">Encore une partie, et après on range.</p>}
       <div className="spacer" />
+      {gentle && (
+        <a className="btn btn--secondary btn--block" href={href('/respire')}>
+          Respirer avant de dormir
+        </a>
+      )}
       {other && (
         <a className="btn btn--secondary btn--block" href={href(`/jeu/${other.id}`)}>
           Un autre jeu : {other.name}

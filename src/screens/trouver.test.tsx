@@ -31,9 +31,9 @@ it('Ajouter un jeu : groupé par type, avec âge et ce que le jeu fait travaille
     expect(within(catalogue).getByRole('heading', { name: type })).toBeInTheDocument();
   expect(within(catalogue).getByText(/Fait bouger et s’exprimer/)).toBeInTheDocument();
   expect(within(catalogue).getAllByText(/Dès 3 ans/).length).toBeGreaterThan(0);
-  expect(shownGames()).toHaveLength(4);
-  // Recherche seulement au-delà de 20 jeux.
-  expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+  expect(shownGames()).toHaveLength(25);
+  // Recherche au-delà de 20 jeux : le catalogue en compte 25.
+  expect(screen.getByRole('searchbox', { name: 'Chercher un jeu' })).toBeInTheDocument();
 });
 
 it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le lecteur d’écran', async () => {
@@ -48,22 +48,61 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
   const parler = within(types).getByRole('button', { name: 'Parler' });
   await user.click(parler);
   expect(parler).toHaveAttribute('aria-pressed', 'true');
-  expect(shownGames()).toEqual(['Quel animal ?', 'Quelle couleur ?', 'Devinettes']);
-  expect(status).toHaveTextContent('3 jeux sur 4');
+  expect(shownGames()).toEqual([
+    'Quel animal ?',
+    'Vrai ou faux rigolo',
+    'Quelle couleur ?',
+    'Devinettes',
+    'Quelle émotion ?',
+    'Ça rime avec…',
+    'Les contraires',
+    'Ombres',
+    'Devine-tête',
+    'Où ça va ?',
+    'Devine avec tes mains',
+    'Que fais-tu si… ?',
+    'Ni oui ni non',
+    'Mime l’émotion',
+  ]);
+  expect(status).toHaveTextContent('14 jeux sur 25');
 
   await user.click(within(moments).getByRole('button', { name: 'Pour la voiture' }));
-  expect(shownGames()).toEqual(['Quel animal ?', 'Devinettes']);
+  const oral = [
+    'Quel animal ?',
+    'Vrai ou faux rigolo',
+    'Devinettes',
+    'Ça rime avec…',
+    'Les contraires',
+    'Où ça va ?',
+    'Devine avec tes mains',
+    'Que fais-tu si… ?',
+    'Ni oui ni non',
+  ];
+  expect(shownGames()).toEqual(oral);
   await user.click(within(ages).getByRole('button', { name: '7 ans et plus' }));
-  expect(shownGames()).toEqual(['Quel animal ?', 'Devinettes']);
+  expect(shownGames()).toEqual(oral);
 
   // Un geste : toucher de nouveau la pastille choisie la retire.
   await user.click(parler);
   expect(parler).toHaveAttribute('aria-pressed', 'false');
-  expect(shownGames()).toEqual(['Quel animal ?', 'Devinettes']);
+  // La chasse au trésor se joue sans courir en voiture.
+  expect(shownGames()).toEqual([
+    'Quel animal ?',
+    'Vrai ou faux rigolo',
+    'Devinettes',
+    'Ça rime avec…',
+    'Les contraires',
+    'Où ça va ?',
+    'Devine avec tes mains',
+    'Que fais-tu si… ?',
+    'Ni oui ni non',
+    'Tape les syllabes',
+    'Chasse au trésor',
+  ]);
 
   // Ou tout retirer d'un coup.
   await user.click(screen.getByRole('button', { name: 'Retirer les filtres' }));
-  expect(shownGames()).toHaveLength(4);
+  expect(shownGames()).toHaveLength(25);
   expect(status).toHaveTextContent('');
   for (const group of [types, ages, moments])
     expect(within(group).queryAllByRole('button', { pressed: true })).toHaveLength(0);

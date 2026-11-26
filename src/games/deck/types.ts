@@ -38,9 +38,23 @@ export interface DeckItem {
   hint?: string;
   /** Indices suivants, donnés un à un si l'enfant sèche (#34). */
   hints?: string[];
+  /**
+   * Question pour en parler ensemble, ouverte et bienveillante (Les émotions, #58), montrée
+   * au parent avec la réponse.
+   */
+  talk?: string;
   /** Visuels intégrés (catalogue) : emoji ou couleur montrés en grand. */
   emoji?: string;
   color?: string;
+  /**
+   * Ombres (#61) : la carte est montrée en silhouette (emoji) ou dans l'ombre (photo), puis en
+   * couleur après « Voir la réponse ». Posé d'après le jeu (pack ou jeu créé), jamais enregistré.
+   */
+  shadow?: boolean;
+  /** L'intrus (#63) : les trois images qui vont ensemble ; l'intrus est `emoji`. */
+  others?: string[];
+  /** Remets dans l'ordre (#131) : les étapes de la séquence, dans l'ordre attendu. */
+  steps?: { text: string; emoji?: string }[];
   /** Médias du parent, gardés dans IndexedDB. */
   image?: Blob;
   audio?: Blob;
@@ -56,4 +70,6 @@ export interface Deck {
   /** Marque de la tuile (2-3 caractères). */
   mark: string;
   items: DeckItem[];
+  /** Image cachée (#62) d'un jeu créé ; absente : réglage du catalogue (`revealCatalogue`). */
+  reveal?: boolean;
 }

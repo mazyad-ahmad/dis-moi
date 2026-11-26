@@ -1,0 +1,92 @@
+/* ---------- Devine-tête (#67) ---------- */
+
+.tete-intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.tete-intro p {
+  margin: 0;
+}
+.tete-intro__title {
+  margin: 0;
+  font-size: 20px;
+}
+.tete-intro__note {
+  font-weight: 600;
+}
+.tete-intro__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Le mot, lu par les autres à quelques pas : le plus grand possible. */
+.tete-card {
+  background: var(--sky);
+  color: var(--ink);
+  overflow: hidden;
+}
+.tete-word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.tete-word__emoji {
+  font-size: 72px;
+  line-height: 1.1;
+}
+.tete-word__answer {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 9vw, 72px);
+  line-height: 1.1;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.tete-word__hint {
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  max-width: 36ch;
+}
+.tete-status {
+  margin: 0;
+  min-height: 22px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/*
+ * Écran resté en portrait (le navigateur a refusé le paysage) : le mot est tourné d'un quart
+ * de tour, pour se lire quand le téléphone est tenu sur le côté, sur le front.
+ */
+@media (orientation: portrait) {
+  .tete-screen .tete-card {
+    min-height: 56vh;
+    padding: 12px;
+  }
+  .tete-screen .tete-word {
+    width: 52vh;
+    max-width: 52vh;
+    transform: rotate(var(--tete-turn, 90deg));
+  }
+  .tete-screen .tete-word__answer {
+    font-size: clamp(36px, 7vh, 64px);
+  }
+}
+/* En paysage, le mot est déjà à l'endroit : rien à retourner. */
+@media (orientation: landscape) {
+  .tete-flip {
+    display: none;
+  }
+  /* Peu de hauteur en paysage : le mot d'abord, l'image plus petite. */
+  .tete-screen .tete-card {
+    padding: 12px 20px;
+  }
+  .tete-screen .tete-word__emoji {
+    font-size: 48px;
+  }
+}

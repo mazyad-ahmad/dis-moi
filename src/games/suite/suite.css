@@ -1,0 +1,58 @@
+/* ---------- La suite logique (#129) ---------- */
+
+.suite-card {
+  min-height: 0;
+}
+/*
+ * La suite se lit de gauche à droite et passe à la ligne si besoin : neuf cases tiennent sur
+ * deux lignes d'un écran de 320 px, sans rien faire défiler de côté.
+ */
+.suite-row {
+  list-style: none;
+  margin: 0;
+  padding: 12px;
+  border-radius: 20px;
+  background: var(--sky);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.suite-cell {
+  min-width: 56px;
+  min-height: 56px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  line-height: 1.1;
+  user-select: none;
+}
+/* Suites qui grandissent : plusieurs images par case, plus petites, sur deux lignes au plus. */
+.suite-cell--many {
+  max-width: 108px;
+  font-size: 24px;
+}
+.suite-cell--many > span {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+}
+/* La case vide : bordure en pointillés et point d'interrogation, sans couleur à deviner. */
+.suite-cell--blank {
+  border: 3px dashed var(--river);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--river);
+}
+/* Choix « en montrant » d'une suite qui grandit : plusieurs emoji, plus petits. */
+.suite-choices--many .choice__emoji {
+  font-size: 28px;
+  overflow-wrap: anywhere;
+  text-align: center;
+}

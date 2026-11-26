@@ -1,3 +1,5 @@
+import { verdictOf } from './vraifaux/verdict';
+
 /**
  * Indices en escalier (#34) : quand l'enfant sèche, le parent donne un indice de plus,
  * jamais la réponse directement. D'abord les indices écrits de la carte, puis la première
@@ -28,9 +30,10 @@ export function writtenHints(card: { hint?: string; hints?: string[] }): string[
 
 /**
  * Échelle d'indices d'une carte : indices écrits, puis première lettre.
- * Toute carte a au moins l'indice « première lettre » (sauf réponse sans lettre).
+ * Toute carte a au moins l'indice « première lettre » (sauf réponse sans lettre, et carte
+ * « vrai ou faux » : « Ça commence par « V » » donnerait la réponse, #56).
  */
 export function hintLadder(card: { answer: string; hint?: string; hints?: string[] }): string[] {
-  const letter = firstLetterHint(card.answer);
+  const letter = !verdictOf(card.answer) && firstLetterHint(card.answer);
   return [...writtenHints(card), ...(letter ? [letter] : [])];
 }

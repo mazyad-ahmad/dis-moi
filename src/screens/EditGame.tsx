@@ -25,6 +25,7 @@ import {
   MAX_TEXT,
   removeItem,
   renameCustomGame,
+  setCustomGameShadow,
   updateItem,
   useCustomGame,
 } from '../data/customGames';
@@ -401,6 +402,38 @@ function ExportButton({ game }: { game: CustomGame }) {
   );
 }
 
+/** Ombres (#61), jeux Image : montrer les images telles quelles ou dans l'ombre. */
+function ShadowChoice({ game }: { game: CustomGame }) {
+  const options = [
+    { value: false, label: 'Telles quelles' },
+    { value: true, label: 'En ombres' },
+  ];
+  return (
+    <>
+      <span className="field-label" id="shadow-label">
+        Montrer les images
+      </span>
+      <div className="chips" role="radiogroup" aria-labelledby="shadow-label">
+        {options.map((o) => (
+          <label key={o.label} className="chip">
+            <input
+              type="radio"
+              name="shadow"
+              checked={!!game.shadow === o.value}
+              onChange={() => void setCustomGameShadow(game.id, o.value)}
+            />
+            {o.label}
+          </label>
+        ))}
+      </div>
+      <p className="muted">
+        En ombres : l’enfant devine l’image cachée (emoji en silhouette, photo assombrie), qui
+        apparaît en couleur avec « Voir la réponse ».
+      </p>
+    </>
+  );
+}
+
 function Editor({ game }: { game: CustomGame }) {
   const [editing, setEditing] = useState<number | null>(null);
   const full = game.items.length >= MAX_ITEMS;
@@ -414,6 +447,7 @@ function Editor({ game }: { game: CustomGame }) {
         Type : {kindLabel(game.kind)}. Une carte = une manche ; les photos et les sons restent sur
         ce téléphone.
       </p>
+      {game.kind === 'image' && <ShadowChoice game={game} />}
 
       <section aria-labelledby="cards-title" className="catalogue">
         <h2 id="cards-title" className="eyebrow">

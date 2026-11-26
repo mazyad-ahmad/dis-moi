@@ -7,6 +7,8 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { BackupSection } from './BackupSection';
 import { GrandSection } from './GrandSection';
 import { PraiseSection } from './PraiseSection';
+import { StorySection } from './StorySection';
+import { RevealSection } from './RevealSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
@@ -183,7 +185,7 @@ function LinkRow({ path, title, detail }: { path: string; title: string; detail:
 }
 
 async function eraseEverything() {
-  const tables = [db.players, db.games, db.customGames, db.settings, db.praises];
+  const tables = [db.players, db.games, db.customGames, db.settings, db.praises, db.stories];
   await db.transaction('rw', tables, async () => {
     await Promise.all(tables.map((t) => t.clear()));
   });
@@ -278,6 +280,8 @@ export function Parent() {
 
       <GrandSection />
 
+      <RevealSection />
+
       <ReadAloudSetting />
 
       <VibrationSetting />
@@ -293,6 +297,8 @@ export function Parent() {
       />
 
       <PraiseSection />
+
+      <StorySection />
 
       <Choice
         legend="Défi du jour"
@@ -375,7 +381,7 @@ export function Parent() {
             const ok = await confirm({
               title: 'Tout effacer ?',
               message:
-                'Joueurs, étoiles, jeux créés, félicitations enregistrées et réglages seront supprimés de ce téléphone.',
+                'Joueurs, étoiles, jeux créés, félicitations et histoires enregistrées et réglages seront supprimés de ce téléphone.',
               confirmLabel: 'Tout effacer',
               danger: true,
             });

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRecording } from '../../audio/recording';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
@@ -13,7 +14,7 @@ import { DrawingGame } from '../dessin/DrawingGame';
 import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
-import { getSettings } from '../../data/settings';
+import { getSettings, useSettings } from '../../data/settings';
 import { cardLevel, drawForLevel } from '../levels';
 import { drawForTurns } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
@@ -21,6 +22,15 @@ import { TurnPlayer, useTurns } from '../useTurns';
 import { cardKey } from './cardKey';
 import type { Deck, DeckItem, DeckKind } from './types';
 import { useObjectUrl } from './useObjectUrl';
+import { VERDICT_OPTIONS, verdictOf, verdictOption } from '../vraifaux/verdict';
+import { consigneOf } from '../jacques/consigne';
+import { JacquesCue } from '../jacques/JacquesCue';
+import { canReveal } from '../reveal/reveal';
+import { RevealCard } from '../reveal/RevealCard';
+import { inCountOrder, SYLLABES_OPTIONS, syllabesOf, syllabesOption } from '../syllabes/syllabes';
+import { SyllabesCue } from '../syllabes/SyllabesCue';
+import { triOf } from '../tri/tri';
+import { TriRound } from '../tri/TriRound';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
 function RecordedSound({ audio }: { audio: Blob }) {
@@ -61,12 +71,18 @@ export function SoundCard({ item }: { item: DeckItem }) {
   );
 }
 
-export function ImageCard({ item }: { item: DeckItem }) {
+/**
+ * Image montrée à l'enfant. Ombres (#61) : tant que la réponse n'est pas vue (`revealed`),
+ * l'emoji est une silhouette et la photo reste dans l'ombre ; elles passent en couleur ensuite.
+ */
+export function ImageCard({ item, revealed = false }: { item: DeckItem; revealed?: boolean }) {
   const url = useObjectUrl(item.image);
+  const shadow = item.shadow ? (revealed ? ' shadow-reveal' : ' shadow-reveal is-shadow') : '';
+  const label = item.shadow && !revealed ? 'Ombre à deviner' : 'Image à montrer';
   return (
     <figure className="deck-card deck-card--image">
       {item.image ? (
-        url && <img className="deck-card__photo" src={url} alt="Image à montrer" />
+        url && <img className={`deck-card__photo${shadow}`} src={url} alt={label} />
       ) : item.color ? (
         <span
           className="deck-card__swatch"
@@ -75,12 +91,16 @@ export function ImageCard({ item }: { item: DeckItem }) {
           style={{ background: item.color }}
         />
       ) : item.emoji ? (
-        <span className="deck-card__emoji" role="img" aria-label="Image à montrer">
+        <span className={`deck-card__emoji${shadow}`} role="img" aria-label={label}>
           {item.emoji}
         </span>
       ) : null}
       {item.text && <strong className="deck-card__text">{item.text}</strong>}
-      <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
+      <figcaption className="muted">
+        {item.shadow && !revealed
+          ? 'Montre l’ombre à l’enfant : qui se cache ?'
+          : "Montre l'écran à l'enfant"}
+      </figcaption>
     </figure>
   );
 }
@@ -99,39 +119,96 @@ function answerOf(item: DeckItem) {
   return item.emoji && !item.color ? `${item.emoji} ${item.answer}` : item.answer;
 }
 
+/** Question pour en parler ensemble (#58), sous la réponse du parent. */
+export function TalkAbout({ item }: { item: DeckItem }) {
+  return item.talk ? (
+    <p className="parent-block__talk">
+      Pour en parler : <strong>{item.talk}</strong>
+    </p>
+  ) : null;
+}
+
+/** Réponse cachée d'une carte, avec sa question pour en parler s'il y en a une. */
+export function DeckAnswer({ item }: { item: DeckItem }) {
+  return (
+    <>
+      {answerOf(item)}
+      <TalkAbout item={item} />
+    </>
+  );
+}
+
 /**
  * Une manche : la carte et la zone du parent (aussi jouée dans le Grand Jeu).
  * `pool` : cartes du jeu où tirer les choix de « Répondre en montrant » (#123).
+ * `reveal` : Image cachée (#62), l'image se dévoile par paliers.
  */
 export function DeckRound({
   kind,
   item,
   pool,
+  reveal,
 }: {
   kind: DeckKind;
   item: DeckItem;
   pool?: readonly DeckItem[];
+  reveal?: boolean;
 }) {
   const soundToImitate = kind === 'sound' && !item.audio && item.text;
-  const choices = useChoices(pool && deckOption(item), pool?.map(deckOption));
+  // Jacques a dit (#57) : piège ou pas, dit d'emblée au parent ; rien à montrer à l'enfant.
+  const consigne = kind === 'question' ? consigneOf(item) : undefined;
+  // Vrai ou faux (#56) : deux choix, Vrai puis Faux, à la place des cartes voisines.
+  const verdict = kind === 'question' ? verdictOf(item.answer) : undefined;
+  // Tape les syllabes (#127) : les nombres de syllabes à montrer ; rien pour « Trouve un mot… ».
+  const syllabes = kind === 'question' ? syllabesOf(item) : undefined;
+  const count = syllabes?.kind === 'mot' ? syllabesOption(syllabes.count) : undefined;
+  const drawn = useChoices(
+    pool && !consigne && syllabes?.kind !== 'trouve'
+      ? verdict
+        ? verdictOption(verdict)
+        : (count ?? deckOption(item))
+      : undefined,
+    verdict ? VERDICT_OPTIONS : count ? SYLLABES_OPTIONS : pool?.map(deckOption),
+  );
+  const choices =
+    drawn && verdict ? [...VERDICT_OPTIONS] : drawn && count ? inCountOrder(drawn) : drawn;
   // L'enfant verrait la réponse (couleur, photo) : les choix la remplacent, le parent la demande.
-  const showMe = !!choices && showsAnswer(kind);
+  // Une ombre (#61) ne la donne pas : les choix, en couleur, s'ajoutent sous la silhouette.
+  const showMe = !!choices && showsAnswer(kind) && !item.shadow;
+  const [revealed, setRevealed] = useState(false);
+  // Où ça va ? (#130) : l'élément, ses familles et une réponse parfois discutable.
+  if (kind === 'question' && triOf(item)) return <TriRound item={item} />;
   return (
     <div className="deck-round round-in">
       {kind === 'sound' && <SoundCard item={item} />}
-      {kind === 'image' && !showMe && <ImageCard item={item} />}
+      {kind === 'image' &&
+        !showMe &&
+        // Une carte en ombre (#61) n'est jamais en Image cachée (#62) : l'ombre l'emporte.
+        (reveal && !item.shadow && canReveal(item) ? (
+          <RevealCard item={item} />
+        ) : (
+          <ImageCard item={item} revealed={revealed} />
+        ))}
       {kind === 'question' && <QuestionCard item={item} />}
-      {choices && <ChoiceBoard options={choices} answer={deckOption(item).key} />}
-      {showMe ? (
+      {choices && (
+        <ChoiceBoard options={choices} answer={verdict ?? count?.key ?? deckOption(item).key} />
+      )}
+      {consigne ? (
+        <JacquesCue consigne={consigne} />
+      ) : syllabes ? (
+        <SyllabesCue syllabes={syllabes} hint={item.hint} />
+      ) : showMe ? (
         <ParentBlock>
           Demande à l’enfant de montrer : <strong>{item.answer}</strong>
+          <TalkAbout item={item} />
         </ParentBlock>
       ) : (
         /* Premier indice écrit visible d'emblée, les suivants à la demande. */
         <ParentBlock
-          hidden={answerOf(item)}
+          hidden={<DeckAnswer item={item} />}
           hints={hintLadder(item)}
           openHints={writtenHints(item).length ? 1 : 0}
+          onReveal={() => setRevealed(true)}
         >
           {soundToImitate && (
             <>
@@ -147,6 +224,8 @@ export function DeckRound({
 function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
   const setting = useRoundSetting();
   const turns = useTurns(deck.id);
+  const { revealCatalogue } = useSettings();
+  const reveal = deck.reveal ?? revealCatalogue.includes(deck.id);
   // Tirage figé pour la partie, même si le jeu est modifié entre-temps ou la page rafraîchie.
   // Chacun son tour (#38) : chaque carte au niveau de l'enfant de la manche.
   const items = useSavedDraw(
@@ -182,7 +261,13 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
       />
       {/* key : nouvelle manche = carte et réponse remises à zéro. */}
       <TurnPlayer.Provider value={turns?.playerAt(round)}>
-        <DeckRound key={round} kind={deck.kind} item={item} pool={deckChoicePool(deck)} />
+        <DeckRound
+          key={round}
+          kind={deck.kind}
+          item={item}
+          pool={deckChoicePool(deck)}
+          reveal={reveal}
+        />
       </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar
