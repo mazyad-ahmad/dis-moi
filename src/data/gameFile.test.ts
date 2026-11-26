@@ -52,6 +52,14 @@ it('exporte puis relit un son', async () => {
   expect(await copy.items[0].audio!.text()).toBe('vroum');
 });
 
+it('relit un son enregistré sur Android (type avec codec)', async () => {
+  const audio = new Blob(['miaou'], { type: 'audio/webm;codecs=opus' });
+  const file = await gameToFile(game('sound', [{ answer: 'Chat', audio }]));
+  const copy = parseGameFile(await file.text());
+  expect(copy.items[0].audio!.type).toBe('audio/webm;codecs=opus');
+  expect(await copy.items[0].audio!.text()).toBe('miaou');
+});
+
 it('importe un fichier comme un nouveau jeu', async () => {
   const id = await createCustomGame('Devinettes', 'question');
   await addItem(id, { text: 'Qui miaule ?', answer: 'Le chat' });

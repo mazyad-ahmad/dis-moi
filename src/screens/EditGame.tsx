@@ -179,6 +179,9 @@ function Recorder({ audio, onChange }: { audio?: Blob; onChange: (a?: Blob) => v
       <span className="muted" role="status">
         {state === 'recording' && `Enregistrement… (${MAX_RECORD_SECONDS} s maximum)`}
         {state === 'denied' && 'Autorise le micro pour enregistrer un son.'}
+        {state === 'idle' &&
+          listen.failed &&
+          'Le son ne s’est pas lancé. Réessaie, ou réenregistre-le.'}
       </span>
     </div>
   );

@@ -99,7 +99,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 - Nom (30 caractères), type choisi à la création : **Son**, **Image**, **Mot à dessiner** ou **Question**.
 - Cartes (50 maximum) : réponse et indice facultatif, plus selon le type :
-  - Son : un **enregistrement** au micro (10 s maximum) ou un bruit à imiter par le parent ;
+  - Son : un **enregistrement** au micro (10 s maximum), que le parent fait écouter à chaque
+    manche (« Écouter le son »), ou un bruit à imiter par le parent ;
   - Image : une **photo** de l'appareil (réduite à 1280 px) ou un texte à montrer ;
     « Ajouter une photo » ouvre le choix d'Android (galerie ou appareil photo). La photo est
     réduite à 1280 px et recopiée en JPEG dans la base (jamais le fichier d'origine, qui peut
@@ -193,6 +194,12 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Les **enregistrements du parent** (sons des jeux créés, félicitations) sont mesurés puis ramenés
   au même niveau à la lecture : un enregistrement crié est baissé, un murmure légèrement remonté
   (×4 au plus). Fonction commune : `playRecording(blob)` de `src/audio/recording.ts`.
+- Si le téléphone ne sait pas décoder un enregistrement par Web Audio (format du micro
+  Android, par exemple `audio/webm;codecs=opus` ou `audio/mp4`), il est lu par un élément
+  `<audio>` branché sur la même sortie, au gain borné d'un son mis à niveau. Si rien ne peut être
+  lu, le bouton reste là et un message invite à réessayer (ou à faire le bruit soi-même). Après un
+  enregistrement au micro, le contexte audio est recréé : sur Android, celui ouvert pendant le
+  micro peut rester réglé comme un appel (écouteur, volume très bas).
 - **Fichiers audio** livrés avec l'appli (`src/`, `public/`) : en WAV, normalisés au moment de
   l'ajout à −22 dBFS efficaces (± 3 dB, silences ignorés), crête sous −1 dBFS. Le test de contenu
   `src/content/audio.test.ts` le vérifie pour chaque fichier et indique le gain à appliquer.

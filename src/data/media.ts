@@ -1,3 +1,4 @@
+import { releaseAudioContext } from '../audio/context';
 import { useEffect, useRef, useState } from 'react';
 
 /** Côté le plus long d'une photo gardée dans la base. */
@@ -98,6 +99,25 @@ export function canRecord(): boolean {
   return typeof MediaRecorder !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
 }
 
+/**
+ * Formats d'enregistrement, du préféré au moins bien lu (#141) : Opus en WebM (Chrome, Android),
+ * puis MP4/AAC (Safari) que tous les téléphones savent relire. Sinon, le choix du navigateur.
+ */
+const RECORD_TYPES = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+
+export function recordType(): string | undefined {
+  if (typeof MediaRecorder === 'undefined' || typeof MediaRecorder.isTypeSupported !== 'function')
+    return undefined;
+  return RECORD_TYPES.find((t) => MediaRecorder.isTypeSupported(t));
+}
+
+/** Type du Blob enregistré : celui du MediaRecorder, sinon celui des morceaux, sinon WebM. */
+export function recordedBlob(chunks: Blob[], mimeType: string | undefined): Blob {
+  const parts = chunks.filter((c) => c.size > 0);
+  const type = mimeType || parts.find((c) => c.type)?.type || 'audio/webm';
+  return new Blob(parts, { type });
+}
+
 export type RecorderState = 'idle' | 'recording' | 'denied';
 
 /** Enregistrement au micro, arrêté automatiquement après MAX_RECORD_SECONDS. */
@@ -119,14 +139,23 @@ export function useRecorder(onDone: (audio: Blob) => void) {
       setState('denied');
       return;
     }
-    const rec = new MediaRecorder(stream);
+    const type = recordType();
+    let rec: MediaRecorder;
+    try {
+      rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+    } catch {
+      rec = new MediaRecorder(stream);
+    }
     const chunks: Blob[] = [];
     rec.ondataavailable = (e) => chunks.push(e.data);
     rec.onstop = () => {
       stream.getTracks().forEach((t) => t.stop());
+      // Le son repart d'un contexte neuf, hors du mode « appel » pris pendant le micro.
+      releaseAudioContext();
       recorder.current = null;
       setState('idle');
-      if (chunks.length) done.current(new Blob(chunks, { type: rec.mimeType || 'audio/webm' }));
+      const audio = recordedBlob(chunks, rec.mimeType);
+      if (audio.size) done.current(audio);
     };
     rec.start();
     recorder.current = rec;

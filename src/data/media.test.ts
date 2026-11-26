@@ -1,4 +1,11 @@
-import { MAX_PHOTO_BYTES, MAX_PHOTO_SIZE, PhotoError, preparePhoto } from './media';
+import {
+  MAX_PHOTO_BYTES,
+  MAX_PHOTO_SIZE,
+  PhotoError,
+  preparePhoto,
+  recordedBlob,
+  recordType,
+} from './media';
 
 const photo = (bytes = 2000, type = 'image/jpeg') =>
   new File([new Uint8Array(bytes)], 'photo.jpg', { type });
@@ -74,5 +81,27 @@ describe('preparePhoto', () => {
     stubBitmap({ width: 8000, height: 6000 });
     stubCanvas(null);
     await expect(preparePhoto(photo(MAX_PHOTO_BYTES + 1))).rejects.toThrow(/trop lourde/);
+  });
+});
+
+describe('enregistrement au micro (#141)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('garde le type exact du MediaRecorder, codec compris', () => {
+    const audio = recordedBlob([new Blob(['a']), new Blob([])], 'audio/webm;codecs=opus');
+    expect(audio.type).toBe('audio/webm;codecs=opus');
+    expect(audio.size).toBe(1);
+  });
+
+  it('sans type annoncé : celui des morceaux, sinon WebM', () => {
+    expect(recordedBlob([new Blob(['a'], { type: 'audio/mp4' })], '').type).toBe('audio/mp4');
+    expect(recordedBlob([new Blob(['a'])], undefined).type).toBe('audio/webm');
+  });
+
+  it('choisit un format que le téléphone sait enregistrer', () => {
+    vi.stubGlobal('MediaRecorder', { isTypeSupported: (t: string) => t === 'audio/mp4' });
+    expect(recordType()).toBe('audio/mp4');
+    vi.stubGlobal('MediaRecorder', undefined);
+    expect(recordType()).toBeUndefined();
   });
 });
