@@ -510,6 +510,20 @@
 .result__stars svg {
   fill: currentColor;
 }
+.result__reward {
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: var(--dawn);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.result__reward-emoji {
+  font-size: 28px;
+  line-height: 32px;
+}
 
 /* ---------- Quelle chanson ? ---------- */
 .song-player {

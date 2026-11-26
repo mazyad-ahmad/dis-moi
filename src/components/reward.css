@@ -213,3 +213,31 @@
     opacity: 0;
   }
 }
+/* Écran de résultat (#33) : les étoiles gagnées apparaissent une à une, la récompense pop.
+   Sans animation, elles sont simplement toutes là. */
+.result__count {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 260px;
+  color: var(--sun);
+}
+.result__count-star {
+  display: block;
+  will-change: transform, opacity;
+  animation: result-star 360ms var(--delay) cubic-bezier(0.3, 1.6, 0.6, 1) backwards;
+}
+.result__count-star svg {
+  display: block;
+  fill: currentColor;
+}
+@keyframes result-star {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+.result__reward {
+  animation: result-star 480ms 300ms cubic-bezier(0.3, 1.6, 0.6, 1) backwards;
+}

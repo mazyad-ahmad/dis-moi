@@ -21,8 +21,13 @@
 1. Depuis l'accueil, le parent choisit un jeu.
 2. Une partie = **10 manches**.
 3. À chaque manche : **Trouvé** → +1 étoile ; **Pas encore / Passer** → 0 étoile, manche suivante.
-4. Après la 10ᵉ manche : écran de résultat (« 7 étoiles gagnées ensemble ! »),
-   boutons **Rejouer** et **Accueil**.
+4. Après la 10ᵉ manche : écran de résultat (« 7 étoiles gagnées ensemble ! »). Les étoiles
+   gagnées y apparaissent une à une, chacune avec le petit son de l'étoile, puis un message
+   varié selon le score, toujours positif (sans étoile : « ce sera pour la prochaine partie »).
+   Une récompense franchie pendant la partie y est fêtée, une seule fois (son son a déjà été
+   joué en jeu, il n'est pas rejoué), et la suivante est rappelée (« Encore 3 étoiles pour la
+   récompense « 25 étoiles » »). Boutons **Un autre jeu** (le jeu suivant de l'accueil),
+   **Accueil** et **Rejouer**.
 5. Le bouton ✕ en haut quitte la partie à tout moment ; les étoiles déjà gagnées sont gardées.
    Un rafraîchissement de la page (ou le rechargement après une mise à jour) reprend la partie
    là où elle en était : même carte, même manche, mêmes étoiles.
