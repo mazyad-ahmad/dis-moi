@@ -112,7 +112,7 @@
   en douceur : ni confettis ni vibration de fête, la mascotte dort, « C'est l'heure de dormir.
   Bonne nuit ! », pas de bouton « Un autre jeu ».
 - **Voiture** : seulement des cartes orales (Quelle chanson ?, Raconte-moi, Histoire à inventer, Quel animal ?, Devinettes,
-  Vrai ou faux rigolo, Ça rime avec…, Les contraires, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
+  Vrai ou faux rigolo, Ça rime avec…, Les contraires, Tape les syllabes (en comptant à voix haute), jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
   regarder ni à dessiner.
 - L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
   conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
@@ -379,6 +379,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Qu’est-ce qui a disparu ?** | Des objets à regarder, le parent les cache, en retire un (ou en ajoute un), les remontre : l'enfant dit ce qui a changé. Voir ci-dessous.  |
 | **Compte avec moi**           | Des objets à compter, deux groupes à comparer, de petites additions et soustractions en images. Voir ci-dessous.                           |
 | **Devine-tête**               | Le téléphone sur le front, l'enfant ne voit pas le mot : les autres le miment ou le décrivent. Voir ci-dessous.                            |
+| **Tape les syllabes**         | Le parent dit un mot, l'enfant tape dans ses mains à chaque syllabe (« cho-co-lat » = 3). Voir ci-dessous.                                 |
 
 ### Les émotions (#58)
 
@@ -457,6 +458,30 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   fromage. »), puis la première lettre ; « Voir la réponse » montre la liste. Pour les rimes,
   la liste n'est qu'un exemple : tout mot qui rime compte, le parent juge.
 - En montrant : l'emoji de la première réponse (🐀 Rat…) parmi les réponses d'autres cartes.
+
+### Tape les syllabes (#127)
+
+- Jeu du catalogue, rangé dans « Lire et compter » : découper un mot en syllabes prépare à la
+  lecture. Le parent lit le mot (« Chocolat »), l'enfant tape une fois dans ses mains par
+  syllabe ; le parent valide avec **Trouvé** / **Pas encore**.
+- 80 mots de 1 à 4 syllabes (`src/content/catalogue-syllabes.json`) : **Petits** des mots de 1
+  ou 2 syllabes (chat, lapin), **Moyens** de 1 à 3 (fraise, girafe, chocolat), **Grands** de 2
+  à 4 (guitare, crocodile, hippopotame). Plus 8 cartes « Trouve un mot qui a 3 syllabes » pour
+  les grands, avec trois exemples ; tout mot juste compte, le parent juge.
+- **Découpage oral**, pas orthographique : on compte comme on parle, le « e » de la fin qui ne
+  se dit pas ne fait pas de syllabe (« pomme » = 1, « gi-rafe » = 2) ; un rappel est montré au
+  parent sur ces mots. Les lettres sont rangées dans les syllabes sans en perdre une, les
+  consonnes doubles coupées au milieu (« bal-lon ») : les tests le vérifient. Mots choisis pour
+  éviter les découpages qui varient selon les gens (lion, camion, cheval, arbre).
+- « Pour le parent », d'emblée : le mot découpé, le nombre de syllabes et autant de 👏 ; pas de
+  « Voir la réponse » ni d'indice « Ça commence par… ». « Pas tout à fait ? On le redit ensemble
+  et on continue ! »
+- **Voiture** : sans taper, l'enfant compte à voix haute (« cho » 1, « co » 2, « lat » 3).
+  Proposé aussi au Coucher (taper dans ses mains ne fait pas courir).
+- En montrant : les nombres de syllabes en grand, dans l'ordre (2, 3 ou 4 choix selon le
+  niveau) ; pas de choix pour « Trouve un mot… ». Une carte est jouée ainsi d'après son thème
+  (`syllabes`, et `trouve` pour la variante, `src/games/syllabes/syllabes.ts`), aussi dans le
+  Grand Jeu et le Défi du jour.
 
 ### Ombres (#61)
 
@@ -790,7 +815,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
-   Compte avec moi, Devine-tête)
+   Compte avec moi, Devine-tête, Tape les syllabes)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

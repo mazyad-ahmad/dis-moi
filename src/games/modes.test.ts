@@ -32,6 +32,7 @@ describe('façons de jouer', () => {
       'vrai-faux',
       'rime',
       'contraire',
+      'syllabes',
     ]);
     for (const g of ALL.filter((g) => suitsMode(g.needs, 'voiture')))
       expect(g.needs!.looks).toBe(false);
@@ -58,6 +59,7 @@ describe('façons de jouer', () => {
       'intrus',
       'disparu',
       'compte',
+      'syllabes',
     ]);
   });
 
@@ -84,6 +86,7 @@ describe('façons de jouer', () => {
       'vrai-faux',
       'rime',
       'contraire',
+      'syllabes',
     ]);
   });
 

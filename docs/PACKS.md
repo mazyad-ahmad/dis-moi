@@ -95,6 +95,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-intrus.json`       | L’intrus                   | `image`    |
 | `catalogue-disparu.json`      | Qu’est-ce qui a disparu ?  | `image`    |
 | `catalogue-compte.json`       | Compte avec moi            | `image`    |
+| `catalogue-syllabes.json`     | Tape les syllabes          | `question` |
 
 ## Cartes « Compte avec moi »
 
@@ -102,6 +103,16 @@ Les cartes de `catalogue-compte.json` (#65) sont des **objets à compter** : `em
 nom au pluriel avec « Les » (« Les pommes »), dont le singulier s'obtient en retirant le `s` ou le `x`
 final (« 1 pomme »). Le niveau de l'objet règle la difficulté de la manche, générée au hasard (compter
 jusqu'à 5, 10 ou 20, comparer, additionner, soustraire). Règles dans `src/games/compte/compte.ts`.
+
+## Cartes « Tape les syllabes »
+
+Une carte `question` de thème `syllabes` se joue en Tape les syllabes (#127) : `text` est le mot
+(« Chocolat »), `answer` le mot découpé comme on le dit, syllabes séparées par des tirets
+(« cho-co-lat » ; « pomme », une seule). Découpage oral : un « e » final muet reste collé à la
+syllabe d'avant (« gi-rafe ») ; les lettres, tirets ôtés, redonnent le mot. Avec le thème `trouve`
+en plus, c'est la variante « Trouve un mot qui a 3 syllabes. » : le nombre est lu dans `text` et
+`answer` donne des exemples découpés, séparés par des virgules. Règle dans
+`src/games/syllabes/syllabes.ts`.
 
 ## Éléments d'histoire
 

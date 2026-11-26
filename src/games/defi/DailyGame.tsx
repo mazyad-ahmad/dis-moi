@@ -19,6 +19,8 @@ import { DrawingCanvas, type DrawingCanvasHandle } from '../dessin/DrawingCanvas
 import { hintLadder, writtenHints } from '../hints';
 import { consigneOf } from '../jacques/consigne';
 import { JacquesCue } from '../jacques/JacquesCue';
+import { syllabesOf } from '../syllabes/syllabes';
+import { SyllabesCue } from '../syllabes/SyllabesCue';
 import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureWay } from '../tresor/treasure';
 import { IntrusRound } from '../intrus/IntrusGame';
@@ -94,6 +96,7 @@ function CardBody({ card }: { card: DailyCard }) {
     default: {
       const { item } = card;
       const consigne = card.kind === 'question' ? consigneOf(item) : undefined;
+      const syllabes = card.kind === 'question' ? syllabesOf(item) : undefined;
       return (
         <div className="deck-round">
           {card.kind === 'sound' && <SoundCard item={item} />}
@@ -101,6 +104,8 @@ function CardBody({ card }: { card: DailyCard }) {
           {card.kind === 'question' && <QuestionCard item={item} />}
           {consigne ? (
             <JacquesCue consigne={consigne} />
+          ) : syllabes ? (
+            <SyllabesCue syllabes={syllabes} hint={item.hint} />
           ) : (
             <ParentBlock
               hidden={<DeckAnswer item={item} />}

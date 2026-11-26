@@ -27,6 +27,8 @@ import { consigneOf } from '../jacques/consigne';
 import { JacquesCue } from '../jacques/JacquesCue';
 import { canReveal } from '../reveal/reveal';
 import { RevealCard } from '../reveal/RevealCard';
+import { inCountOrder, SYLLABES_OPTIONS, syllabesOf, syllabesOption } from '../syllabes/syllabes';
+import { SyllabesCue } from '../syllabes/SyllabesCue';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
 function RecordedSound({ audio }: { audio: Blob }) {
@@ -155,11 +157,19 @@ export function DeckRound({
   const consigne = kind === 'question' ? consigneOf(item) : undefined;
   // Vrai ou faux (#56) : deux choix, Vrai puis Faux, à la place des cartes voisines.
   const verdict = kind === 'question' ? verdictOf(item.answer) : undefined;
+  // Tape les syllabes (#127) : les nombres de syllabes à montrer ; rien pour « Trouve un mot… ».
+  const syllabes = kind === 'question' ? syllabesOf(item) : undefined;
+  const count = syllabes?.kind === 'mot' ? syllabesOption(syllabes.count) : undefined;
   const drawn = useChoices(
-    pool && !consigne ? (verdict ? verdictOption(verdict) : deckOption(item)) : undefined,
-    verdict ? VERDICT_OPTIONS : pool?.map(deckOption),
+    pool && !consigne && syllabes?.kind !== 'trouve'
+      ? verdict
+        ? verdictOption(verdict)
+        : (count ?? deckOption(item))
+      : undefined,
+    verdict ? VERDICT_OPTIONS : count ? SYLLABES_OPTIONS : pool?.map(deckOption),
   );
-  const choices = drawn && verdict ? [...VERDICT_OPTIONS] : drawn;
+  const choices =
+    drawn && verdict ? [...VERDICT_OPTIONS] : drawn && count ? inCountOrder(drawn) : drawn;
   // L'enfant verrait la réponse (couleur, photo) : les choix la remplacent, le parent la demande.
   // Une ombre (#61) ne la donne pas : les choix, en couleur, s'ajoutent sous la silhouette.
   const showMe = !!choices && showsAnswer(kind) && !item.shadow;
@@ -176,9 +186,13 @@ export function DeckRound({
           <ImageCard item={item} revealed={revealed} />
         ))}
       {kind === 'question' && <QuestionCard item={item} />}
-      {choices && <ChoiceBoard options={choices} answer={verdict ?? deckOption(item).key} />}
+      {choices && (
+        <ChoiceBoard options={choices} answer={verdict ?? count?.key ?? deckOption(item).key} />
+      )}
       {consigne ? (
         <JacquesCue consigne={consigne} />
+      ) : syllabes ? (
+        <SyllabesCue syllabes={syllabes} hint={item.hint} />
       ) : showMe ? (
         <ParentBlock>
           Demande à l’enfant de montrer : <strong>{item.answer}</strong>
