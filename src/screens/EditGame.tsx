@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { href, navigate } from '../app/router';
+import { useRecording } from '../audio/recording';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { useConfirm } from '../components/useConfirm';
@@ -8,6 +9,7 @@ import {
   IconCamera,
   IconMic,
   IconPencil,
+  IconPlay,
   IconShare,
   IconStop,
   IconTrash,
@@ -52,7 +54,7 @@ function Photo({ blob }: { blob: Blob }) {
 
 function Recorder({ audio, onChange }: { audio?: Blob; onChange: (a?: Blob) => void }) {
   const { state, start, stop } = useRecorder(onChange);
-  const url = useObjectUrl(audio);
+  const listen = useRecording(audio);
   if (!canRecord())
     return <p className="muted">L’enregistrement n’est pas disponible sur cet appareil.</p>;
   return (
@@ -68,7 +70,14 @@ function Recorder({ audio, onChange }: { audio?: Blob; onChange: (a?: Blob) => v
       )}
       {audio && state !== 'recording' && (
         <>
-          {url && <audio controls src={url} aria-label="Son enregistré" />}
+          <Button
+            variant="secondary"
+            icon={listen.playing ? <IconStop size={18} /> : <IconPlay size={18} />}
+            onClick={listen.toggle}
+            aria-label={listen.playing ? 'Arrêter le son enregistré' : 'Écouter le son enregistré'}
+          >
+            {listen.playing ? 'Arrêter' : 'Écouter'}
+          </Button>
           <button type="button" className="link-btn" onClick={() => onChange(undefined)}>
             Retirer le son
           </button>

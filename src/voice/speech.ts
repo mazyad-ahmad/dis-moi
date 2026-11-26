@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { getSettings, type Volume } from '../data/settings';
 
 /**
  * Lecture à voix haute (#35) par la synthèse vocale du téléphone (`speechSynthesis`).
@@ -12,6 +13,12 @@ export type SpeechSpeed = 'normal' | 'slow';
 
 /** Débit de la synthèse pour chaque vitesse. */
 export const SPEECH_RATES: Record<SpeechSpeed, number> = { normal: 1, slow: 0.7 };
+
+/**
+ * Volume de la voix selon le volume de l'appli (#121). La synthèse vocale ne passe pas par
+ * Web Audio : ni plafond ni mise à niveau, seulement ce volume, que certains téléphones ignorent.
+ */
+export const SPEECH_VOLUME: Record<Volume, number> = { soft: 0.5, normal: 1 };
 
 function synth(): SpeechSynthesis | undefined {
   return typeof window !== 'undefined' &&
@@ -89,6 +96,7 @@ export function speak(
   u.voice = v;
   u.lang = v.lang;
   u.rate = SPEECH_RATES[speed];
+  u.volume = SPEECH_VOLUME[getSettings().volume];
   const done = () => {
     if (current !== u) return;
     current = null;

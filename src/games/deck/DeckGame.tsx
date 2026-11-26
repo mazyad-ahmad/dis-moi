@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { registerAudioSource } from '../../audio/context';
+import { useRecording } from '../../audio/recording';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
@@ -16,41 +15,11 @@ import { useRoundSetting, useRounds } from '../useRounds';
 import type { Deck, DeckItem } from './types';
 import { useObjectUrl } from './useObjectUrl';
 
-/** Lecture d'un son enregistré par le parent. */
+/** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
 function RecordedSound({ audio }: { audio: Blob }) {
-  const url = useObjectUrl(audio);
-  const el = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState(false);
-  useEffect(() => () => el.current?.pause(), []);
-  // Pendant l'écoute, aucun son d'interface ne couvre l'enregistrement.
-  useEffect(
-    () =>
-      registerAudioSource(() => {
-        const a = el.current;
-        return !!a && !a.paused && !a.ended;
-      }),
-    [],
-  );
-
-  const toggle = () => {
-    const a = el.current;
-    if (!a) return;
-    if (playing) a.pause();
-    else {
-      a.currentTime = 0;
-      void a.play().catch(() => setPlaying(false));
-    }
-  };
-
+  const { playing, toggle } = useRecording(audio);
   return (
     <>
-      <audio
-        ref={el}
-        src={url}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => setPlaying(false)}
-      />
       <button
         type="button"
         className="song-player__play"

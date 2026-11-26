@@ -18,6 +18,7 @@ import {
   ROUND_CHOICES,
   setSetting,
   useSettings,
+  VOLUME_CHOICES,
 } from '../data/settings';
 import { clock } from '../games/format';
 import { promptInstall, usePwa } from '../pwa/pwa';
@@ -28,6 +29,8 @@ const THEMES: { value: Theme; label: string }[] = [
   { value: 'light', label: 'Jour' },
   { value: 'night', label: 'Nuit' },
 ];
+
+const VOLUME_LABELS = { soft: 'Doux', normal: 'Normal' } as const;
 
 const READ_ALOUD_LABELS = { normal: 'Normale', slow: 'Lente', off: 'Non' } as const;
 
@@ -242,6 +245,16 @@ export function Parent() {
       />
 
       <PraiseSection />
+
+      <Choice
+        legend="Volume de l’appli"
+        name="volume"
+        value={settings.volume}
+        options={VOLUME_CHOICES.map((v) => ({ value: v, label: VOLUME_LABELS[v] }))}
+        onChange={(v) => void setSetting('volume', v)}
+        className="segmented--2"
+        hint="Tous les sons de l’appli restent sous un plafond, même un enregistrement très fort. « Doux » le baisse encore."
+      />
 
       <Choice
         legend="Verrou parent"

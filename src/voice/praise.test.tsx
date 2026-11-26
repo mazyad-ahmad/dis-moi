@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
-import { playClip } from '../audio/clip';
+import { playRecording, type RecordingPlayback } from '../audio/recording';
 import { registerAudioSource, resetAudioForTests } from '../audio/context';
 import { db } from '../data/db';
 import { addPraise, MAX_PRAISES } from '../data/praises';
@@ -10,13 +10,18 @@ import { cancelPraise, endPhrase, pickOther, praise, PRAISES } from './praise';
 import { resetVoiceForTests } from './speech';
 
 // Le contexte audio n'existe pas dans jsdom : on simule la lecture des sons enregistrés.
-vi.mock('../audio/clip', () => ({
-  playClip: vi.fn(async () => ({
+vi.mock('../audio/recording', () => {
+  const playRecording = vi.fn<(audio: Blob) => Promise<RecordingPlayback>>(async () => ({
     stop: vi.fn(),
     playing: () => true,
-    done: new Promise<void>(() => {}),
-  })),
-}));
+    ended: new Promise<void>(() => {}),
+  }));
+  return {
+    playRecording,
+    // Bouton d'écoute de l'espace Parent : joue par la même fonction.
+    useRecording: (audio: Blob) => ({ playing: false, toggle: () => void playRecording(audio) }),
+  };
+});
 
 class FakeUtterance {
   voice: SpeechSynthesisVoice | null = null;
@@ -71,7 +76,7 @@ const praised = (spoken: string[]) =>
 beforeEach(async () => {
   resetVoiceForTests();
   resetAudioForTests();
-  vi.mocked(playClip).mockClear();
+  vi.mocked(playRecording).mockClear();
   await Promise.all([db.settings.clear(), db.games.clear(), db.praises.clear()]);
   await loadSettings();
   // Sans son d'interface, la félicitation part tout de suite.
@@ -193,14 +198,14 @@ describe('félicitations du parent', () => {
     const audio = new Blob(['bravo'], { type: 'audio/webm' });
     await addPraise(audio);
     praise();
-    await waitFor(() => expect(playClip).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(playRecording).toHaveBeenCalledTimes(1));
     expect(synth.spoken).toEqual([]);
   });
 
   it('marchent aussi sans voix française locale', async () => {
     await addPraise(new Blob(['bravo']));
     praise({ stars: 2 });
-    await waitFor(() => expect(playClip).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(playRecording).toHaveBeenCalledTimes(1));
   });
 
   it('sont limitées en nombre', async () => {
@@ -252,7 +257,7 @@ describe('espace Parent', () => {
     const group = await screen.findByRole('group', { name: 'Félicitations parlées' });
     expect(within(group).getByLabelText('Activées')).toBeChecked();
     await user.click(within(group).getByRole('button', { name: 'Écouter Félicitation 1' }));
-    expect(playClip).toHaveBeenCalledTimes(1);
+    expect(playRecording).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
     const dialog = await screen.findByRole('alertdialog');

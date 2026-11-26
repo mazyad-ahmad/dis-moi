@@ -5,9 +5,16 @@ import { expect, test } from '@playwright/test';
 test.beforeEach(async ({ page }) => {
   // Compte les notes jouées par le synthétiseur et les contextes audio créés.
   await page.addInitScript(() => {
-    const w = window as unknown as { notes: number; contexts: number };
+    const w = window as unknown as {
+      notes: number;
+      contexts: number;
+      ceiling: number;
+      volumes: GainNode[];
+    };
     w.notes = 0;
     w.contexts = 0;
+    w.ceiling = -1;
+    w.volumes = [];
     const Original = window.AudioContext;
     window.AudioContext = class extends Original {
       constructor(options?: AudioContextOptions) {
@@ -17,6 +24,25 @@ test.beforeEach(async ({ page }) => {
       createOscillator() {
         w.notes++;
         return super.createOscillator();
+      }
+      // #121 : plafond (WaveShaper) puis volume de l'appli (le nœud créé juste après).
+      createWaveShaper() {
+        const shaper = super.createWaveShaper();
+        const set = Object.getOwnPropertyDescriptor(WaveShaperNode.prototype, 'curve')!.set!;
+        Object.defineProperty(shaper, 'curve', {
+          set(c: Float32Array) {
+            w.ceiling = Math.max(...Array.from(c, Math.abs));
+            set.call(shaper, c);
+          },
+        });
+        const createGain = this.createGain.bind(this);
+        this.createGain = () => {
+          const g = createGain();
+          w.volumes.push(g);
+          this.createGain = createGain;
+          return g;
+        };
+        return shaper;
       }
     };
   });
@@ -64,4 +90,30 @@ test('Trouvé et Passer jouent un son, réglage coupé : plus rien', async ({ pa
   await page.getByRole('button', { name: 'Passer' }).click();
   await expect(page.getByText(/^Manche 3 sur/)).toBeVisible();
   expect(await notes(page)).toBe(0);
+});
+
+test('volume de l’appli : plafond toujours, doux par défaut, normal au choix', async ({ page }) => {
+  const level = () =>
+    page.evaluate(() => {
+      const w = window as unknown as { ceiling: number; volumes: GainNode[] };
+      return { ceiling: w.ceiling, volume: w.volumes[0]?.gain.value };
+    });
+  await page.goto('./#/jeu/lettres');
+  await page.getByRole('button', { name: 'Trouvé' }).click();
+  await expect.poll(() => notes(page)).toBeGreaterThan(0);
+  const soft = await level();
+  expect(soft.ceiling).toBeGreaterThan(0);
+  expect(soft.ceiling).toBeLessThanOrEqual(0.5);
+  expect(soft.volume).toBe(0.5);
+
+  await page.goto('./#/parent');
+  await expect(page.getByRole('radio', { name: 'Doux' })).toBeChecked();
+  await page.getByText('Normal', { exact: true }).click();
+  await expect.poll(() => storedSetting(page, 'volume')).toBe('normal');
+  await page.reload();
+  await expect(page.getByRole('radio', { name: 'Normal' })).toBeChecked();
+
+  await page.goto('./#/jeu/lettres');
+  await page.getByRole('button', { name: 'Trouvé' }).click();
+  await expect.poll(async () => (await level()).volume).toBe(1);
 });

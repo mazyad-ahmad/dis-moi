@@ -1,4 +1,9 @@
-import { audioOutput, registerAudioSource, runningAudioContext } from '../../audio/context';
+import {
+  audioOutput,
+  FADE_IN,
+  registerAudioSource,
+  runningAudioContext,
+} from '../../audio/context';
 import type { NoteEvent } from './melody';
 
 export { audioAvailable } from '../../audio/context';
@@ -56,7 +61,7 @@ export class MelodyPlayer {
       osc.type = 'triangle';
       osc.frequency.value = e.freq;
       env.gain.setValueAtTime(0, t);
-      env.gain.linearRampToValueAtTime(1, t + 0.015);
+      env.gain.linearRampToValueAtTime(1, t + FADE_IN);
       env.gain.exponentialRampToValueAtTime(0.5, t + Math.min(0.2, e.duration * 0.6));
       env.gain.setValueAtTime(0.5, Math.max(t + 0.02, end - 0.06));
       env.gain.linearRampToValueAtTime(0.0001, end);

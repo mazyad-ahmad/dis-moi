@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { playClip, type Clip } from '../audio/clip';
+import { useRecording } from '../audio/recording';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { IconMic, IconPause, IconPlay, IconStop, IconTrash } from '../components/icons';
@@ -18,21 +17,9 @@ const PRAISE_CHOICES = [
 /** Une félicitation enregistrée : l'écouter ou la supprimer. */
 function PraiseRow({ praise, index }: { praise: Praise; index: number }) {
   const [confirmDialog, confirm] = useConfirm();
-  const [playing, setPlaying] = useState(false);
-  const clip = useRef<Clip | null>(null);
-  useEffect(() => () => clip.current?.stop(), []);
+  // Réécoute au niveau commun, comme pendant le jeu.
+  const { playing, toggle } = useRecording(praise.audio);
   const label = `Félicitation ${index + 1}`;
-
-  async function toggle() {
-    if (clip.current) return clip.current.stop();
-    const c = await playClip(praise.audio);
-    if (!c) return;
-    clip.current = c;
-    setPlaying(true);
-    await c.done;
-    clip.current = null;
-    setPlaying(false);
-  }
 
   return (
     <li>
@@ -45,7 +32,7 @@ function PraiseRow({ praise, index }: { praise: Praise; index: number }) {
           type="button"
           className="icon-btn icon-btn--plain"
           aria-label={playing ? `Arrêter ${label}` : `Écouter ${label}`}
-          onClick={() => void toggle()}
+          onClick={toggle}
         >
           {playing ? <IconPause size={20} /> : <IconPlay size={20} />}
         </button>

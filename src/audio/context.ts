@@ -1,7 +1,35 @@
+import { getSettings, type Volume } from '../data/settings';
+
 /**
- * Un seul `AudioContext` pour toute l'appli (mélodies, sons d'interface…).
- * Tout le son passe par une sortie commune (`audioOutput()`), point unique pour régler le volume.
+ * Un seul `AudioContext` pour toute l'appli (mélodies, sons d'interface, enregistrements…).
+ * Tout le son passe par une sortie commune (`audioOutput()`) :
+ * entrée → plafond (#121, rien ne dépasse CEILING) → volume de l'appli (doux / normal) → haut-parleur.
  */
+
+/** Amplitude que la somme de tous les sons ne dépasse jamais (≈ −6 dBFS), avant le volume. */
+export const CEILING = 0.5;
+/** Au-dessus de ce niveau, le plafond arrondit doucement les crêtes au lieu de les couper net. */
+const KNEE = 0.4;
+/** Volume de l'appli appliqué après le plafond. */
+export const VOLUME_GAIN: Record<Volume, number> = { soft: 0.5, normal: 1 };
+/** Montée douce au début de chaque son, en secondes : jamais d'attaque brutale. */
+export const FADE_IN = 0.02;
+
+/**
+ * Courbe du plafond : identique sous KNEE, puis arrondie vers CEILING sans jamais l'atteindre.
+ * Une entrée hors de [−1, 1] prend la valeur du bout de la courbe : le plafond tient toujours.
+ */
+export function ceilingCurve(points = 2049): Float32Array<ArrayBuffer> {
+  const curve = new Float32Array(points);
+  const room = CEILING - KNEE;
+  for (let i = 0; i < points; i++) {
+    const x = (i / (points - 1)) * 2 - 1;
+    const a = Math.abs(x);
+    const y = a <= KNEE ? a : KNEE + room * Math.tanh((a - KNEE) / room);
+    curve[i] = Math.sign(x) * y;
+  }
+  return curve;
+}
 
 type AudioCtor = typeof AudioContext;
 
@@ -17,6 +45,7 @@ export function audioAvailable(): boolean {
 
 let ctx: AudioContext | null = null;
 let output: GainNode | null = null;
+let volume: GainNode | null = null;
 let listening = false;
 
 /** Après verrouillage puis réveil du téléphone, le navigateur a pu suspendre le son. */
@@ -36,7 +65,11 @@ export function audioContext(): AudioContext | null {
     return null;
   }
   output = ctx.createGain();
-  output.connect(ctx.destination);
+  const ceiling = ctx.createWaveShaper();
+  ceiling.curve = ceilingCurve();
+  volume = ctx.createGain();
+  volume.gain.value = VOLUME_GAIN[getSettings().volume];
+  output.connect(ceiling).connect(volume).connect(ctx.destination);
   if (!listening) {
     document.addEventListener('visibilitychange', onVisible);
     listening = true;
@@ -44,9 +77,14 @@ export function audioContext(): AudioContext | null {
   return ctx;
 }
 
-/** Nœud de sortie commun : chaque son s'y branche plutôt que sur `destination`. */
+/**
+ * Nœud de sortie commun : chaque son s'y branche plutôt que sur `destination`.
+ * Le volume de l'appli suit le réglage du parent à chaque son.
+ */
 export function audioOutput(): GainNode | null {
-  return audioContext() ? output : null;
+  if (!audioContext()) return null;
+  if (volume) volume.gain.value = VOLUME_GAIN[getSettings().volume];
+  return output;
 }
 
 /**
@@ -87,6 +125,7 @@ export function audioBusy(except?: () => boolean): boolean {
 export function resetAudioForTests(): void {
   ctx = null;
   output = null;
+  volume = null;
   sources.clear();
   if (listening) document.removeEventListener('visibilitychange', onVisible);
   listening = false;

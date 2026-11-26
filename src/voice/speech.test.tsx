@@ -15,6 +15,7 @@ class FakeUtterance {
   voice: SpeechSynthesisVoice | null = null;
   lang = '';
   rate = 1;
+  volume = 1;
   onend: (() => void) | null = null;
   onerror: (() => void) | null = null;
   constructor(public text: string) {}
@@ -97,6 +98,16 @@ describe('choix de la voix', () => {
     speak('Bonjour', { speed: 'slow' });
     expect(synth.spoken[0]).toMatchObject({ text: 'Bonjour', voice: LOCAL_FR, lang: 'fr-FR' });
     expect(synth.spoken[0].rate).toBeLessThan(1);
+  });
+
+  it('suit le volume de l’appli (doux par défaut)', async () => {
+    const synth = fakeSynth([LOCAL_FR]);
+    speak('Bonjour');
+    expect(synth.spoken[0].volume).toBeLessThan(1);
+    await setSetting('volume', 'normal');
+    speak('Bonjour');
+    expect(synth.spoken[1].volume).toBe(1);
+    await setSetting('volume', 'soft');
   });
 });
 

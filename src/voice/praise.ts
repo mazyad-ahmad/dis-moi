@@ -1,5 +1,5 @@
-import { playClip } from '../audio/clip';
 import { audioBusy, sourcePlaying } from '../audio/context';
+import { playRecording } from '../audio/recording';
 import { listPraises } from '../data/praises';
 import { getSettings } from '../data/settings';
 import { speak, type Speaking } from './speech';
@@ -67,12 +67,13 @@ async function say(text: string, mine: number) {
       praises.find((p) => p.id === lastClip),
     );
     lastClip = praise.id;
-    const clip = await playClip(praise.audio);
+    // Au niveau commun, comme tout enregistrement du parent (#121).
+    const clip = await playRecording(praise.audio);
     if (!clip) return;
     if (mine !== ticket) return clip.stop();
     const unwatch = watch(clip.stop, () => audioBusy(clip.playing));
     current = clip;
-    void clip.done.then(() => {
+    void clip.ended.then(() => {
       unwatch();
       if (current === clip) current = null;
     });

@@ -9,6 +9,7 @@ import {
   READ_ALOUD_CHOICES,
   ROUND_CHOICES,
   setSetting,
+  VOLUME_CHOICES,
   type Settings,
 } from './settings';
 import { requestPersistentStorage } from './storage';
@@ -177,6 +178,8 @@ function readSettings(raw: unknown): Partial<Settings> {
     out.readAloud = raw.readAloud as Settings['readAloud'];
   if (typeof raw.sounds === 'boolean') out.sounds = raw.sounds;
   if (typeof raw.praise === 'boolean') out.praise = raw.praise;
+  if ((VOLUME_CHOICES as readonly unknown[]).includes(raw.volume))
+    out.volume = raw.volume as Settings['volume'];
   return out;
 }
 

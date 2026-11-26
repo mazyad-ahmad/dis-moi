@@ -163,8 +163,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Dites par la même voix française **installée sur le téléphone** que la lecture à voix haute
   (module `src/voice/praise.ts`), sans réseau.
 - Le parent peut **enregistrer ses propres félicitations** au micro dans l’espace Parent
-  (5 maximum, 10 s chacune) : elles remplacent alors la voix du téléphone. Elles sont jouées par
-  le contexte audio partagé (`src/audio/clip.ts`, sortie commune `audioOutput()`), restent dans
+  (5 maximum, 10 s chacune) : elles remplacent alors la voix du téléphone. Elles sont jouées comme
+  tout enregistrement du parent, au niveau commun (`playRecording`, voir « Volume »), restent dans
   le téléphone (IndexedDB, table `praises`), ne vont ni dans la sauvegarde ni dans un jeu
   partagé, et partent avec « Effacer toutes les données ».
 - Sans voix française locale ni enregistrement, la fonction n’est pas proposée : l’espace Parent
@@ -175,6 +175,23 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Réglage **Félicitations parlées** (activées par défaut) dans l’espace Parent, indépendant du
   réglage **Sons**. Ton unique pour l’instant (l’adaptation à l’âge viendra avec les niveaux).
 
+## Volume (#121)
+
+- Tout le son de l'appli (mélodies, sons d'interface, enregistrements du parent, futurs fichiers
+  audio) passe par une **sortie unique** : un **plafond** que rien ne dépasse (−6 dBFS, crêtes
+  arrondies en douceur), puis le **volume de l'appli**.
+- Réglage **Volume de l'appli** dans l'espace Parent : **Doux** (par défaut, moitié du niveau) ou
+  **Normal**. Le volume du téléphone reste celui choisi par la famille.
+- Chaque son démarre par une **montée douce** (20 ms au moins) : jamais d'attaque brutale.
+- Les **enregistrements du parent** (sons des jeux créés, félicitations) sont mesurés puis ramenés
+  au même niveau à la lecture : un enregistrement crié est baissé, un murmure légèrement remonté
+  (×4 au plus). Fonction commune : `playRecording(blob)` de `src/audio/recording.ts`.
+- **Fichiers audio** livrés avec l'appli (`src/`, `public/`) : en WAV, normalisés au moment de
+  l'ajout à −22 dBFS efficaces (± 3 dB, silences ignorés), crête sous −1 dBFS. Le test de contenu
+  `src/content/audio.test.ts` le vérifie pour chaque fichier et indique le gain à appliquer.
+- La **lecture à voix haute** (synthèse vocale du téléphone) ne passe pas par cette sortie : elle
+  suit seulement le volume de l'appli (moitié en « Doux »), que certains téléphones ignorent.
+
 ## Public visé (proposition)
 
 - **3 à 7 ans**. Niveaux de difficulté reportés après la v1.
@@ -183,7 +200,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :

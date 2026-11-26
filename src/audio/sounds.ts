@@ -1,5 +1,5 @@
 import { getSettings } from '../data/settings';
-import { audioBusy, runningAudioContext, audioOutput } from './context';
+import { audioBusy, audioOutput, FADE_IN, runningAudioContext } from './context';
 
 /**
  * Sons d'interface, synthétisés (aucun fichier audio) : courts, doux, jamais négatifs.
@@ -88,7 +88,7 @@ export async function playSound(name: UiSound): Promise<void> {
     osc.type = type;
     osc.frequency.value = tone.freq;
     env.gain.setValueAtTime(0.0001, t);
-    env.gain.linearRampToValueAtTime(gain, t + 0.01);
+    env.gain.linearRampToValueAtTime(gain, t + FADE_IN);
     env.gain.exponentialRampToValueAtTime(0.0001, end);
     osc.connect(env).connect(out);
     osc.start(t);

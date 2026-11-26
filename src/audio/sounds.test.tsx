@@ -7,59 +7,10 @@ import { REWARDS } from '../data/history';
 import { MelodyPlayer } from '../games/chanson/player';
 import { audioBusy, registerAudioSource, resetAudioForTests } from './context';
 import { answerSound, playSound, UI_SOUNDS, type UiSound } from './sounds';
-
-/** Web Audio minimal : retient les oscillateurs programmés. */
-class FakeParam {
-  value = 0;
-  setValueAtTime() {}
-  linearRampToValueAtTime() {}
-  exponentialRampToValueAtTime() {}
-}
-class FakeNode {
-  connected = true;
-  connect(n: FakeNode) {
-    return n;
-  }
-  disconnect() {
-    this.connected = false;
-  }
-}
-class FakeOsc extends FakeNode {
-  type = 'sine';
-  frequency = new FakeParam();
-  start() {}
-  stop() {}
-}
-class FakeGain extends FakeNode {
-  gain = new FakeParam();
-}
-let contexts: FakeContext[] = [];
-class FakeContext {
-  state: AudioContextState = 'running';
-  currentTime = 0;
-  destination = new FakeNode();
-  oscillators: FakeOsc[] = [];
-  constructor() {
-    contexts.push(this);
-  }
-  createOscillator() {
-    const o = new FakeOsc();
-    this.oscillators.push(o);
-    return o;
-  }
-  createGain() {
-    return new FakeGain();
-  }
-  resume() {
-    this.state = 'running';
-    return Promise.resolve();
-  }
-}
-
-const played = () => contexts.flatMap((c) => c.oscillators.map((o) => o.frequency.value));
+import { contexts, FakeContext, played, resetFakeAudio } from '../test/fakeAudio';
 
 beforeEach(async () => {
-  contexts = [];
+  resetFakeAudio();
   resetAudioForTests();
   vi.stubGlobal('AudioContext', FakeContext);
   await Promise.all([db.players.clear(), db.settings.clear(), db.games.clear()]);

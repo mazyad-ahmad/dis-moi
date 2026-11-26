@@ -24,7 +24,12 @@ export interface Settings {
   sounds: boolean;
   /** Félicitations parlées au « Trouvé » et en fin de partie (#116). */
   praise: boolean;
+  /** Volume de l'appli (#121) : doux par défaut. */
+  volume: Volume;
 }
+
+export type Volume = 'soft' | 'normal';
+export const VOLUME_CHOICES = ['soft', 'normal'] as const satisfies readonly Volume[];
 
 export type ReadAloud = 'off' | SpeechSpeed;
 export const READ_ALOUD_CHOICES = ['normal', 'slow', 'off'] as const satisfies readonly ReadAloud[];
@@ -41,6 +46,7 @@ export const DEFAULT_SETTINGS: Settings = {
   readAloud: 'normal',
   sounds: true,
   praise: true,
+  volume: 'soft',
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;
