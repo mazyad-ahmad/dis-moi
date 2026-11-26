@@ -268,12 +268,30 @@ Le parent les ajoute depuis « Ajouter un jeu » (bouton Ajouter / Ajouté) ; il
 alors sur l'accueil. Ils suivent le même déroulé (manches, étoiles) et un format commun de
 cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou une couleur.
 
-| Jeu                  | Règle proposée                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Quel animal ?**    | Le **parent imite le cri** affiché (« Meuh ! ») et l'enfant devine. Pas d'enregistrement de cris pour la v1 (droits) : à revoir si besoin. |
-| **Quelle couleur ?** | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
-| **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
-| **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
+| Jeu                  | Règle proposée                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Quel animal ?**    | Le **parent imite le cri** affiché (« Meuh ! ») et l'enfant devine ; « Écouter le cri » fait entendre le vrai (#118, voir plus bas). |
+| **Quelle couleur ?** | Une pastille de couleur en grand, l'enfant la nomme.                                                                                 |
+| **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                  |
+| **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                          |
+
+#### Vrais cris et photos (#118)
+
+- Chaque animal de « Quel animal ? » a un **vrai cri enregistré** et une **photo**. L'imitation
+  par le parent reste la façon de jouer : le bouton « Écouter le cri » vient en plus, sous l'oreille.
+  Il est joué comme un enregistrement du parent (sortie commune, niveau commun) et s'arrête au
+  changement de manche ou quand on quitte le jeu.
+- La photo ne s'affiche **jamais avant la réponse** (elle la donnerait) : elle remplace l'oreille
+  après « Voir la réponse », et après « Trouvé » elle s'affiche 3 secondes par-dessus la manche
+  suivante (un appui la ferme). « Passer » ne la montre pas. Même chose dans le Grand Jeu et le
+  Défi du jour. L'emoji reste le repli d'une carte sans photo.
+- Uniquement des fichiers libres, **CC0 ou domaine public** (sons de Freesound et Wikimedia
+  Commons, photos de Flickr et Wikimedia Commons) : source, auteur, licence et retouches de
+  chaque fichier dans `src/content/media/credits.json`.
+- Fichiers embarqués dans l'appli et mis en cache par le service worker : tout marche hors ligne,
+  rien ne part du téléphone. Sons en WAV mono 16 kHz (1 à 3,5 s, niveau commun), photos WebP
+  480 × 360 : environ 1,7 Mo pour les 18 animaux (plafond de 3 Mo vérifié par les tests).
+- Une carte sans fichier garde le fonctionnement d'avant.
 
 Contenu (#55) : 18 animaux, 22 couleurs (dont des nuances pour les grands : bleu marine,
 turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.

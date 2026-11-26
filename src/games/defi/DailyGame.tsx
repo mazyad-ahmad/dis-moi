@@ -13,9 +13,9 @@ import { vibrate } from '../../pwa/haptics';
 import { praise } from '../../voice/praise';
 import { NotFound } from '../../screens/Placeholder';
 import { SongRound } from '../chanson/SongGame';
-import { ImageCard, QuestionCard, SoundCard } from '../deck/DeckGame';
+import { DeckRound } from '../deck/DeckGame';
+import { useFoundPhoto } from '../deck/useFoundPhoto';
 import { DrawingPad } from '../dessin/DrawingPad';
-import { hintLadder, writtenHints } from '../hints';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -63,28 +63,8 @@ function CardBody({ card }: { card: DailyCard }) {
       );
     case 'draw':
       return <DrawCard word={card.word} />;
-    default: {
-      const { item } = card;
-      const answer = item.emoji && !item.color ? `${item.emoji} ${item.answer}` : item.answer;
-      return (
-        <div className="deck-round">
-          {card.kind === 'sound' && <SoundCard item={item} />}
-          {card.kind === 'image' && <ImageCard item={item} />}
-          {card.kind === 'question' && <QuestionCard item={item} />}
-          <ParentBlock
-            hidden={answer}
-            hints={hintLadder(item)}
-            openHints={writtenHints(item).length ? 1 : 0}
-          >
-            {card.kind === 'sound' && item.text && (
-              <>
-                À imiter : <strong>{item.text}</strong>
-              </>
-            )}
-          </ParentBlock>
-        </div>
-      );
-    }
+    default:
+      return <DeckRound kind={card.kind} item={card.item} />;
   }
 }
 
@@ -111,8 +91,15 @@ function DailyRound({ day }: { day: string }) {
   const [done, setDone] = useState(false);
   const saving = useRef(false);
   const { source, card } = dailyPick(day);
+  const photo = useFoundPhoto();
 
-  if (done) return <DailyDone day={day} party />;
+  if (done)
+    return (
+      <>
+        <DailyDone day={day} party />
+        {photo.overlay}
+      </>
+    );
 
   const found = async () => {
     if (saving.current) return;
@@ -123,6 +110,7 @@ function DailyRound({ day }: { day: string }) {
     void playSound(sound);
     praise({ afterMs: getSettings().sounds ? soundLength(sound) * 1000 + 150 : 0 });
     vibrate('found');
+    if ('item' in card) photo.show(card.item);
     setDone(true);
   };
 

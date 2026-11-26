@@ -59,9 +59,17 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules     |
 | `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                            |
 | `source`          | `melody` seulement, obligatoire : auteur ou origine de l'air et son statut (« …, domaine public »)                    |
+| `sound`           | facultatif (`sound` seulement) : vrai son, fichier WAV de `src/content/media/` (`"vache.wav"`)                        |
+| `photo`           | facultatif (jeux à cartes) : photo montrée après la réponse, `.webp` ou `.jpg` de `src/content/media/`                |
 | `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                                 |
 | `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`) ; pour `melody`, obligatoire : `comptine`, `noel` ou `classique`     |
 | `lang`            | facultatif : langue de la carte si elle diffère du pack                                                               |
+
+Sons et photos (#118) : fichiers libres (CC0 ou domaine public de préférence), légers (son WAV mono
+16 kHz au niveau commun, photo 480 × 360), rangés dans `src/content/media/` avec leur source, leur
+auteur et leur licence dans `src/content/media/credits.json` ; les tests refusent un fichier sans
+crédit et un total au-delà de 3 Mo. Ils sont embarqués au build et ne vont pas dans un fichier de jeu
+partagé : un pack importé garde ses cartes, sans son ni photo.
 
 Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ inconnu est refusé
 (faute de frappe).

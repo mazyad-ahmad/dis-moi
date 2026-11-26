@@ -41,6 +41,12 @@ export interface DeckItem {
   /** Visuels intégrés (catalogue) : emoji ou couleur montrés en grand. */
   emoji?: string;
   color?: string;
+  /**
+   * Médias des jeux intégrés (#118), embarqués dans l'appli : vrai son à faire écouter
+   * (« Écouter le cri ») et photo montrée une fois la réponse donnée.
+   */
+  soundUrl?: string;
+  photoUrl?: string;
   /** Médias du parent, gardés dans IndexedDB. */
   image?: Blob;
   audio?: Blob;

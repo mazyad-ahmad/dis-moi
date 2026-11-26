@@ -22,6 +22,8 @@ import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
 import { cardKey } from './cardKey';
 import type { Deck, DeckItem, DeckKind } from './types';
+import { AnswerPhoto, RealSound } from './media';
+import { useFoundPhoto } from './useFoundPhoto';
 import { useObjectUrl } from './useObjectUrl';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
@@ -46,17 +48,26 @@ function RecordedSound({ audio }: { audio: Blob }) {
   );
 }
 
-export function SoundCard({ item }: { item: DeckItem }) {
+/**
+ * Carte son. Jeu intégré avec un vrai cri (#118) : le parent imite toujours d'abord, le bouton
+ * « Écouter le cri » vient en plus ; la photo remplace l'oreille une fois la réponse vue.
+ */
+export function SoundCard({ item, revealed = false }: { item: DeckItem; revealed?: boolean }) {
   return (
     <section className="song-player" aria-label="Son">
       {item.audio ? (
         <RecordedSound audio={item.audio} />
       ) : (
         <>
-          <span className="deck-card__ear" aria-hidden="true">
-            <IconEar size={56} />
-          </span>
+          {revealed && item.photoUrl ? (
+            <AnswerPhoto item={item} />
+          ) : (
+            <span className="deck-card__ear" aria-hidden="true">
+              <IconEar size={56} />
+            </span>
+          )}
           <span role="status">Le parent fait le bruit, l’enfant devine</span>
+          {item.soundUrl && <RealSound url={item.soundUrl} />}
         </>
       )}
     </section>
@@ -118,11 +129,14 @@ export function DeckRound({
   const choices = useChoices(pool && deckOption(item), pool?.map(deckOption));
   // L'enfant verrait la réponse (couleur, photo) : les choix la remplacent, le parent la demande.
   const showMe = !!choices && showsAnswer(kind);
+  // Photo de la réponse (#118) : seulement après « Voir la réponse ».
+  const [revealed, setRevealed] = useState(false);
   return (
     <div className="deck-round round-in">
-      {kind === 'sound' && <SoundCard item={item} />}
+      {kind === 'sound' && <SoundCard item={item} revealed={revealed} />}
       {kind === 'image' && !showMe && <ImageCard item={item} />}
       {kind === 'question' && <QuestionCard item={item} />}
+      {revealed && kind !== 'sound' && <AnswerPhoto item={item} />}
       {choices && <ChoiceBoard options={choices} answer={deckOption(item).key} />}
       {showMe ? (
         <ParentBlock>
@@ -134,6 +148,7 @@ export function DeckRound({
           hidden={answerOf(item)}
           hints={hintLadder(item)}
           openHints={writtenHints(item).length ? 1 : 0}
+          onReveal={() => setRevealed(true)}
         >
           {soundToImitate && (
             <>
@@ -179,9 +194,15 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
   // Clés des cartes au lancement (le jeu créé peut changer pendant la partie).
   const [keys] = useState(() => new Map(deck.items.map((it, i) => [it, cardKey(it, i)])));
   useMarkSeen(deck.id, finished ? undefined : keys.get(item));
+  const photo = useFoundPhoto();
 
   if (finished)
-    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
+    return (
+      <>
+        <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />
+        {photo.overlay}
+      </>
+    );
 
   return (
     <main className="screen">
@@ -201,9 +222,13 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}
-        onFound={() => answer(true)}
+        onFound={() => {
+          photo.show(item);
+          answer(true);
+        }}
         skipLabel={deck.kind === 'question' ? 'Pas encore' : 'Passer'}
       />
+      {photo.overlay}
     </main>
   );
 }

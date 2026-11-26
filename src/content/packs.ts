@@ -16,7 +16,7 @@ import type { Tint } from '../games/registry';
 export type PackKind = DeckKind | 'melody' | 'glyph';
 export const PACK_KINDS: PackKind[] = [...DECK_KINDS.map((k) => k.value), 'melody', 'glyph'];
 
-export interface PackItem extends Omit<DeckItem, 'image' | 'audio'> {
+export interface PackItem extends Omit<DeckItem, 'image' | 'audio' | 'soundUrl' | 'photoUrl'> {
   /** Identifiant stable dans le pack (minuscules, chiffres et tirets). */
   id: string;
   /** Niveau par âge, obligatoire pour le contenu intégré (#40). */
@@ -27,6 +27,10 @@ export interface PackItem extends Omit<DeckItem, 'image' | 'audio'> {
   bpm?: number;
   /** Origine et statut de domaine public de l'air (pack « melody », #45). */
   source?: string;
+  /** Vrai son de la carte (pack « sound ») : fichier WAV de `src/content/media/`. */
+  sound?: string;
+  /** Photo montrée une fois la réponse donnée : fichier de `src/content/media/`. */
+  photo?: string;
 }
 
 export interface Pack {
@@ -88,10 +92,26 @@ const ITEM_FIELDS = new Set([
   'melody',
   'bpm',
   'source',
+  'sound',
+  'photo',
 ]);
 
 /** Thèmes des airs (#45) : chaque air en a un, dans « tags ». */
 export const MELODY_THEMES = ['comptine', 'noel', 'classique'] as const;
+
+/**
+ * Sons et photos des jeux intégrés (#118), embarqués au build et mis en cache par le service
+ * worker : nom de fichier → adresse. Source et licence de chacun : `media/credits.json`.
+ */
+export const MEDIA: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>('./media/*.{wav,jpg,webp}', {
+      eager: true,
+      query: '?url',
+      import: 'default',
+    }),
+  ).map(([path, url]) => [path.slice('./media/'.length), url]),
+);
 
 const isText = (v: unknown, max = MAX_TEXT): v is string =>
   typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max;
@@ -138,6 +158,24 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
   }
 }
 
+/** Son et photo d'une carte (#118) : fichiers présents dans `media/`, au bon format. */
+function mediaProblem(kind: PackKind, item: Record<string, unknown>): string | undefined {
+  const file = (value: unknown, ext: RegExp) =>
+    typeof value === 'string' && ext.test(value) && value in MEDIA;
+  if (item.sound !== undefined) {
+    if (kind !== 'sound') return '« sound » est réservé aux packs de sons';
+    if (!file(item.sound, /^[a-z0-9-]+\.wav$/))
+      return `son (« sound ») introuvable dans src/content/media/ (fichier .wav) : ${item.sound}`;
+  }
+  if (item.photo !== undefined) {
+    if (!DECK_KINDS.some((k) => k.value === kind))
+      return '« photo » est réservée aux jeux à cartes';
+    if (!file(item.photo, /^[a-z0-9-]+\.(jpg|webp)$/))
+      return `photo (« photo ») introuvable dans src/content/media/ (.jpg ou .webp) : ${item.photo}`;
+  }
+  return undefined;
+}
+
 /** Problème d'une carte, ou rien. */
 function itemProblem(kind: PackKind, item: Record<string, unknown>): string | undefined {
   const unknown = Object.keys(item).filter((k) => !ITEM_FIELDS.has(k));
@@ -174,6 +212,8 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     (item.melody !== undefined || item.bpm !== undefined || item.source !== undefined)
   )
     return '« melody », « bpm » et « source » sont réservés aux packs d’airs';
+  const media = mediaProblem(kind, item);
+  if (media) return media;
   return kindRule(kind, item);
 }
 
@@ -251,13 +291,20 @@ export function getPack(id: string): Pack {
   return pack;
 }
 
-/** Cartes d'un pack, au format des jeux à cartes. */
+/** Cartes d'un pack, au format des jeux à cartes (son et photo : adresses des fichiers). */
 export function deckItems(pack: Pack): DeckItem[] {
   return pack.items.map((item) => {
-    const copy: DeckItem & Partial<Pick<PackItem, 'melody' | 'bpm' | 'source'>> = { ...item };
+    const copy: DeckItem &
+      Partial<Pick<PackItem, 'melody' | 'bpm' | 'source' | 'sound' | 'photo'>> = {
+      ...item,
+    };
     delete copy.melody;
     delete copy.bpm;
     delete copy.source;
+    delete copy.sound;
+    delete copy.photo;
+    if (item.sound && MEDIA[item.sound]) copy.soundUrl = MEDIA[item.sound];
+    if (item.photo && MEDIA[item.photo]) copy.photoUrl = MEDIA[item.photo];
     return copy;
   });
 }

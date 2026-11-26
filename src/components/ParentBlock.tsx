@@ -13,6 +13,8 @@ interface Props {
   hints?: ReactNode[];
   /** Nombre d'indices visibles d'emblée (par défaut : aucun). */
   openHints?: number;
+  /** Appelé quand le parent affiche le contenu masqué. */
+  onReveal?: () => void;
   /** Appelé avec le nombre d'indices visibles après chaque appui. */
   onHint?: (shown: number) => void;
   children?: ReactNode;
@@ -26,6 +28,7 @@ export function ParentBlock({
   hints = [],
   openHints = 0,
   onHint,
+  onReveal,
   children,
 }: Props) {
   const [revealed, setRevealed] = useState(false);
@@ -42,7 +45,14 @@ export function ParentBlock({
         (revealed ? (
           <div className="parent-block__answer">{hidden}</div>
         ) : (
-          <button type="button" className="parent-block__reveal" onClick={() => setRevealed(true)}>
+          <button
+            type="button"
+            className="parent-block__reveal"
+            onClick={() => {
+              setRevealed(true);
+              onReveal?.();
+            }}
+          >
             <IconEye size={20} />
             {revealLabel}
           </button>
