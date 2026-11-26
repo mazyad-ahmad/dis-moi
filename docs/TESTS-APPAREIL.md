@@ -29,17 +29,17 @@ L'objectif est d'avoir au moins deux appareils, un récent et un modeste.
 
 Appareil : Poco F6, HyperOS 3, Chrome, appli installée.
 
-| #   | Cas                | Résultat | Remarque                                                                             |
-| --- | ------------------ | -------- | ------------------------------------------------------------------------------------ |
-| 1   | Installation       | ✅       |                                                                                      |
-| 2   | Hors ligne         | ✅       |                                                                                      |
-| 3   | Mise à jour        | —        | À faire à la prochaine fusion dans `main`                                            |
-| 4   | TalkBack           | —        |                                                                                      |
-| 5   | Mélodies           | ✅       |                                                                                      |
-| 6   | Micro              | ❌       | Autorisation, enregistrement et création OK, mais aucun son pendant la partie : #141 |
-| 7   | Photo              | ❌       | « Ajouter des questions » ne fait rien dans un jeu photo : #142                      |
-| 8   | Partage de fichier | —        |                                                                                      |
-| 9   | Dessin au doigt    | ✅       |                                                                                      |
-| 10  | Écran allumé       | ✅       |                                                                                      |
-| 11  | Remise à zéro      | ❌       | Page Étoiles vide après la remise à zéro, même après de nouvelles parties : #143     |
-| 12  | Pages longues      | ❌       | Espace Parent : on défile au-delà du contenu, la barre du bas remonte : #145         |
+| #   | Cas                | Résultat | Remarque                                                                                                                                                                                                                                                        |
+| --- | ------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Installation       | ✅       |                                                                                                                                                                                                                                                                 |
+| 2   | Hors ligne         | ✅       |                                                                                                                                                                                                                                                                 |
+| 3   | Mise à jour        | —        | À faire à la prochaine fusion dans `main`                                                                                                                                                                                                                       |
+| 4   | TalkBack           | ⚠️       | L'écran est bien décrit, mais les boutons n'ont pas pu être activés pour passer à la suite. Probablement la prise en main de TalkBack (les boutons sont standards) : à refaire en sélectionnant le bouton d'une touche, puis en touchant deux fois n'importe où |
+| 5   | Mélodies           | ✅       |                                                                                                                                                                                                                                                                 |
+| 6   | Micro              | ❌       | Autorisation, enregistrement et création OK, mais aucun son pendant la partie : #141                                                                                                                                                                            |
+| 7   | Photo              | ❌       | « Ajouter des questions » ne fait rien dans un jeu photo : #142                                                                                                                                                                                                 |
+| 8   | Partage de fichier | —        |                                                                                                                                                                                                                                                                 |
+| 9   | Dessin au doigt    | ✅       |                                                                                                                                                                                                                                                                 |
+| 10  | Écran allumé       | ✅       |                                                                                                                                                                                                                                                                 |
+| 11  | Remise à zéro      | ❌       | Page Étoiles vide après la remise à zéro, même après de nouvelles parties : #143                                                                                                                                                                                |
+| 12  | Pages longues      | ❌       | Espace Parent : on défile au-delà du contenu, la barre du bas remonte : #145                                                                                                                                                                                    |
