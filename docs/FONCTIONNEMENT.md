@@ -415,11 +415,12 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   Commons, photos de Flickr et Wikimedia Commons) : source, auteur, licence et retouches de
   chaque fichier dans `src/content/media/credits.json`.
 - Fichiers embarqués dans l'appli et mis en cache par le service worker : tout marche hors ligne,
-  rien ne part du téléphone. Sons en WAV mono 16 kHz (1 à 3,5 s, niveau commun), photos WebP
-  480 × 360 : environ 1,7 Mo pour les 18 animaux (plafond de 3 Mo vérifié par les tests).
+  rien ne part du téléphone. Sons en WAV mono 16 kHz (1 à 3,5 s ; environ 1 s pour les
+  22 animaux ajoutés ensuite, pour tenir dans le plafond), photos WebP 480 × 360 : environ 2,9 Mo
+  pour les 40 animaux (plafond de 3 Mo vérifié par les tests, presque atteint).
 - Une carte sans fichier garde le fonctionnement d'avant.
 
-Contenu (#55) : 18 animaux, 22 couleurs (dont des nuances pour les grands : bleu marine,
+Contenu (#55) : 40 animaux, 22 couleurs (dont des nuances pour les grands : bleu marine,
 turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
 
 ### Cartes déjà vues (#55)

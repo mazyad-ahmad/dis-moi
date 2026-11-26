@@ -214,6 +214,7 @@ describe('catalogue', () => {
   });
   it('a de quoi jouer plusieurs parties sans revoir une carte (#55)', () => {
     const count = (id: string) => findCatalogueGame(id)!.items.length;
+    expect(count('animal')).toBeGreaterThanOrEqual(40);
     expect(count('mime')).toBeGreaterThanOrEqual(40);
     expect(count('devinette')).toBeGreaterThanOrEqual(50);
     // Couleurs : des nuances pour les grands.

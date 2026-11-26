@@ -355,5 +355,445 @@
     "license": "Marque du domaine public 1.0",
     "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
     "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "chevre.wav",
+    "kind": "son",
+    "title": "Single Goat Bleating 2x",
+    "author": "Kinoton",
+    "source": "https://freesound.org/people/Kinoton/sounds/581240",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "dindon.wav",
+    "kind": "son",
+    "title": "Turkey - Gobble - 96kHz.wav",
+    "author": "JarredGibb",
+    "source": "https://freesound.org/people/JarredGibb/sounds/233123",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "oie.wav",
+    "kind": "son",
+    "title": "Canada Geese Honks",
+    "author": "Kinoton",
+    "source": "https://freesound.org/people/Kinoton/sounds/423346",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "poussin.wav",
+    "kind": "son",
+    "title": "Baby Chicks Chirp.boaay",
+    "author": "BOAAY",
+    "source": "https://freesound.org/people/BOAAY/sounds/519193",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "elephant.wav",
+    "kind": "son",
+    "title": "Elephant voice - trumpeting",
+    "author": "தகவலுழவன்",
+    "source": "https://commons.wikimedia.org/wiki/File:Elephant_voice_-_trumpeting.ogg",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "singe.wav",
+    "kind": "son",
+    "title": "Monkey screaming.wav",
+    "author": "Archeos",
+    "source": "https://freesound.org/people/Archeos/sounds/325549",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "tigre.wav",
+    "kind": "son",
+    "title": "Tiger Roar",
+    "author": "lauramellis",
+    "source": "https://freesound.org/people/lauramellis/sounds/263115",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "ours.wav",
+    "kind": "son",
+    "title": "move and growl grizzly bear",
+    "author": "Nivatius",
+    "source": "https://freesound.org/people/Nivatius/sounds/519596",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "corbeau.wav",
+    "kind": "son",
+    "title": "Caw.ogg",
+    "author": "egomassive",
+    "source": "https://freesound.org/people/egomassive/sounds/536732",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "pigeon.wav",
+    "kind": "son",
+    "title": "pigeon territorial coo.wav",
+    "author": "5ro4",
+    "source": "https://freesound.org/people/5ro4/sounds/649390",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "dauphin.wav",
+    "kind": "son",
+    "title": "G12-15-Dolphins Underwater.wav",
+    "author": "craigsmith",
+    "source": "https://freesound.org/people/craigsmith/sounds/437947",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "phoque.wav",
+    "kind": "son",
+    "title": "S01-11_Seal barks and jumps into water; bird calls.wav",
+    "author": "craigsmith",
+    "source": "https://freesound.org/people/craigsmith/sounds/675397",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "perroquet.wav",
+    "kind": "son",
+    "title": "Parrot screaming",
+    "author": "16FVolejnikovaA",
+    "source": "https://freesound.org/people/16FVolejnikovaA/sounds/498400",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "grillon.wav",
+    "kind": "son",
+    "title": "Single cricket chirping during a summer evening in the",
+    "author": "Pfannkuchn",
+    "source": "https://freesound.org/people/Pfannkuchn/sounds/360628",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "moustique.wav",
+    "kind": "son",
+    "title": "Single Mosquito Buzz",
+    "author": "scottjodoin",
+    "source": "https://freesound.org/people/scottjodoin/sounds/435650",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "cerf.wav",
+    "kind": "son",
+    "title": "Bellowing deer - Animal - Nature - Hirsch - Röhren - Ti",
+    "author": "IchBinChrist",
+    "source": "https://freesound.org/people/IchBinChrist/sounds/407631",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "baleine.wav",
+    "kind": "son",
+    "title": "Humpbackwhale2",
+    "author": "Spyrogumas",
+    "source": "https://commons.wikimedia.org/wiki/File:Humpbackwhale2.ogg",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "manchot.wav",
+    "kind": "son",
+    "title": "Pinguin Colony at Gourdin Island in the Antarctica Peninsula",
+    "author": "al.barbosa",
+    "source": "https://freesound.org/people/al.barbosa/sounds/150873",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "paon.wav",
+    "kind": "son",
+    "title": "Bird, Peacock Call",
+    "author": "Kinoton",
+    "source": "https://freesound.org/people/Kinoton/sounds/688203",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "chameau.wav",
+    "kind": "son",
+    "title": "G12-05-Camel Grunt.wav",
+    "author": "craigsmith",
+    "source": "https://freesound.org/people/craigsmith/sounds/437937",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "herisson.wav",
+    "kind": "son",
+    "title": "Angry hedgehog sniffing 1",
+    "author": "fthgurdy",
+    "source": "https://freesound.org/people/fthgurdy/sounds/528183",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "hippopotame.wav",
+    "kind": "son",
+    "title": "hippos.mp3",
+    "author": "toadie",
+    "source": "https://freesound.org/people/toadie/sounds/194870",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "extrait, converti en WAV mono 16 kHz, niveau ramené à −22 dBFS"
+  },
+  {
+    "file": "chevre.webp",
+    "kind": "photo",
+    "title": "The Snow Queen of the Farm: The British Saanen",
+    "author": "Oneterry AKA Terry Kearney",
+    "source": "https://www.flickr.com/photos/24490288@N04/55262721904",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "dindon.webp",
+    "kind": "photo",
+    "title": "Wild Turkey",
+    "author": "YoungSue",
+    "source": "https://www.flickr.com/photos/95782365@N08/52243551179",
+    "license": "Marque du domaine public 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "oie.webp",
+    "kind": "photo",
+    "title": "Goose",
+    "author": "sandro349",
+    "source": "https://www.flickr.com/photos/186236561@N02/49596926258",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "poussin.webp",
+    "kind": "photo",
+    "title": "Chicks",
+    "author": "Alabama Extension",
+    "source": "https://www.flickr.com/photos/184594136@N08/52753477239",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "elephant.webp",
+    "kind": "photo",
+    "title": "African bush elephant (Loxodonta africana), Masai Mara",
+    "author": "Hobbyfotowiki",
+    "source": "https://commons.wikimedia.org/wiki/File:African_bush_elephant_(Loxodonta_africana),_Masai_Mara.jpg",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "singe.webp",
+    "kind": "photo",
+    "title": "Lake Sebu Monkey",
+    "author": "Gary Lee Todd, Ph.D.",
+    "source": "https://www.flickr.com/photos/101561334@N08/51602991879",
+    "license": "Marque du domaine public 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "tigre.webp",
+    "kind": "photo",
+    "title": "Siberian Tiger",
+    "author": "Mathias Appel",
+    "source": "https://www.flickr.com/photos/91501748@N07/51893446026",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "ours.webp",
+    "kind": "photo",
+    "title": "Kodiak brown bear in the snow.",
+    "author": "USFWSAlaska",
+    "source": "https://www.flickr.com/photos/54775250@N07/51942706388",
+    "license": "Marque du domaine public 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "corbeau.webp",
+    "kind": "photo",
+    "title": "Afternoon Tea for Crow.",
+    "author": "Wildlife Terry",
+    "source": "https://www.flickr.com/photos/44510888@N05/51912423212",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "pigeon.webp",
+    "kind": "photo",
+    "title": "Pigeon ramier",
+    "author": "didier.michelle.ferrand",
+    "source": "https://www.flickr.com/photos/187946018@N05/55295682757",
+    "license": "Marque du domaine public 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "dauphin.webp",
+    "kind": "photo",
+    "title": "DOLPHIN, COMMON BOTTLENOSE (Tursiops truncatus) (6-24-2014) san simeon pier, slo co, ca -02 (14620153243)",
+    "author": "ALAN SCHMIERER",
+    "source": "https://commons.wikimedia.org/wiki/File:DOLPHIN,_COMMON_BOTTLENOSE_(Tursiops_truncatus)_(6-24-2014)_san_simeon_pier,_slo_co,_ca_-02_(14620153243).jpg",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "phoque.webp",
+    "kind": "photo",
+    "title": "Harbor Seal at Piedras Blancas",
+    "author": "blmcalifornia",
+    "source": "https://www.flickr.com/photos/50976304@N07/51896886522",
+    "license": "Marque du domaine public 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "perroquet.webp",
+    "kind": "photo",
+    "title": "The superb parrot",
+    "author": "Bernard Spragg",
+    "source": "https://www.flickr.com/photos/88123769@N02/55171168425",
+    "license": "Marque du domaine public 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "grillon.webp",
+    "kind": "photo",
+    "title": "House Cricket (Acheta domesticus)",
+    "author": "Kiloueka",
+    "source": "https://commons.wikimedia.org/wiki/File:House_Cricket_(Acheta_domesticus).jpg",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "moustique.webp",
+    "kind": "photo",
+    "title": "Mosquito",
+    "author": "U.S. Fish and Wildlife Service - Midwest Region",
+    "source": "https://www.flickr.com/photos/49208525@N08/52425151354",
+    "license": "Marque du domaine public 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "cerf.webp",
+    "kind": "photo",
+    "title": "Imperial stag awaiting the rut.",
+    "author": "Charos Pix",
+    "source": "https://www.flickr.com/photos/98609459@N08/55565398950",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "baleine.webp",
+    "kind": "photo",
+    "title": "Humpback Whale Breach_Tongass_HEH_17",
+    "author": "Forest Service Alaska Region, USDA",
+    "source": "https://www.flickr.com/photos/58184989@N07/52502994650",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "manchot.webp",
+    "kind": "photo",
+    "title": "King penguin in Edinburgh Zoo 01",
+    "author": "Adam Harangozó",
+    "source": "https://commons.wikimedia.org/wiki/File:King_penguin_in_Edinburgh_Zoo_01.jpg",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "paon.webp",
+    "kind": "photo",
+    "title": "176 He Turned Around Slowly",
+    "author": "The Fun Chronicles",
+    "source": "https://www.flickr.com/photos/196406308@N04/52424545854",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "chameau.webp",
+    "kind": "photo",
+    "title": "Camel head",
+    "author": "Mussi Katz",
+    "source": "https://www.flickr.com/photos/52775988@N00/51863272878",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "herisson.webp",
+    "kind": "photo",
+    "title": "Hedgehog",
+    "author": "Nils Soderman",
+    "source": "https://www.flickr.com/photos/191729915@N03/51385935942",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
+  },
+  {
+    "file": "hippopotame.webp",
+    "kind": "photo",
+    "title": "2023, Hippopotamus, Isimangoliso Wetland Park, South-Africa, St. Lucia#4665.jpg",
+    "author": "Jim van de Burgt Photography",
+    "source": "https://www.flickr.com/photos/146851823@N08/54281566919",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "recadrée en 4:3, réduite à 480 × 360, convertie en WebP"
   }
 ]

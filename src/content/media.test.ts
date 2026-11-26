@@ -41,6 +41,7 @@ describe('sons et photos embarqués', () => {
   });
 
   it('chaque animal de « Quel animal ? » a un cri enregistré et une photo', () => {
+    expect(deckItems(getPack('animal')).length).toBeGreaterThanOrEqual(40);
     for (const item of deckItems(getPack('animal'))) {
       expect(item.soundUrl, item.answer).toBeTruthy();
       expect(item.photoUrl, item.answer).toBeTruthy();
