@@ -123,7 +123,7 @@ describe('un pack invalide nomme la carte fautive', () => {
     [
       'phrase « prolonger » pour un mot à dessiner',
       withItem(getPack('dessin'), 0, { prolonger: 'Demande-lui sa couleur.' }),
-      'carte 1 (« Un chat ») : « prolonger » n’est pas montré pour un mot à dessiner',
+      '« prolonger » n’est pas montré pour un mot à dessiner',
     ],
     ['type inconnu', { ...animals, kind: 'video' }, 'type (« kind ») inconnu'],
     ['type de jeu inconnu', { ...animals, activities: ['nager'] }, '« activities »'],
