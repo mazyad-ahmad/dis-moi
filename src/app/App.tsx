@@ -12,6 +12,7 @@ import { SongGame } from '../games/chanson/SongGame';
 import { DrawingGame } from '../games/dessin/DrawingGame';
 import { LettersGame } from '../games/lettres/LettersGame';
 import { GrandGame } from '../games/grand/GrandGame';
+import { RaconteGame } from '../games/raconte/RaconteGame';
 import { GRAND_ID } from '../games/grand/pool';
 import { NotForMode, NotFound } from '../screens/Placeholder';
 import { AddGame } from '../screens/AddGame';
@@ -38,6 +39,7 @@ const GAME_SCREENS: Record<string, () => React.ReactElement> = {
   chanson: SongGame,
   lettres: LettersGame,
   dessin: DrawingGame,
+  raconte: RaconteGame,
   [GRAND_ID]: GrandGame,
   defi: DailyGame,
 };

@@ -111,8 +111,8 @@
   jeu qui fait bouger (Mime ça) ; la chasse au trésor s'y joue en version « sans courir ». Fin
   en douceur : ni confettis ni vibration de fête, la mascotte dort, « C'est l'heure de dormir.
   Bonne nuit ! », pas de bouton « Un autre jeu ».
-- **Voiture** : seulement des cartes orales (Quelle chanson ?, Quel animal ?, Devinettes, Vrai ou
-  faux rigolo, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
+- **Voiture** : seulement des cartes orales (Quelle chanson ?, Raconte-moi, Quel animal ?, Devinettes,
+  Vrai ou faux rigolo, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
   regarder ni à dessiner.
 - L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
   conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
@@ -168,6 +168,27 @@
   aussi dans le Grand Jeu.
 - Chaque choix est un bouton d'au moins 64 px, nommé pour le lecteur d'écran (« La vache »,
   « Lettre A », « Rouge »). Images : emoji dessinés par la police du téléphone, aucun fichier.
+
+## Raconte-moi (#125)
+
+- Un jeu pour **se parler**, sans bonne réponse : « Qu’est-ce qui t’a fait rire aujourd’hui ? »,
+  « Si tu étais un animal, lequel serais-tu ? ». Tuile **Raconte-moi** sur l’accueil (jeu de base,
+  `#/jeu/raconte`), types Parler et Se calmer.
+- **60 questions** ouvertes (`src/content/raconte.json`), 20 par niveau, sur quatre thèmes :
+  Ma journée, Imaginer, Ma famille et mes amis, Mes goûts (le thème s’affiche au-dessus de la
+  question). Relues pour qu’aucune ne soit intrusive ni anxiogène : ni secret, ni peur, ni
+  comparaison avec d’autres enfants (liste de mots écartés vérifiée par les tests).
+- Le parent lit la question (bouton « Lire »), l’enfant raconte, puis **le parent répond à son
+  tour** : c’est un échange, rappelé dans « Pour le parent ». Pas de réponse cachée, pas d’indice.
+- **Merci de m’avoir raconté** remplace « Trouvé » et donne l’étoile, gagnée ensemble.
+  **Passer** change de question sans rien dire (la note douce habituelle) et ne retire jamais
+  d’étoile. Une partie toute passée finit sur « Merci pour ce moment ensemble. On se racontera
+  d’autres choses ! ».
+- **Rien n’est enregistré** : pas de micro, pas de texte à écrire ; la partie ne garde que ses
+  manches et ses étoiles, comme les autres jeux.
+- Oral, il se joue en **Voiture** et au **Coucher**, en équipe, chacun son tour (question au
+  niveau de l’enfant) ou en équipes. Pas dans le Grand Jeu ni le Défi du jour (ils demandent une
+  bonne réponse), ni de « Répondre en montrant ».
 
 ## Mascotte (proposition)
 

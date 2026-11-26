@@ -43,7 +43,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `format`, `version`                | `"dis-moi/jeu"` et `1`, comme un fichier de jeu                                                                                                                     |
 | `id`                               | identifiant (minuscules, chiffres, tirets) ; fichier `<id>.json`                                                                                                    |
 | `revision`                         | révision du contenu, à augmenter à chaque changement de cartes                                                                                                      |
-| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`                                                                                             |
+| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`, `chat` (questions ouvertes)                                                                |
 | `name`, `lang`                     | nom (30 caractères max) et langue (`fr`)                                                                                                                            |
 | `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS`                                                                                     |
 | `moves`                            | facultatif : `true` si le jeu fait bouger l'enfant (mime) ; écarté au Coucher                                                                                       |
@@ -53,7 +53,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | Champ d'une carte | Rôle                                                                                                              |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `id`              | identifiant stable dans le pack (minuscules, chiffres, tirets), unique                                            |
-| `answer`          | réponse (unique dans le pack) ; pour `glyph`, le caractère ; pour `melody`, le titre                              |
+| `answer`          | réponse (unique dans le pack) ; pour `glyph`, le caractère ; pour `melody`, le titre ; pour `chat`, la question   |
 | `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)                                           |
 | `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)                                          |
 | `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                    |
@@ -61,7 +61,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules |
 | `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                        |
 | `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                             |
-| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`)                                                                  |
+| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`) ; pour `chat`, un thème obligatoire (`journee`, `imaginer`…)     |
 | `lang`            | facultatif : langue de la carte si elle diffère du pack                                                           |
 
 Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ inconnu est refusé
@@ -75,6 +75,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `lettres.json`                | Quelle lettre ?            | `glyph`    |
 | `chiffres.json`               | Quelle lettre ? (chiffres) | `glyph`    |
 | `dessin.json`                 | Dessine ça                 | `draw`     |
+| `raconte.json`                | Raconte-moi                | `chat`     |
 | `catalogue-animal.json`       | Quel animal ?              | `sound`    |
 | `catalogue-couleur.json`      | Quelle couleur ?           | `image`    |
 | `catalogue-mime.json`         | Mime ça                    | `image`    |

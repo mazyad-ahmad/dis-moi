@@ -41,10 +41,10 @@ describe('Ajouter un jeu : catalogue', () => {
   it('ajoute et retire un jeu du catalogue sur l’accueil', async () => {
     const user = userEvent.setup();
     open('/ajouter');
-    expect(screen.getByText("3 jeux dans l'appli")).toBeInTheDocument();
+    expect(screen.getByText("4 jeux dans l'appli")).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Ajouter Devinettes' }));
     expect(screen.getByRole('button', { name: 'Retirer Devinettes' })).toHaveTextContent('Ajouté');
-    expect(screen.getByText("4 jeux dans l'appli")).toBeInTheDocument();
+    expect(screen.getByText("5 jeux dans l'appli")).toBeInTheDocument();
     expect(getSettings().catalogue).toEqual(['devinette']);
 
     await user.click(screen.getByRole('link', { name: 'Retour' }));

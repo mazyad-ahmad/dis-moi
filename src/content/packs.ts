@@ -4,6 +4,7 @@ import { parseMelody } from '../games/chanson/melody';
 import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
 import { isLevel, LEVELS, type Level } from '../games/levels';
+import { chatTheme, CHAT_THEMES } from '../games/raconte/themes';
 import type { Tint } from '../games/registry';
 
 /**
@@ -12,9 +13,17 @@ import type { Tint } from '../games/registry';
  * quelques champs en plus. Ajouter une carte = ajouter une ligne au fichier. Voir docs/PACKS.md.
  */
 
-/** Types de pack : ceux des jeux à cartes, plus les airs (Quelle chanson ?) et les glyphes. */
-export type PackKind = DeckKind | 'melody' | 'glyph';
-export const PACK_KINDS: PackKind[] = [...DECK_KINDS.map((k) => k.value), 'melody', 'glyph'];
+/**
+ * Types de pack : ceux des jeux à cartes, plus les airs (Quelle chanson ?), les glyphes et les
+ * questions ouvertes, sans bonne réponse (Raconte-moi, #125).
+ */
+export type PackKind = DeckKind | 'melody' | 'glyph' | 'chat';
+export const PACK_KINDS: PackKind[] = [
+  ...DECK_KINDS.map((k) => k.value),
+  'melody',
+  'glyph',
+  'chat',
+];
 
 export interface PackItem extends Omit<DeckItem, 'image' | 'audio'> {
   /** Identifiant stable dans le pack (minuscules, chiffres et tirets). */
@@ -109,6 +118,11 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
         : 'rien à montrer (« emoji », « color » ou « text »)';
     case 'draw':
       return undefined;
+    case 'chat':
+      // La question est dans « answer » ; chaque question a un thème.
+      return chatTheme(item.tags as string[] | undefined)
+        ? undefined
+        : `thème (« tags ») manquant : ${CHAT_THEMES.map((t) => t.value).join(', ')}`;
     case 'glyph':
       if (typeof item.answer !== 'string' || [...item.answer].length !== 1)
         return 'un glyphe est un seul caractère';

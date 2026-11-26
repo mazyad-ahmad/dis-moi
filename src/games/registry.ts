@@ -61,6 +61,17 @@ export const GAMES: GameInfo[] = [
     levels: packLevels('dessin'),
     skill: 'Fait travailler la main et l’imagination',
   },
+  {
+    id: 'raconte',
+    name: 'Raconte-moi',
+    category: 'Se parler',
+    tint: 'dawn',
+    mark: '💬',
+    needs: needsOf('chat'),
+    activities: ['parler', 'calme'],
+    levels: packLevels('raconte'),
+    skill: 'Aide à mettre des mots sur sa journée et ses idées',
+  },
 ];
 
 export function findGame(id: string): GameInfo | undefined {

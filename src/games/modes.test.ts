@@ -22,7 +22,14 @@ describe('façons de jouer', () => {
   });
 
   it('Voiture : seulement des jeux oraux, rien à regarder', () => {
-    expect(suited('voiture')).toEqual(['chanson', 'animal', 'devinette', 'tresor', 'vrai-faux']);
+    expect(suited('voiture')).toEqual([
+      'chanson',
+      'raconte',
+      'animal',
+      'devinette',
+      'tresor',
+      'vrai-faux',
+    ]);
     for (const g of ALL.filter((g) => suitsMode(g.needs, 'voiture')))
       expect(g.needs!.looks).toBe(false);
   });
@@ -33,6 +40,7 @@ describe('façons de jouer', () => {
       'chanson',
       'lettres',
       'dessin',
+      'raconte',
       'animal',
       'couleur',
       'devinette',
@@ -52,7 +60,7 @@ describe('façons de jouer', () => {
     const oral = (Object.keys(KIND_NEEDS) as (keyof typeof KIND_NEEDS)[]).filter((k) =>
       suitsMode(KIND_NEEDS[k], 'voiture'),
     );
-    expect(oral.sort()).toEqual(['melody', 'question', 'sound']);
+    expect(oral.sort()).toEqual(['chat', 'melody', 'question', 'sound']);
   });
 
   it('le défi du jour déclare aussi ses besoins', () => {
