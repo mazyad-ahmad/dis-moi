@@ -25,8 +25,8 @@ const WIDTHS = [
 const ERASER_FACTOR = 3;
 
 interface Props {
-  /** Phrase sous le dessin (« L'enfant dessine avec le doigt »). */
-  hint: ReactNode;
+  /** Phrase sous le dessin (« L'enfant dessine avec le doigt »), selon le nombre de traits. */
+  hint: ReactNode | ((strokes: number) => ReactNode);
   /** Dessin figé (temps écoulé) : ni trait ni outil. */
   disabled?: boolean;
   /** Bouton posé dans un coin du dessin (« Garder », #52), selon le nombre de traits. */
@@ -68,7 +68,7 @@ export function DrawingPad({ hint, disabled, corner, ref }: Props) {
           onCount={setCount}
         />
         <span className="drawing-area__hint muted" aria-live="polite">
-          {hint}
+          {typeof hint === 'function' ? hint(count) : hint}
         </span>
         {corner?.(count)}
       </div>

@@ -298,6 +298,23 @@
   données » vide la galerie ; « Remettre les étoiles à zéro » n'y touche pas.
 - Le Défi du jour ne propose pas « Garder ».
 
+### Façons de jouer (#53)
+
+- Au-dessus du mot, quatre choix sur une ligne (« Façon de jouer ») : **Classique** (le jeu
+  habituel), **Mystère**, **À deux**, **Yeux fermés**. Chaque variante est précédée de son
+  explication d'une phrase, sous le sélecteur. Le choix reste d'une manche à l'autre et après un
+  rafraîchissement ; une nouvelle partie repart en Classique.
+- **Dessin mystère** : le mot s'affiche « pour l'enfant » (lu par la voix s'il ne lit pas
+  encore) ; **Cacher le mot** le masque d'un geste avant de rendre le téléphone, **Voir le mot**
+  le découvre quand le parent a proposé. Le mot suivant s'affiche de nouveau pour l'enfant. Le
+  parent valide avec **Deviné** (+1 étoile) ou **Passer**.
+- **Dessin à deux** : un trait chacun ; la phrase sous le dessin dit à qui le tour (« Au tour de
+  Léa : un trait », puis « Au tour du parent »). L'enfant commence ; annuler un trait rend la main.
+- **Les yeux fermés** : on dessine les yeux fermés, puis on rit ensemble du dessin.
+- Les variantes gardent la zone de dessin, les outils, « Garder » et le minuteur (aucun en mode
+  Coucher). Dessine ça et les mots à dessiner créés les proposent ; le Grand Jeu et le Défi du
+  jour restent en Classique.
+
 ### Contenu de Dessine ça (#54)
 
 - **150 mots** dans le pack `src/content/dessin.json`, écrits pour l'appli, 25 par **thème** :

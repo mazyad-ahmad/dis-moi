@@ -795,6 +795,38 @@
   font-size: 13px;
   pointer-events: none;
 }
+/* Façons de jouer (#53) : quatre choix sur une ligne (320 px compris), puis leur explication. */
+.variant-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.segmented--variants {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-radius: 24px;
+}
+.segmented--variants label {
+  border-radius: 20px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+.variant-picker__about {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+/* Dessin mystère : le mot se cache d'un geste avant de rendre le téléphone. */
+.word-card__word--hidden {
+  font-style: italic;
+}
+.word-card__hide {
+  width: fit-content;
+  margin-top: 8px;
+  padding: 0 16px;
+  font: var(--text-label);
+}
 /* Outils de dessin (#51) : une seule ligne de boutons de 48 px, même sur un écran de 320 px
    (5 × 48 px + 4 × 8 px = 272 px, la largeur utile). Couleurs et épaisseurs s'ouvrent
    au-dessus de la ligne, sur le dessin. */

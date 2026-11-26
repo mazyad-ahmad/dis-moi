@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentProps, type RefObject } from 'react';
+import { useEffect, useId, useRef, useState, type ComponentProps, type RefObject } from 'react';
 import { playSound } from '../../audio/sounds';
 import type { Player } from '../../data/db';
 import { DrawingError, keepDrawing, updateDrawingImage } from '../../data/drawings';
@@ -22,6 +22,7 @@ import { useTurns } from '../useTurns';
 import { type DrawingCanvasHandle } from './DrawingCanvas';
 import { DrawingPad } from './DrawingPad';
 import { useCountdown } from './useCountdown';
+import { drawHint, restoreVariant, VARIANTS, type Variant } from './variants';
 import { DRAW_LEVELS, DRAW_WORDS } from './words';
 
 interface DrawingProps {
@@ -82,6 +83,13 @@ function DrawingSession({
   const [seconds] = useState(() =>
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
   );
+  // Façon de jouer (#53), gardée d'une manche à l'autre et après un rafraîchissement.
+  const [variant, setVariant] = useSaved<Variant>(
+    gameId,
+    'variant',
+    () => 'classique',
+    restoreVariant,
+  );
 
   const word = turns && shown.length ? shown[shown.length - 1] : words[index % words.length];
   useMarkSeen(gameId, finished ? undefined : word);
@@ -102,6 +110,8 @@ function DrawingSession({
         word={word}
         turn={shown.length}
         seconds={seconds}
+        variant={variant}
+        onVariant={setVariant}
         onOtherWord={words.length > 1 ? () => show(round) : undefined}
         onAnswer={(found) => {
           if (round < rounds) show(round + 1);
@@ -117,6 +127,8 @@ function DrawingSession({
       word={word}
       turn={index}
       seconds={seconds}
+      variant={variant}
+      onVariant={setVariant}
       onOtherWord={() => setIndex(index + 1)}
       onAnswer={(found) => {
         setIndex(index + 1);
@@ -196,16 +208,90 @@ interface BoardProps {
   turn: unknown;
   /** Durée du minuteur, en secondes ; 0 : pas de minuteur (mode Coucher, #42). */
   seconds: number;
+  /** Façon de jouer (#53) ; classique par défaut (Grand Jeu, Défi du jour). */
+  variant?: Variant;
+  /** Choix de la façon de jouer : absent, le sélecteur n'est pas proposé. */
+  onVariant?: (variant: Variant) => void;
   /** « Autre mot » : absent, le bouton n'est pas proposé. */
   onOtherWord?: () => void;
   onAnswer: (found: boolean) => void;
+}
+
+/** Sélecteur des façons de jouer (#53), avec l'explication d'une phrase de la variante choisie. */
+function VariantPicker({ value, onChange }: { value: Variant; onChange: (v: Variant) => void }) {
+  const name = useId();
+  const about = VARIANTS.find((v) => v.value === value)?.about;
+  return (
+    <div className="variant-picker">
+      <div className="segmented segmented--variants" role="radiogroup" aria-label="Façon de jouer">
+        {VARIANTS.map((v) => (
+          <label key={v.value}>
+            <input
+              type="radio"
+              name={name}
+              value={v.value}
+              checked={value === v.value}
+              onChange={() => onChange(v.value)}
+            />
+            {v.label}
+          </label>
+        ))}
+      </div>
+      {about && <p className="variant-picker__about">{about}</p>}
+    </div>
+  );
+}
+
+/**
+ * Le mot de la manche. En Dessin mystère (#53), l'enfant le lit seul puis le cache d'un geste
+ * avant de rendre le téléphone ; le parent le découvre après avoir deviné.
+ */
+function WordShown({ word, mystery }: { word: string; mystery: boolean }) {
+  const [hidden, setHidden] = useState(false);
+  if (!mystery)
+    return (
+      <>
+        <span className="word-card__label">Le parent lit à voix haute</span>
+        <strong className="word-card__word">{word}</strong>
+        <ReadAloud text={word} />
+      </>
+    );
+  return (
+    <>
+      <span className="word-card__label">Mot secret, pour l'enfant</span>
+      {hidden ? (
+        <strong className="word-card__word word-card__word--hidden">Mot caché</strong>
+      ) : (
+        <>
+          <strong className="word-card__word">{word}</strong>
+          <ReadAloud text={word} />
+        </>
+      )}
+      <button
+        type="button"
+        className="btn btn--secondary word-card__hide"
+        onClick={() => setHidden(!hidden)}
+      >
+        {hidden ? 'Voir le mot' : 'Cacher le mot'}
+      </button>
+    </>
+  );
 }
 
 /**
  * Une manche de dessin : mot, minuteur, zone de dessin et boutons.
  * Partagée par « Dessine ça », les mots à dessiner créés et le Grand Jeu (#41).
  */
-export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnswer }: BoardProps) {
+export function DrawingBoard({
+  heading,
+  word,
+  turn,
+  seconds,
+  variant = 'classique',
+  onVariant,
+  onOtherWord,
+  onAnswer,
+}: BoardProps) {
   const canvas = useRef<DrawingCanvasHandle>(null);
   const timed = seconds > 0;
   const left = useCountdown(Math.max(0, seconds), turn);
@@ -246,12 +332,12 @@ export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnsw
         }
       />
 
+      {onVariant && <VariantPicker value={variant} onChange={onVariant} />}
+
       <section className="word-card" aria-label="Mot à dessiner">
-        {/* key : chaque nouveau mot entre en douceur. */}
+        {/* key : chaque nouveau mot entre en douceur (et revient visible en Dessin mystère). */}
         <div key={`${String(turn)}:${word}`} className="round-in">
-          <span className="word-card__label">Le parent lit à voix haute</span>
-          <strong className="word-card__word">{word}</strong>
-          <ReadAloud text={word} />
+          <WordShown word={word} mystery={variant === 'mystere'} />
         </div>
         {onOtherWord && (
           <button
@@ -277,12 +363,14 @@ export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnsw
             canvas={canvas}
           />
         )}
-        hint={
-          timeUp ? 'Temps écoulé ! Le parent valide le dessin.' : "L'enfant dessine avec le doigt"
-        }
+        hint={(strokes) => drawHint(variant, { timeUp, strokes, child: heading.player?.name })}
       />
 
-      <AnswerBar onSkip={() => next(false)} onFound={() => next(true)} foundLabel="C'est fini" />
+      <AnswerBar
+        onSkip={() => next(false)}
+        onFound={() => next(true)}
+        foundLabel={variant === 'mystere' ? 'Deviné' : "C'est fini"}
+      />
     </main>
   );
 }
