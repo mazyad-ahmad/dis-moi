@@ -13,6 +13,8 @@ export interface Song {
   hint: string;
   /** Indices suivants, donnés un à un si l'enfant sèche (#34). */
   hints?: string[];
+  /** Phrase pour prolonger la discussion après la réponse (#124). */
+  prolonger?: string;
   bpm: number;
   melody: string;
   /** Niveau par âge (#40). */
@@ -31,6 +33,7 @@ export const SONGS: Song[] = getPack('chansons').items.map((item) => ({
   title: item.answer,
   hint: item.hint!,
   ...(item.hints && { hints: item.hints }),
+  ...(item.prolonger && { prolonger: item.prolonger }),
   bpm: item.bpm!,
   melody: item.melody!,
   level: item.level,

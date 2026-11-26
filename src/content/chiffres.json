@@ -2,20 +2,20 @@
   "format": "dis-moi/jeu",
   "version": 1,
   "id": "chiffres",
-  "revision": 2,
+  "revision": 3,
   "kind": "glyph",
   "name": "Quel chiffre ?",
   "lang": "fr",
   "items": [
-    {"id": "0", "level": 2, "answer": "0", "hint": "Demande combien de doigts on lève avec le poing fermé"},
-    {"id": "1", "level": 1, "answer": "1", "hint": "Demande de sauter 1 fois sur place"},
-    {"id": "2", "level": 1, "answer": "2", "hint": "Demande combien d’yeux on a"},
-    {"id": "3", "level": 1, "answer": "3", "hint": "Demande de montrer 3 doigts"},
-    {"id": "4", "level": 1, "answer": "4", "hint": "Demande combien de pattes a un chat"},
-    {"id": "5", "level": 1, "answer": "5", "hint": "Demande de taper 5 fois dans les mains"},
-    {"id": "6", "level": 2, "answer": "6", "hint": "Demande quel chiffre vient juste après 5"},
-    {"id": "7", "level": 2, "answer": "7", "hint": "Demande de compter jusqu’à 7"},
-    {"id": "8", "level": 2, "answer": "8", "hint": "Demande combien de pattes a une araignée"},
-    {"id": "9", "level": 2, "answer": "9", "hint": "Demande quel nombre vient juste après 9 (10)"}
+    {"id": "0", "level": 2, "answer": "0", "hint": "Demande combien de doigts on lève avec le poing fermé", "prolonger": "Demande-lui ce qui reste quand on mange tous les gâteaux de l’assiette."},
+    {"id": "1", "level": 1, "answer": "1", "hint": "Demande de sauter 1 fois sur place", "prolonger": "Cherchez ensemble quelque chose qu’on a en un seul exemplaire : le nez."},
+    {"id": "2", "level": 1, "answer": "2", "hint": "Demande combien d’yeux on a", "prolonger": "Cherchez ensemble ce qui va par deux sur le corps : yeux, oreilles, mains…"},
+    {"id": "3", "level": 1, "answer": "3", "hint": "Demande de montrer 3 doigts", "prolonger": "Cherchez trois objets de la même couleur dans la pièce."},
+    {"id": "4", "level": 1, "answer": "4", "hint": "Demande combien de pattes a un chat", "prolonger": "Demande-lui quels autres animaux ont quatre pattes."},
+    {"id": "5", "level": 1, "answer": "5", "hint": "Demande de taper 5 fois dans les mains", "prolonger": "Comptez ensemble les doigts d’une main, puis ceux de l’autre."},
+    {"id": "6", "level": 2, "answer": "6", "hint": "Demande quel chiffre vient juste après 5", "prolonger": "Demande-lui combien de pattes a une fourmi (six)."},
+    {"id": "7", "level": 2, "answer": "7", "hint": "Demande de compter jusqu’à 7", "prolonger": "Demande-lui combien il y a de jours dans une semaine (sept)."},
+    {"id": "8", "level": 2, "answer": "8", "hint": "Demande combien de pattes a une araignée", "prolonger": "Demande-lui combien de bras a une pieuvre (huit)."},
+    {"id": "9", "level": 2, "answer": "9", "hint": "Demande quel nombre vient juste après 9 (10)", "prolonger": "Comptez ensemble à rebours, de neuf jusqu’à zéro, comme une fusée."}
   ]
 }

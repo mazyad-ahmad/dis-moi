@@ -129,7 +129,7 @@ export function GlyphRound({
         </figure>
       )}
 
-      <ParentBlock>
+      <ParentBlock prolonger={card.prolonger}>
         {model && (
           <p>
             L’enfant repasse <strong>{glyphName(card)}</strong> du doigt.{' '}

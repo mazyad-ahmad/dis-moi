@@ -56,6 +56,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)                                               |
 | `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)                                              |
 | `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                        |
+| `prolonger`       | facultatif : phrase pour prolonger la discussion, montrée au parent après la réponse (100 caractères, pas `draw`)     |
 | `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules     |
 | `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                            |
 | `source`          | `melody` seulement, obligatoire : auteur ou origine de l'air et son statut (« …, domaine public »)                    |

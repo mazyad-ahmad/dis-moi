@@ -1,4 +1,4 @@
-import { MAX_GAME_NAME, MAX_HINTS, MAX_TEXT } from '../data/customGames';
+import { MAX_GAME_NAME, MAX_HINTS, MAX_PROLONGER, MAX_TEXT } from '../data/customGames';
 import { GAME_FILE_FORMAT, GAME_FILE_VERSION } from '../data/gameFile';
 import { parseMelody } from '../games/chanson/melody';
 import { isActivity, type Activity } from '../games/activities';
@@ -84,6 +84,7 @@ const ITEM_FIELDS = new Set([
   'text',
   'hint',
   'hints',
+  'prolonger',
   'emoji',
   'color',
   'level',
@@ -209,6 +210,11 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
     )
   )
     return `indices (« hints ») : liste de 1 à ${MAX_HINTS} textes attendue`;
+  if (item.prolonger !== undefined) {
+    if (kind === 'draw') return '« prolonger » n’est pas montré pour un mot à dessiner';
+    if (!isText(item.prolonger, MAX_PROLONGER))
+      return `« prolonger » vide, trop long (${MAX_PROLONGER} max) ou mal espacé`;
+  }
   if (item.emoji !== undefined && !isText(item.emoji, 16)) return 'emoji invalide';
   // Niveaux par âge (#40) : chaque carte intégrée en a un.
   if (!isLevel(item.level))

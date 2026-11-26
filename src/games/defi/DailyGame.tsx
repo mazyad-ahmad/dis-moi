@@ -55,7 +55,7 @@ function CardBody({ card }: { card: DailyCard }) {
             </span>
             <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
           </figure>
-          <ParentBlock>
+          <ParentBlock prolonger={card.card.prolonger}>
             {card.card.hint}
             <ReadAloud text={card.card.hint} />
           </ParentBlock>

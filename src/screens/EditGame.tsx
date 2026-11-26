@@ -22,6 +22,7 @@ import {
   deleteCustomGame,
   MAX_GAME_NAME,
   MAX_ITEMS,
+  MAX_PROLONGER,
   MAX_TEXT,
   removeItem,
   renameCustomGame,
@@ -272,6 +273,18 @@ function ItemForm({
             maxLength={MAX_TEXT}
             value={item.hint ?? ''}
             onChange={(e) => set({ hint: e.target.value })}
+          />
+        </label>
+      )}
+      {kind !== 'draw' && (
+        <label className="field-label">
+          Pour prolonger (facultatif)
+          <input
+            className="field"
+            maxLength={MAX_PROLONGER}
+            placeholder="Ex. : Cherchez quelque chose de rouge autour de vous"
+            value={item.prolonger ?? ''}
+            onChange={(e) => set({ prolonger: e.target.value })}
           />
         </label>
       )}

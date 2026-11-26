@@ -122,7 +122,13 @@ export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }
         onDrone={setDrone}
       />
       {choices && <ChoiceBoard options={choices} answer={song.id} />}
-      <ParentBlock hidden={song.title} hints={hints} openHints={1} onHint={setShown} />
+      <ParentBlock
+        hidden={song.title}
+        hints={hints}
+        openHints={1}
+        onHint={setShown}
+        prolonger={song.prolonger}
+      />
     </>
   );
 }

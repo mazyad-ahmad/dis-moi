@@ -24,7 +24,13 @@ it('exporte puis relit un jeu avec ses photos', async () => {
   const photo = new Blob([new Uint8Array([0, 1, 2, 250, 255])], { type: 'image/png' });
   const file = await gameToFile(
     game('image', [
-      { answer: 'La cuisine', image: photo, hint: 'On y mange', hints: ['Il y a un frigo'] },
+      {
+        answer: 'La cuisine',
+        image: photo,
+        hint: 'On y mange',
+        hints: ['Il y a un frigo'],
+        prolonger: 'Demande-lui ce qu’il aime manger',
+      },
       { answer: 'Pomme', text: '🍎' },
     ]),
   );
@@ -36,6 +42,7 @@ it('exporte puis relit un jeu avec ses photos', async () => {
     answer: 'La cuisine',
     hint: 'On y mange',
     hints: ['Il y a un frigo'],
+    prolonger: 'Demande-lui ce qu’il aime manger',
   });
   expect(copy.items[0].image!.type).toBe('image/png');
   expect([...new Uint8Array(await copy.items[0].image!.arrayBuffer())]).toEqual([

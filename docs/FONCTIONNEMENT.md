@@ -15,6 +15,13 @@
   sautés), généré pour toute carte. Dans « Quelle chanson ? », un indice fait aussi passer
   l'extrait au ralenti (mêmes notes, tempo × 0,7). Le bouton disparaît une fois la réponse vue.
   Pas de pénalité : **Trouvé** rapporte une étoile, quel que soit le nombre d'indices.
+- **Pour prolonger** (#124) : une phrase courte pour continuer la discussion une fois la réponse
+  trouvée (« Demande-lui où vit la vache », « Cherchez ensemble quelque chose de rouge dans la
+  pièce »). Elle apparaît dans « Pour le parent » **après la réponse** (avec « Voir la réponse »),
+  ou d'emblée quand la réponse est déjà à l'écran (lettres et chiffres, « Répondre en montrant »).
+  Rédigée pour toutes les cartes du catalogue, des chansons, des lettres et des chiffres (pas pour
+  les mots à dessiner, joués sans bloc parent) ; jamais une consigne risquée, et rien qui demande
+  de bouger dans les jeux joués en voiture (relu à la main).
 
 ## Déroulé d'une partie (proposition)
 
@@ -370,7 +377,8 @@ turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
 ### Créer mon propre jeu
 
 - Nom (30 caractères), type choisi à la création : **Son**, **Image**, **Mot à dessiner** ou **Question**.
-- Cartes (50 maximum) : réponse et indice facultatif, plus selon le type :
+- Cartes (50 maximum) : réponse, indice facultatif et phrase « Pour prolonger » facultative
+  (100 caractères, sauf mot à dessiner), plus selon le type :
   - Son : un **enregistrement** au micro (10 s maximum), que le parent fait écouter à chaque
     manche (« Écouter le son »), ou un bruit à imiter par le parent ;
   - Image : une **photo** de l'appareil (réduite à 1280 px) ou un texte à montrer ;

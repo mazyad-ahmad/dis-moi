@@ -15,6 +15,8 @@ export interface GlyphCard {
   glyph: string;
   /** Consigne lue par le parent. */
   hint: string;
+  /** Phrase pour prolonger la discussion (#124). */
+  prolonger?: string;
   /** Niveau par âge (#40). */
   level: Level;
 }
@@ -25,6 +27,7 @@ function glyphs(packId: string, set: GlyphSet): GlyphCard[] {
     set,
     glyph: item.answer,
     hint: item.hint!,
+    ...(item.prolonger && { prolonger: item.prolonger }),
     level: item.level,
   }));
 }
@@ -50,6 +53,7 @@ function fromLetters(set: 'lower' | 'cursive', intro: (glyph: string) => string)
       set,
       glyph,
       hint: `${intro(glyph)} ${c.hint}`,
+      ...(c.prolonger && { prolonger: c.prolonger }),
       level: harder(c.level),
     };
   });

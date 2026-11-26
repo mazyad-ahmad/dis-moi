@@ -10,6 +10,8 @@ export const MAX_ITEMS = 50;
 export const MAX_TEXT = 140;
 /** Indices écrits en plus de « hint » sur une carte (#34). */
 export const MAX_HINTS = 3;
+/** Phrase « pour prolonger » d'une carte (#124) : courte, lue par le parent après la réponse. */
+export const MAX_PROLONGER = 100;
 /** Préfixe des identifiants de route des jeux créés : #/jeu/perso-12. */
 export const CUSTOM_PREFIX = 'perso-';
 
@@ -37,6 +39,8 @@ export function cleanItem(kind: DeckKind, raw: DeckItem): DeckItem {
     .filter(Boolean)
     .slice(0, MAX_HINTS);
   if (hints.length && kind !== 'draw') item.hints = hints;
+  const prolonger = clean(raw.prolonger, MAX_PROLONGER);
+  if (prolonger && kind !== 'draw') item.prolonger = prolonger;
   if (raw.image && kind === 'image') item.image = raw.image;
   // Visuels intégrés (cartes du catalogue, packs partagés) : emoji ou couleur montrés en grand.
   const emoji = clean(raw.emoji, 16);

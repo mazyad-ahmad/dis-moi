@@ -186,6 +186,10 @@
 .parent-block__hints p {
   margin: 0;
 }
+.parent-block__prolonger {
+  margin: 0;
+  color: var(--ink);
+}
 
 /* ---------- En-têtes ---------- */
 .game-header {

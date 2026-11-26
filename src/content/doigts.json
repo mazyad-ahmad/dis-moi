@@ -2,20 +2,20 @@
   "format": "dis-moi/jeu",
   "version": 1,
   "id": "doigts",
-  "revision": 1,
+  "revision": 2,
   "kind": "glyph",
   "name": "Combien de doigts ?",
   "lang": "fr",
   "items": [
-    {"id": "1", "level": 1, "answer": "1", "hint": "Demande combien de doigts sont levés, puis de faire pareil"},
-    {"id": "2", "level": 1, "answer": "2", "hint": "Demande combien de doigts sont levés, puis de les montrer avec sa main"},
-    {"id": "3", "level": 1, "answer": "3", "hint": "Demande combien de doigts, sans les compter un par un"},
-    {"id": "4", "level": 2, "answer": "4", "hint": "Demande combien de doigts : il en manque un pour la main entière"},
-    {"id": "5", "level": 1, "answer": "5", "hint": "Demande combien de doigts : toute la main !"},
-    {"id": "6", "level": 2, "answer": "6", "hint": "Demande combien de doigts : une main entière et encore un"},
-    {"id": "7", "level": 2, "answer": "7", "hint": "Demande combien de doigts : cinq et encore deux"},
-    {"id": "8", "level": 3, "answer": "8", "hint": "Demande combien de doigts : cinq et encore trois"},
-    {"id": "9", "level": 3, "answer": "9", "hint": "Demande combien de doigts : il n’en manque qu’un pour faire dix"},
-    {"id": "10", "level": 2, "answer": "10", "hint": "Demande combien de doigts : les deux mains entières"}
+    {"id": "1", "level": 1, "answer": "1", "hint": "Demande combien de doigts sont levés, puis de faire pareil", "prolonger": "Demande-lui de toucher son nez avec un seul doigt."},
+    {"id": "2", "level": 1, "answer": "2", "hint": "Demande combien de doigts sont levés, puis de les montrer avec sa main", "prolonger": "Demande-lui de faire deux petits sauts sur place."},
+    {"id": "3", "level": 1, "answer": "3", "hint": "Demande combien de doigts, sans les compter un par un", "prolonger": "Demande-lui qui sont les trois petits cochons de l’histoire."},
+    {"id": "4", "level": 2, "answer": "4", "hint": "Demande combien de doigts : il en manque un pour la main entière", "prolonger": "Demande-lui de taper quatre fois dans les mains."},
+    {"id": "5", "level": 1, "answer": "5", "hint": "Demande combien de doigts : toute la main !", "prolonger": "Demande-lui de nommer ses cinq doigts : pouce, index…"},
+    {"id": "6", "level": 2, "answer": "6", "hint": "Demande combien de doigts : une main entière et encore un", "prolonger": "Demande-lui de montrer six avec ses doigts, sans regarder l’écran."},
+    {"id": "7", "level": 2, "answer": "7", "hint": "Demande combien de doigts : cinq et encore deux", "prolonger": "Demande-lui de montrer sept avec ses doigts, sans regarder l’écran."},
+    {"id": "8", "level": 3, "answer": "8", "hint": "Demande combien de doigts : cinq et encore trois", "prolonger": "Demande-lui de montrer huit avec ses doigts, sans regarder l’écran."},
+    {"id": "9", "level": 3, "answer": "9", "hint": "Demande combien de doigts : il n’en manque qu’un pour faire dix", "prolonger": "Demande-lui de montrer neuf avec ses doigts, sans regarder l’écran."},
+    {"id": "10", "level": 2, "answer": "10", "hint": "Demande combien de doigts : les deux mains entières", "prolonger": "Faites ensemble un double « tope là » avec les deux mains."}
   ]
 }

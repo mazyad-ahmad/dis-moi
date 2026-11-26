@@ -110,6 +110,21 @@ describe('un pack invalide nomme la carte fautive', () => {
       withItem(getPack('nombres'), 0, { answer: '1000' }),
       'carte 1 (« 1000 ») : un glyphe fait 1 à 3 caractères',
     ],
+    [
+      'phrase « prolonger » trop longue',
+      withItem(animals, 0, { prolonger: 'Demande-lui '.repeat(10).trim() }),
+      'carte 1 (« La vache ») : « prolonger » vide, trop long (100 max) ou mal espacé',
+    ],
+    [
+      'phrase « prolonger » vide',
+      withItem(animals, 1, { prolonger: '' }),
+      'carte 2 (« Le chat ») : « prolonger » vide',
+    ],
+    [
+      'phrase « prolonger » pour un mot à dessiner',
+      withItem(getPack('dessin'), 0, { prolonger: 'Demande-lui sa couleur.' }),
+      'carte 1 (« Un chat ») : « prolonger » n’est pas montré pour un mot à dessiner',
+    ],
     ['type inconnu', { ...animals, kind: 'video' }, 'type (« kind ») inconnu'],
     ['type de jeu inconnu', { ...animals, activities: ['nager'] }, '« activities »'],
     ['type de jeu en double', { ...animals, activities: ['parler', 'parler'] }, '« activities »'],

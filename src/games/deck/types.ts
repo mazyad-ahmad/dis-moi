@@ -38,6 +38,8 @@ export interface DeckItem {
   hint?: string;
   /** Indices suivants, donnés un à un si l'enfant sèche (#34). */
   hints?: string[];
+  /** Phrase pour prolonger la discussion après la réponse (#124), pour le parent. */
+  prolonger?: string;
   /** Visuels intégrés (catalogue) : emoji ou couleur montrés en grand. */
   emoji?: string;
   color?: string;

@@ -20,6 +20,7 @@ interface FileItem {
   text?: string;
   hint?: string;
   hints?: string[];
+  prolonger?: string;
   emoji?: string;
   color?: string;
   image?: string;
@@ -91,6 +92,7 @@ export async function encodeGame(game: SharedGame): Promise<GameFile> {
     if (it.text) item.text = it.text;
     if (it.hint) item.hint = it.hint;
     if (it.hints?.length) item.hints = it.hints;
+    if (it.prolonger) item.prolonger = it.prolonger;
     if (it.emoji) item.emoji = it.emoji;
     if (it.color) item.color = it.color;
     if (it.image) item.image = await blobToDataUrl(it.image);
@@ -161,6 +163,7 @@ export function decodeGame(data: unknown): SharedGame {
       text: optionalText(e.text),
       hint: optionalText(e.hint),
       hints: optionalTextList(e.hints),
+      prolonger: optionalText(e.prolonger),
       emoji: optionalText(e.emoji),
       color: optionalText(e.color),
       image: kind === 'image' ? dataUrlToBlob(e.image, 'image') : undefined,

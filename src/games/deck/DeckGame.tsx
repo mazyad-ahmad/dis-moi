@@ -139,7 +139,7 @@ export function DeckRound({
       {revealed && kind !== 'sound' && <AnswerPhoto item={item} />}
       {choices && <ChoiceBoard options={choices} answer={deckOption(item).key} />}
       {showMe ? (
-        <ParentBlock>
+        <ParentBlock prolonger={item.prolonger}>
           Demande à l’enfant de montrer : <strong>{item.answer}</strong>
         </ParentBlock>
       ) : (
@@ -149,6 +149,7 @@ export function DeckRound({
           hints={hintLadder(item)}
           openHints={writtenHints(item).length ? 1 : 0}
           onReveal={() => setRevealed(true)}
+          prolonger={item.prolonger}
         >
           {soundToImitate && (
             <>
