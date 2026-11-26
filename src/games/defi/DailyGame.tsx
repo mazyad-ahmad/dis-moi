@@ -25,6 +25,8 @@ import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureWay } from '../tresor/treasure';
 import { IntrusRound } from '../intrus/IntrusGame';
 import { INTRUS_ID } from '../intrus/intrus';
+import { triOf } from '../tri/tri';
+import { TriRound } from '../tri/TriRound';
 import { DisparuRound } from '../disparu/DisparuGame';
 import { DISPARU_ID } from '../disparu/disparu';
 import { CompteRound } from '../compte/CompteGame';
@@ -174,6 +176,8 @@ function DailyRound({ day }: { day: string }) {
           way={treasureWay('run', getSettings().gameMode)}
           seconds={0}
         />
+      ) : card.kind === 'question' && triOf(card.item) ? (
+        <TriRound item={card.item} />
       ) : source.game === INTRUS_ID && card.kind === 'image' ? (
         <IntrusRound item={card.item} />
       ) : source.game === DISPARU_ID && card.kind === 'image' ? (

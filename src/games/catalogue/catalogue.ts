@@ -37,6 +37,7 @@ export const CATALOGUE_PACKS = [
   'compte',
   'devine-tete',
   'syllabes',
+  'tri',
 ];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {

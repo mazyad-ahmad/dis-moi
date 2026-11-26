@@ -380,6 +380,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Compte avec moi**           | Des objets à compter, deux groupes à comparer, de petites additions et soustractions en images. Voir ci-dessous.                           |
 | **Devine-tête**               | Le téléphone sur le front, l'enfant ne voit pas le mot : les autres le miment ou le décrivent. Voir ci-dessous.                            |
 | **Tape les syllabes**         | Le parent dit un mot, l'enfant tape dans ses mains à chaque syllabe (« cho-co-lat » = 3). Voir ci-dessous.                                 |
+| **Où ça va ?**                | Un élément (emoji et mot) et deux ou trois familles : l'enfant dit où il va et pourquoi, le parent valide. Voir ci-dessous.                |
 
 ### Les émotions (#58)
 
@@ -604,6 +605,28 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   ni dans le Défi du jour, qui ne prévoient pas de passer le téléphone sur le front. Chacun son
   tour et en équipes comme les autres jeux (« À toi, Léa ! » : celle qui a le téléphone).
 
+### Où ça va ? (#130)
+
+- Jeu du catalogue, rangé dans « Parler » : la carte montre un élément en grand (emoji et mot)
+  et deux ou trois familles ; le parent lit la question (« La vache, ça vit à la ferme, dans la
+  forêt ou dans la mer ? »), l'enfant dit où il va **et pourquoi**, le parent valide avec
+  **Trouvé** / **Pas encore**.
+- 80 cartes (`src/content/catalogue-tri.json`) sur 6 thèmes : animaux (ferme, forêt, mer),
+  aliments (fruit, légume), vêtements (été, hiver), objets de la maison (cuisine, salle de
+  bain), chaud ou froid, transports (route, ciel, eau). Petits 37, Moyens 28, Grands 15.
+  Thèmes et familles dans `src/games/tri/tri.ts`.
+- Derrière « Voir la réponse » : la famille et une phrase d'explication. **Les cas discutables
+  ne sont pas tranchés** (le canard vit à la ferme et sur l'étang, la tomate est un fruit qu'on
+  cuisine comme un légume) : « Carte discutable : plusieurs réponses vont » est dit d'emblée au
+  parent, et la réponse donne chacune des familles (« les deux se disent »). Une autre bonne
+  raison de l'enfant compte aussi.
+- « Répondre en montrant » : les familles du thème deviennent les choix (toujours toutes,
+  deux ou trois, quel que soit l'âge) ; sur une carte discutable, chacune est acceptée. Sans
+  ce réglage, les familles restent montrées, sans rien à toucher.
+- Se joue à l'oral (la question nomme les familles) : au Coucher et en Voiture, où rien n'est
+  à toucher. Se joue aussi dans le Grand Jeu et le Défi du jour.
+- Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -815,7 +838,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
-   Compte avec moi, Devine-tête, Tape les syllabes)
+   Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

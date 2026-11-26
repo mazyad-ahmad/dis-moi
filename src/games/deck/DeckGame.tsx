@@ -29,6 +29,8 @@ import { canReveal } from '../reveal/reveal';
 import { RevealCard } from '../reveal/RevealCard';
 import { inCountOrder, SYLLABES_OPTIONS, syllabesOf, syllabesOption } from '../syllabes/syllabes';
 import { SyllabesCue } from '../syllabes/SyllabesCue';
+import { triOf } from '../tri/tri';
+import { TriRound } from '../tri/TriRound';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
 function RecordedSound({ audio }: { audio: Blob }) {
@@ -174,6 +176,8 @@ export function DeckRound({
   // Une ombre (#61) ne la donne pas : les choix, en couleur, s'ajoutent sous la silhouette.
   const showMe = !!choices && showsAnswer(kind) && !item.shadow;
   const [revealed, setRevealed] = useState(false);
+  // Où ça va ? (#130) : l'élément, ses familles et une réponse parfois discutable.
+  if (kind === 'question' && triOf(item)) return <TriRound item={item} />;
   return (
     <div className="deck-round round-in">
       {kind === 'sound' && <SoundCard item={item} />}

@@ -25,22 +25,31 @@ function Visual({ option }: { option: ChoiceOption }) {
 /**
  * Les choix en grand. Toucher la bonne réponse la met en valeur ; un autre choix ne fait
  * rien (ni son, ni message) : l'enfant peut réessayer. Le parent valide toujours la manche.
+ * Plusieurs bonnes réponses possibles (Où ça va ?, #130) : chacune est acceptée.
  */
-export function ChoiceBoard({ options, answer }: { options: ChoiceOption[]; answer: string }) {
-  const [found, setFound] = useState(false);
-  const right = options.find((o) => o.key === answer);
+export function ChoiceBoard({
+  options,
+  answer,
+}: {
+  options: ChoiceOption[];
+  answer: string | readonly string[];
+}) {
+  const [found, setFound] = useState<string>();
+  const good = (key: string) =>
+    typeof answer === 'string' ? key === answer : answer.includes(key);
+  const right = options.find((o) => o.key === found);
   return (
     <section className="choices round-in" aria-label="Choix de l’enfant">
       <div className={`choices__grid choices__grid--${options.length}`}>
         {options.map((o) => {
-          const shown = found && o.key === answer;
+          const shown = o.key === found;
           return (
             <button
               key={o.key}
               type="button"
               className={`choice${shown ? ' is-right' : ''}`}
               aria-label={o.label}
-              onClick={() => o.key === answer && setFound(true)}
+              onClick={() => good(o.key) && setFound(o.key)}
             >
               <span className="choice__visual" aria-hidden="true">
                 <Visual option={o} />
@@ -55,7 +64,7 @@ export function ChoiceBoard({ options, answer }: { options: ChoiceOption[]; answ
         })}
       </div>
       <p className="choices__status" role="status">
-        {found && right ? `Oui, c’est ça : ${right.label} !` : ''}
+        {right ? `Oui, c’est ça : ${right.label} !` : ''}
       </p>
     </section>
   );

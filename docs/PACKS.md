@@ -95,7 +95,9 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-intrus.json`       | L’intrus                   | `image`    |
 | `catalogue-disparu.json`      | Qu’est-ce qui a disparu ?  | `image`    |
 | `catalogue-compte.json`       | Compte avec moi            | `image`    |
+| `catalogue-devine-tete.json`  | Devine-tête                | `image`    |
 | `catalogue-syllabes.json`     | Tape les syllabes          | `question` |
+| `catalogue-tri.json`          | Où ça va ?                 | `question` |
 
 ## Cartes « Compte avec moi »
 
@@ -119,7 +121,15 @@ en plus, c'est la variante « Trouve un mot qui a 3 syllabes. » : le nombre est
 Un pack `story` (Histoire à inventer, #68) range des héros, des lieux et des objets : `answer` est le
 mot avec son article (« un dragon », « au zoo », « une clé »), `emoji` son image (obligatoire), et
 `tags` donne un seul rôle, `heros`, `lieu` ou `objet`. Règle dans `src/games/histoire/parts.ts`.
-| `catalogue-devine-tete.json` | Devine-tête | `image` |
+
+## Cartes « Où ça va ? »
+
+Les cartes de `catalogue-tri.json` (#130) sont des **éléments à ranger** : `answer` l'élément avec
+son article (« La vache »), `emoji` son image, `text` la phrase d'explication lue par le parent, et
+`tags` le thème (`tri-animaux`, `tri-aliments`, `tri-vetements`, `tri-objets`, `tri-temperature`,
+`tri-transports`) suivi de la ou des familles où il va (`["tri-animaux", "ferme"]`). Deux familles
+(`["tri-animaux", "ferme", "foret"]`) : la carte est discutable, le parent en est prévenu et chacune
+est acceptée. Thèmes, familles et question dans `src/games/tri/tri.ts`.
 
 ## Cartes « vrai ou faux »
 

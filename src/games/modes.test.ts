@@ -33,6 +33,7 @@ describe('façons de jouer', () => {
       'rime',
       'contraire',
       'syllabes',
+      'tri',
     ]);
     for (const g of ALL.filter((g) => suitsMode(g.needs, 'voiture')))
       expect(g.needs!.looks).toBe(false);
@@ -60,6 +61,7 @@ describe('façons de jouer', () => {
       'disparu',
       'compte',
       'syllabes',
+      'tri',
     ]);
   });
 
@@ -87,6 +89,7 @@ describe('façons de jouer', () => {
       'rime',
       'contraire',
       'syllabes',
+      'tri',
     ]);
   });
 
