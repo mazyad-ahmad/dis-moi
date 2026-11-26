@@ -209,6 +209,26 @@
 | **Quelle lettre, quel chiffre ?** | Lettres majuscules A-Z ou chiffres 0-9, tirés au hasard sans répétition dans la partie. Consigne parent associée à chaque glyphe. |
 | **Dessine ça**                    | Minuteur de **60 s** ; à zéro, le dessin reste visible et le parent valide. Pas de note du dessin : « C'est fini » = +1 étoile.   |
 
+### Outils de dessin (#51)
+
+- Sous le dessin, **une seule ligne de cinq boutons** de 48 px (tient sur un écran de 320 px) :
+  **Couleur**, **Épaisseur**, **Gomme**, **Annuler le dernier trait**, **Tout effacer**.
+- **Couleur** ouvre une palette de **8 couleurs** (noir, vert, bleu, or, rouge, rose, violet,
+  marron, qui suivent le thème jour / nuit) ; **Épaisseur** en ouvre trois (fin, moyen, épais ;
+  moyen par défaut). Elles s'ouvrent au-dessus de la ligne et se referment au choix, en touchant
+  le dessin ou avec Échap. Choisir une couleur quitte la gomme.
+- **Gomme** : le doigt efface, trois fois plus large que l'épaisseur choisie.
+- **Annuler** retire le dernier trait (un trait de gomme compris), autant de fois qu'on veut ;
+  grisé quand il n'y a plus rien, comme « Tout effacer ».
+- Le dessin est gardé comme une **liste de traits** (points, couleur, épaisseur, gomme) et
+  redessiné à partir d'elle (`src/games/dessin/strokes.ts`, fonctions pures) : après une
+  **rotation** ou un redimensionnement, il est retracé net à la nouvelle taille, en entier,
+  sans être déformé (réduit et centré si la zone rétrécit). Le tracé est **lissé** (courbes qui
+  passent par les milieux des points).
+- Les mêmes outils servent dans Dessine ça, les mots à dessiner créés, le Grand Jeu et le Défi
+  du jour. Temps écoulé : dessin et outils figés, le parent valide.
+- Le dessin n'est jamais enregistré : il disparaît au mot suivant.
+
 ### Contenu des chansons
 
 - Uniquement des **airs traditionnels ou du domaine public** : 43 airs (Frère Jacques, Une souris
@@ -438,7 +458,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    bloc parent avec titre caché + indice, bouton « Voir la réponse ».
 3. **Quelle lettre, quel chiffre ?** — bascule Lettres / Chiffres, glyphe en grand
    (« Montre l'écran à l'enfant »), consigne parent, boutons Passer / Trouvé.
-4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
+4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt et ses outils,
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire

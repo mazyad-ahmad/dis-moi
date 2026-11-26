@@ -11,7 +11,7 @@ Pas de compte, pas de publicité, pas de suivi : un moment de jeu partagé.
 | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | **Quelle chanson ?**              | Un extrait de 10 s est joué, l'enfant devine la chanson. Le parent voit la réponse et un indice.        |
 | **Quelle lettre, quel chiffre ?** | Une lettre ou un chiffre s'affiche en grand, le parent a une consigne associée.                         |
-| **Dessine ça**                    | Le parent lit un mot, l'enfant le dessine au doigt sur l'écran, avec un minuteur.                       |
+| **Dessine ça**                    | Le parent lit un mot, l'enfant le dessine au doigt (8 couleurs, gomme, annuler), avec un minuteur.      |
 | **Le Grand Jeu**                  | Chaque manche, un jeu différent de l'accueil, annoncé par un écran-éclair (« Maintenant : Mime ça ! »). |
 | **Ajouter un jeu**                | Catalogue de jeux supplémentaires (animaux, couleurs, mime, devinettes) ou création de son propre jeu.  |
 

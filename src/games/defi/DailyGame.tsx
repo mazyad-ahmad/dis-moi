@@ -4,7 +4,6 @@ import { answerSound, playSound, soundLength } from '../../audio/sounds';
 import { AnswerBar } from '../../components/AnswerBar';
 import { Confetti } from '../../components/Confetti';
 import { GameHeader } from '../../components/GameHeader';
-import { IconTrash } from '../../components/icons';
 import { Mascot } from '../../components/Mascot';
 import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
@@ -15,7 +14,7 @@ import { praise } from '../../voice/praise';
 import { NotFound } from '../../screens/Placeholder';
 import { SongRound } from '../chanson/SongGame';
 import { ImageCard, QuestionCard, SoundCard } from '../deck/DeckGame';
-import { DrawingCanvas, type DrawingCanvasHandle } from '../dessin/DrawingCanvas';
+import { DrawingPad } from '../dessin/DrawingPad';
 import { hintLadder, writtenHints } from '../hints';
 import {
   DAILY_ID,
@@ -29,7 +28,6 @@ import {
 
 /** Mot à dessiner : sans minuteur, l'enfant prend son temps. */
 function DrawCard({ word }: { word: string }) {
-  const canvas = useRef<DrawingCanvasHandle>(null);
   return (
     <>
       <section className="word-card" aria-label="Mot à dessiner">
@@ -39,21 +37,7 @@ function DrawCard({ word }: { word: string }) {
           <ReadAloud text={word} />
         </div>
       </section>
-      <div className="drawing-area">
-        <DrawingCanvas ref={canvas} color="var(--ink)" />
-        <span className="drawing-area__hint muted">L'enfant dessine avec le doigt</span>
-      </div>
-      <div className="pen-bar">
-        <span />
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label="Tout effacer"
-          onClick={() => canvas.current?.clear()}
-        >
-          <IconTrash size={20} />
-        </button>
-      </div>
+      <DrawingPad hint="L'enfant dessine avec le doigt" />
     </>
   );
 }

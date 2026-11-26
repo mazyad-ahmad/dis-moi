@@ -5,7 +5,7 @@ import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { ReadAloud } from '../../components/ReadAloud';
-import { IconRefresh, IconTimer, IconTrash } from '../../components/icons';
+import { IconRefresh, IconTimer } from '../../components/icons';
 import { vibrate } from '../../pwa/haptics';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
@@ -15,17 +15,10 @@ import { modeDrawSeconds } from '../modes';
 import { nextForLevel } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { useTurns } from '../useTurns';
-import { DrawingCanvas, type DrawingCanvasHandle } from './DrawingCanvas';
+import { type DrawingCanvasHandle } from './DrawingCanvas';
+import { DrawingPad } from './DrawingPad';
 import { useCountdown } from './useCountdown';
 import { DRAW_LEVELS, DRAW_WORDS } from './words';
-
-const PENS = [
-  { label: 'Noir', color: 'var(--ink)' },
-  { label: 'Vert', color: 'var(--forest)' },
-  { label: 'Bleu', color: 'var(--river)' },
-  { label: 'Or', color: 'var(--sun)' },
-  { label: 'Rouge', color: 'var(--ember)' },
-];
 
 interface DrawingProps {
   gameId?: string;
@@ -139,7 +132,6 @@ interface BoardProps {
  * Partagée par « Dessine ça », les mots à dessiner créés et le Grand Jeu (#41).
  */
 export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnswer }: BoardProps) {
-  const [pen, setPen] = useState(PENS[0].color);
   const canvas = useRef<DrawingCanvasHandle>(null);
   const timed = seconds > 0;
   const left = useCountdown(Math.max(0, seconds), turn);
@@ -199,37 +191,13 @@ export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnsw
         )}
       </section>
 
-      <div className="drawing-area">
-        <DrawingCanvas ref={canvas} color={pen} disabled={timeUp} />
-        <span className="drawing-area__hint muted" aria-live="polite">
-          {timeUp ? 'Temps écoulé ! Le parent valide le dessin.' : "L'enfant dessine avec le doigt"}
-        </span>
-      </div>
-
-      <div className="pen-bar">
-        <div className="pen-bar__colors" role="radiogroup" aria-label="Couleurs">
-          {PENS.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              role="radio"
-              aria-checked={pen === p.color}
-              aria-label={p.label}
-              className="pen"
-              style={{ background: p.color }}
-              onClick={() => setPen(p.color)}
-            />
-          ))}
-        </div>
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label="Tout effacer"
-          onClick={() => canvas.current?.clear()}
-        >
-          <IconTrash size={20} />
-        </button>
-      </div>
+      <DrawingPad
+        ref={canvas}
+        disabled={timeUp}
+        hint={
+          timeUp ? 'Temps écoulé ! Le parent valide le dessin.' : "L'enfant dessine avec le doigt"
+        }
+      />
 
       <AnswerBar onSkip={() => next(false)} onFound={() => next(true)} foundLabel="C'est fini" />
     </main>

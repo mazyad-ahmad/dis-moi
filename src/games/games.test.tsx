@@ -116,8 +116,9 @@ describe('Dessine ça', () => {
     expect(screen.getByRole('timer')).toHaveTextContent('1:00'); // minuteur relancé
     expect(screen.getByText('Manche 1 sur 10')).toBeInTheDocument();
 
+    await user.click(screen.getByRole('button', { name: 'Couleur : Noir' }));
     await user.click(screen.getByRole('radio', { name: 'Bleu' }));
-    expect(screen.getByRole('radio', { name: 'Bleu' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('button', { name: 'Couleur : Bleu' })).toBeInTheDocument();
 
     act(() => void vi.advanceTimersByTime(61_000));
     expect(screen.getByRole('timer')).toHaveAccessibleName('Temps écoulé');

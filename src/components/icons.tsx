@@ -92,6 +92,17 @@ export const IconRefresh = (p: P) => (
     <path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5" />
   </svg>
 );
+export const IconUndo = (p: P) => (
+  <svg {...base(p, 2)}>
+    <path d="M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+  </svg>
+);
+export const IconEraser = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M14.5 4.5l5 5L11 18H6.5l-3-3a1.4 1.4 0 0 1 0-2z" />
+    <path d="M9 10l5 5M11 20h9" />
+  </svg>
+);
 export const IconPlay = ({ size = 24, ...rest }: P) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden {...rest}>
     <path d="M8 5v14l11-7z" />

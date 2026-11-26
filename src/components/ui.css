@@ -709,19 +709,77 @@
   font-size: 13px;
   pointer-events: none;
 }
+/* Outils de dessin (#51) : une seule ligne de boutons de 48 px, même sur un écran de 320 px
+   (5 × 48 px + 4 × 8 px = 272 px, la largeur utile). Couleurs et épaisseurs s'ouvrent
+   au-dessus de la ligne, sur le dessin. */
+:root {
+  --pen-rose: #a8386c;
+  --pen-violet: #6a4ca6;
+  --pen-brown: #7a5233;
+}
+:root[data-theme='night'] {
+  --pen-rose: #f0a3c6;
+  --pen-violet: #bba6ee;
+  --pen-brown: #d6a77a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --pen-rose: #f0a3c6;
+    --pen-violet: #bba6ee;
+    --pen-brown: #d6a77a;
+  }
+}
 .pen-bar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
-.pen-bar__colors {
+.pen-tool {
+  width: var(--tap);
+  height: var(--tap);
+}
+.pen-tool:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pen-tool[aria-pressed='true'],
+.pen-tool[aria-checked='true'] {
+  background: var(--sky);
+  border-color: var(--river);
+  box-shadow: 0 0 0 2px var(--river);
+}
+.pen-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--hairline);
+}
+.pen-dot {
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+.pen-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 2;
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  padding: 8px;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+.pen-panel--colors {
+  display: grid;
+  grid-template-columns: repeat(4, var(--tap));
 }
 .pen {
-  width: 44px;
-  height: 44px;
+  width: var(--tap);
+  height: var(--tap);
   border-radius: var(--radius-full);
   border: 3px solid transparent;
   outline-offset: 0;
