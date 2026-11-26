@@ -1,4 +1,4 @@
-import { getPack, MELODY_THEMES } from '../content/packs';
+import { DRAW_THEMES, getPack, MELODY_THEMES } from '../content/packs';
 import { extractLength, noteFreq, parseMelody, schedule } from './chanson/melody';
 import { EXTRACT_SECONDS, SONGS } from './chanson/songs';
 import { DRAW_WORDS } from './dessin/words';
@@ -62,6 +62,35 @@ describe('banques de questions', () => {
     expect(DRAW_WORDS.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS * 3);
     expect(SONGS.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);
     expect(new Set(SONGS.map((s) => s.id)).size).toBe(SONGS.length);
+  });
+  it('a 150 mots à dessiner, chacun avec un thème et un niveau (#54)', () => {
+    const items = getPack('dessin').items;
+    expect(items).toHaveLength(150);
+    const key = (answer: string) => answer.toLowerCase().replace(/^(un|une|le|la|les) /, '');
+    expect(new Set(items.map((i) => key(i.answer))).size).toBe(items.length);
+    for (const item of items)
+      expect(
+        item.tags?.filter((t) => (DRAW_THEMES as readonly string[]).includes(t)),
+        item.answer,
+      ).toHaveLength(1);
+    for (const theme of DRAW_THEMES)
+      expect(items.filter((i) => i.tags?.includes(theme)).length).toBeGreaterThanOrEqual(15);
+    // Une partie entière à chaque niveau.
+    for (const level of [1, 2, 3])
+      expect(items.filter((i) => i.level === level).length).toBeGreaterThanOrEqual(
+        DEFAULT_ROUNDS * 3,
+      );
+  });
+  it('les Petits dessinent des formes simples, les scènes sont pour les Grands (#54)', () => {
+    const items = getPack('dessin').items;
+    const scene = / (qui|avec|sur|dans|plein|sous) /;
+    for (const item of items.filter((i) => i.level === 1)) {
+      expect(item.answer, item.answer).not.toMatch(scene);
+      expect(item.answer.split(' ').length, item.answer).toBeLessThanOrEqual(4);
+    }
+    const scenes = items.filter((i) => scene.test(i.answer));
+    expect(scenes.length).toBeGreaterThanOrEqual(10);
+    for (const item of scenes) expect(item.level, item.answer).toBe(3);
   });
 });
 

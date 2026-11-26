@@ -59,6 +59,16 @@ describe('un pack invalide nomme la carte fautive', () => {
       'carte 1 (« Frère Jacques ») : thème (« tags ») : un seul parmi comptine, noel, classique',
     ],
     [
+      'thème d’un mot à dessiner manquant',
+      withItem(getPack('dessin'), 0, { tags: undefined }),
+      'carte 1 (« Un ver de terre ») : thème (« tags ») : un seul parmi animaux, maison, nature',
+    ],
+    [
+      'deux thèmes pour un mot à dessiner',
+      withItem(getPack('dessin'), 0, { tags: ['animaux', 'nature'] }),
+      'carte 1 (« Un ver de terre ») : thème (« tags ») : un seul parmi',
+    ],
+    [
       'source hors d’un pack d’airs',
       withItem(animals, 0, { source: 'Traditionnel' }),
       'carte 1 (« La vache ») : « melody », « bpm » et « source »',

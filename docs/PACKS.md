@@ -62,7 +62,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `sound`           | facultatif (`sound` seulement) : vrai son, fichier WAV de `src/content/media/` (`"vache.wav"`)                        |
 | `photo`           | facultatif (jeux à cartes) : photo montrée après la réponse, `.webp` ou `.jpg` de `src/content/media/`                |
 | `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                                 |
-| `tags`            | facultatif : thèmes, en minuscules (`["ferme"]`) ; pour `melody`, obligatoire : `comptine`, `noel` ou `classique`     |
+| `tags`            | thèmes en minuscules (`["ferme"]`) ; obligatoire : un thème de `MELODY_THEMES` (`melody`), de `DRAW_THEMES` (`draw`)  |
 | `lang`            | facultatif : langue de la carte si elle diffère du pack                                                               |
 
 Sons et photos (#118) : fichiers libres (CC0 ou domaine public de préférence), légers (son WAV mono

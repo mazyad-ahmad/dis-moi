@@ -249,6 +249,15 @@
   du jour. Temps écoulé : dessin et outils figés, le parent valide.
 - Le dessin n'est jamais enregistré : il disparaît au mot suivant.
 
+### Contenu de Dessine ça (#54)
+
+- **150 mots** dans le pack `src/content/dessin.json`, écrits pour l'appli, 25 par **thème** :
+  animaux, maison, nature, nourriture, véhicules, imaginaire.
+- Chaque mot a un **niveau** : formes simples pour les Petits (un ballon, une pomme, un fantôme),
+  objets à plusieurs parties pour les Moyens (une voiture, une pieuvre), animaux plus difficiles
+  et **scènes** pour les Grands (« Un chat qui dort », « Un bateau sur les vagues »).
+- Les tests refusent un mot sans thème, un doublon et une scène hors du niveau Grands.
+
 ### Contenu des chansons
 
 - Uniquement des **airs traditionnels ou du domaine public** : 43 airs (Frère Jacques, Une souris

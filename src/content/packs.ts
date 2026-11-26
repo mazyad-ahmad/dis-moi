@@ -99,6 +99,20 @@ const ITEM_FIELDS = new Set([
 /** Thèmes des airs (#45) : chaque air en a un, dans « tags ». */
 export const MELODY_THEMES = ['comptine', 'noel', 'classique'] as const;
 
+/** Thèmes des mots à dessiner (#54) : chaque mot en a un, dans « tags ». */
+export const DRAW_THEMES = [
+  'animaux',
+  'maison',
+  'nature',
+  'nourriture',
+  'vehicules',
+  'imaginaire',
+] as const;
+
+/** Un seul thème de la liste dans « tags » (les autres mots sont libres). */
+const oneTheme = (tags: unknown, themes: readonly string[]) =>
+  Array.isArray(tags) && tags.filter((t) => themes.includes(t as string)).length === 1;
+
 /**
  * Sons et photos des jeux intégrés (#118), embarqués au build et mis en cache par le service
  * worker : nom de fichier → adresse. Source et licence de chacun : `media/credits.json`.
@@ -130,7 +144,9 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
         ? undefined
         : 'rien à montrer (« emoji », « color » ou « text »)';
     case 'draw':
-      return undefined;
+      return oneTheme(item.tags, DRAW_THEMES)
+        ? undefined
+        : `thème (« tags ») : un seul parmi ${DRAW_THEMES.join(', ')}`;
     case 'glyph':
       // Une lettre, un chiffre ou un nombre jusqu'à 100 (#48).
       if (typeof item.answer !== 'string' || [...item.answer].length > 3)
@@ -143,10 +159,7 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
       if (typeof item.melody !== 'string') return 'air (« melody ») manquant';
       if (!isText(item.source))
         return 'source (« source ») manquante : auteur ou origine, et statut de domaine public';
-      if (
-        !Array.isArray(item.tags) ||
-        item.tags.filter((t) => (MELODY_THEMES as readonly unknown[]).includes(t)).length !== 1
-      )
+      if (!oneTheme(item.tags, MELODY_THEMES))
         return `thème (« tags ») : un seul parmi ${MELODY_THEMES.join(', ')}`;
       try {
         parseMelody(item.melody);
