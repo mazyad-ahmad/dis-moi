@@ -36,7 +36,7 @@ export function GrandSection() {
                   type="button"
                   className={`pill${on ? ' pill--on' : ''}`}
                   aria-pressed={on}
-                  aria-label={`${g.name} dans ${GRAND_NAME}`}
+                  aria-label={`${on ? 'Inclus' : 'Inclure'} : ${g.name} dans ${GRAND_NAME}`}
                   disabled={on && kept <= MIN_GRAND_GAMES}
                   onClick={() => void toggleGrandGame(g.id)}
                 >

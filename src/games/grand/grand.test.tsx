@@ -96,7 +96,9 @@ describe('manches de dessin', () => {
 it('l’espace Parent mémorise les jeux inclus, deux au moins', async () => {
   const user = userEvent.setup();
   open('/parent');
-  const song = await screen.findByRole('button', { name: 'Quelle chanson ? dans Le Grand Jeu' });
+  const song = await screen.findByRole('button', {
+    name: 'Inclus : Quelle chanson ? dans Le Grand Jeu',
+  });
   expect(song).toHaveAttribute('aria-pressed', 'true');
   await user.click(song);
   expect(song).toHaveAttribute('aria-pressed', 'false');
@@ -104,9 +106,13 @@ it('l’espace Parent mémorise les jeux inclus, deux au moins', async () => {
     expect(await db.settings.get('grandExcluded')).toMatchObject({ value: ['chanson'] }),
   );
   // Plus que deux jeux : on ne peut plus en retirer.
-  expect(screen.getByRole('button', { name: 'Dessine ça dans Le Grand Jeu' })).toBeDisabled();
+  expect(
+    screen.getByRole('button', { name: 'Inclus : Dessine ça dans Le Grand Jeu' }),
+  ).toBeDisabled();
   await user.click(song);
-  expect(screen.getByRole('button', { name: 'Dessine ça dans Le Grand Jeu' })).toBeEnabled();
+  expect(
+    screen.getByRole('button', { name: 'Inclus : Dessine ça dans Le Grand Jeu' }),
+  ).toBeEnabled();
 });
 
 it('reprend la partie après un rafraîchissement : même manche, même jeu', async () => {
