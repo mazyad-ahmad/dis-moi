@@ -111,7 +111,7 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
     (saved) => (resolvePlan(saved, games) ? (saved as PlannedRound[]) : undefined),
   );
   const [planned] = useState(() => resolvePlan(plan, games)!);
-  const { round, rounds, stars, finished, answer } = useRounds(
+  const { round, rounds, stars, finished, answer, team, teams } = useRounds(
     GRAND_ID,
     planned.length,
     turns?.order,
@@ -124,7 +124,8 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   const [announced, setAnnounced] = useState(0);
   const go = useCallback(() => setAnnounced(round), [round]);
 
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
   const current = planned[round - 1];
   const { game, card } = current;
@@ -135,6 +136,7 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
     category: GRAND_NAME,
     title: titleOf(current),
     player: turns?.playerAt(round),
+    team,
   };
 
   if (announced < round) return <Flash key={round} heading={heading} game={game} onGo={go} />;

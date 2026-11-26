@@ -155,9 +155,14 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         : drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel),
     cardKey,
   );
-  const { round, rounds, stars, finished, answer } = useRounds(deck.id, items.length, turns?.order);
+  const { round, rounds, stars, finished, answer, team, teams } = useRounds(
+    deck.id,
+    items.length,
+    turns?.order,
+  );
 
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
   const item = items[round - 1];
   return (
@@ -169,6 +174,7 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         category={deck.category}
         title={deck.name}
         player={turns?.playerAt(round)}
+        team={team}
       />
       {/* key : nouvelle manche = carte et réponse remises à zéro. */}
       <TurnPlayer.Provider value={turns?.playerAt(round)}>

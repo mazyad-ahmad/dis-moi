@@ -35,6 +35,21 @@ async function fillPhone() {
   // Chacun son tour (#38) : qui a joué chaque manche.
   await updateRecord(r, { played: 5, stars: 4, turns: [sami, lea, sami, lea, sami] });
   await startRecord({ gameId: 'chanson', rounds: 3, played: 1, stars: 0, mode: 'express' });
+  // En équipes (#44) : étoiles par équipe dans la partie ; les équipes elles-mêmes restent locales.
+  await startRecord({
+    gameId: 'dessin',
+    rounds: 2,
+    played: 2,
+    stars: 1,
+    teams: [
+      { name: 'Les Renards', color: 'dawn', stars: 1, children: 2 },
+      { name: 'Les Dauphins', color: 'sky', stars: 0, children: 1 },
+    ],
+  });
+  await setSetting('teams', [
+    { name: 'Les Renards', color: 'dawn', members: [{ name: 'Invité' }] },
+    { name: 'Les Dauphins', color: 'sky', members: [{ name: 'Léa', playerId: lea }] },
+  ]);
   await setSetting('theme', 'night');
   await setSetting('rounds', 15);
   await setSetting('catalogue', ['devinette']);
@@ -74,6 +89,12 @@ describe('Sauvegarde complète', () => {
     expect(after.players).toEqual(before.players);
     expect(after.games).toEqual(before.games);
     expect(after.games).toContainEqual(expect.objectContaining({ mode: 'express' }));
+    expect(after.games).toContainEqual(
+      expect.objectContaining({ teams: expect.arrayContaining([expect.anything()]) }),
+    );
+    // Les prénoms des invités ne quittent pas le téléphone.
+    expect(text).not.toContain('Invité');
+    expect(getSettings().teams).toBeNull();
     expect(after.customGames).toEqual(before.customGames);
     expect(getSettings()).toMatchObject({
       theme: 'night',
@@ -185,7 +206,7 @@ describe('Sauvegarde complète', () => {
       expect(players.map((p) => p.name)).toEqual(['LÉA', 'Sami']);
       const sami = players[1].id;
       const games = await db.games.toArray();
-      expect(games).toHaveLength(2);
+      expect(games).toHaveLength(3);
       expect(games[0].playerIds).toEqual([lea, sami]);
       expect((await db.customGames.toArray()).map((g) => g.name)).toEqual([
         'Devinettes de Léa',

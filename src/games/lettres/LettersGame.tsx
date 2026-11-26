@@ -103,10 +103,15 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
     digits: useSavedDraw(GAME, 'digits', DIGITS, () => byLevel(DIGITS, turns, setting), glyphOf),
   };
   const [{ mode, pos }, setPlace] = useSaved<Place>(GAME, 'place', () => START, restorePlace);
-  const { round, rounds, stars, finished, answer } = useRounds(GAME, undefined, turns?.order);
+  const { round, rounds, stars, finished, answer, team, teams } = useRounds(
+    GAME,
+    undefined,
+    turns?.order,
+  );
   const setMode = (m: Mode) => setPlace({ mode: m, pos });
 
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
   const deck = decks[mode];
   // Chacun son tour : la carte de la manche, au niveau de l'enfant, quel que soit le paquet.
@@ -125,6 +130,7 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
         category="Lettres et chiffres"
         title={mode === 'letters' ? 'Quelle lettre ?' : 'Quel chiffre ?'}
         player={turns?.playerAt(round)}
+        team={team}
       />
 
       <div className="segmented segmented--2" role="radiogroup" aria-label="Type d'image">

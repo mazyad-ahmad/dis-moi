@@ -171,7 +171,34 @@
   (`turns` de la partie, sur l'appareil). Aucun score par enfant, aucun classement nulle part.
 - Avec un seul joueur actif (ou aucun), « Chacun son tour » se joue comme en équipe.
 - La rotation est une fonction pure (`src/games/turns.ts` : `startOrder`, `turnAt`, `rotation`),
-  réutilisable pour des équipes.
+  réutilisée pour les équipes.
+
+## Jouer en équipes (#44)
+
+- Pour un anniversaire ou une réunion de cousins : lien **Jouer en équipes** sur l'accueil
+  (écran `#/equipes`, derrière le verrou parent s'il est activé).
+- **2 ou 3 équipes**, chacune avec un nom (proposés : Les Renards, Les Grenouilles, Les Dauphins ;
+  20 caractères) et une couleur parmi les 6 des avatars, différente pour chaque équipe.
+- Les joueurs du jour sont placés d'office ; les autres enfants de la famille s'ajoutent d'un
+  appui, et les **invités** par leur prénom seul : ils ne sont **pas** ajoutés aux joueurs de la
+  famille. **12 enfants** au plus, toutes équipes confondues. Un nouvel enfant rejoint l'équipe la
+  moins nombreuse ; toucher un prénom le fait passer dans l'équipe suivante, la croix le retire.
+  Changer le nombre d'équipes ou « Mélanger les équipes » répartit tout le monde au hasard, à un
+  près. « C'est parti ! » demande au moins un enfant par équipe.
+- Les équipes (invités compris) restent sur le téléphone, d'une partie à l'autre, jusqu'à
+  **Arrêter** (accueil ou écran des équipes). Elles ne vont pas dans la sauvegarde.
+- En partie, les équipes jouent **à tour de rôle** (même rotation que « Chacun son tour », ordre
+  tiré au sort au lancement, qui remplace le tour par tour individuel) : en haut de la manche,
+  « À vous, Les Renards ! » sur la couleur de l'équipe, avec ses étoiles. Le compteur en haut
+  reste le **total commun**. Tous les jeux à manches, Grand Jeu compris (pas le défi du jour).
+  Les cartes suivent le niveau de la partie.
+- Fin de partie : le total commun en grand (« 7 étoiles gagnées ensemble ! »), puis « Bravo à
+  toutes les équipes ! » : chaque équipe fêtée, dans l'ordre de l'écran des équipes (jamais par
+  score), avec ses étoiles si elle en a. Ni gagnant ni perdant.
+- La partie enregistrée garde le **total commun** (il rejoint les étoiles de la famille), les
+  enfants de la famille présents (pas les invités) et, pour chaque équipe, son nom, sa couleur,
+  ses étoiles et son nombre d'enfants (`teams` de la partie). L'historique note « En équipes :
+  Les Renards, Les Dauphins ». Module `src/games/teams.ts` (fonctions pures).
 
 ## Jeux
 

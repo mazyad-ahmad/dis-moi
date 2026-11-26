@@ -95,6 +95,8 @@ export function Stars() {
                     <span className="muted">
                       {dayLabel(r.startedAt)}
                       {who.length > 0 && ` · ${who.map((p) => p.name).join(', ')}`}
+                      {r.teams?.length &&
+                        ` · En équipes : ${r.teams.map((t) => t.name).join(', ')}`}
                       {r.mode && r.mode !== 'normal' && ` · ${modeInfo(r.mode).name}`}
                       {r.played < r.rounds && ` · ${r.played} manches sur ${r.rounds}`}
                     </span>

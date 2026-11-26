@@ -7,7 +7,9 @@ import { vibrate } from '../pwa/haptics';
 import { useWakeLock } from '../pwa/useWakeLock';
 import { cancelPraise, praise } from '../voice/praise';
 import { gentleEnd, modeRounds } from './modes';
-import { rotation } from './turns';
+import { allMembers, teamScores, type TeamScore } from './teams';
+import { rotation, turnAt } from './turns';
+import { useTeamTurns } from './useTeams';
 import { clearSaved, readSaved, useClearSavedOnLeave, useSaved, writeSaved } from './session';
 
 /** Nombre de manches par défaut (docs/FONCTIONNEMENT.md), réglable dans l'espace Parent. */
@@ -26,17 +28,29 @@ export interface Rounds {
   finished: boolean;
   /** Trouvé (+1 étoile) ou Passer / Pas encore (0). */
   answer: (found: boolean) => void;
+  /** En équipes (#44) : l'équipe de la manche en cours, avec ses étoiles. */
+  team?: TeamScore;
+  /** En équipes : les étoiles de chaque équipe, dans l'ordre de l'écran des équipes. */
+  teams?: TeamScore[];
 }
 
 interface Progress {
   played: number;
   stars: number;
+  /** En équipes (#44) : manche trouvée ou non, pour les étoiles de chaque équipe. */
+  found?: boolean[];
 }
 
 function restoreProgress(saved: unknown): Progress | undefined {
   const p = saved as Partial<Progress> | null;
   const ok = (n: unknown): n is number => Number.isInteger(n) && (n as number) >= 0;
-  return p && ok(p.played) && ok(p.stars) && p.stars <= p.played
+  if (!p || !ok(p.played) || !ok(p.stars) || p.stars > p.played) return undefined;
+  if (p.found === undefined) return { ...p } as Progress;
+  const found = p.found;
+  return Array.isArray(found) &&
+    found.length === p.played &&
+    found.every((f) => typeof f === 'boolean') &&
+    found.filter(Boolean).length === p.stars
     ? ({ ...p } as Progress)
     : undefined;
 }
@@ -56,6 +70,8 @@ export function useRounds(
 ): Rounds {
   const setting = useRoundSetting();
   const rounds = wanted ?? setting;
+  // En équipes (#44) : les équipes jouent à tour de rôle, ordre tiré au sort au lancement.
+  const party = useTeamTurns(gameId);
   // Façon de jouer (#42), figée au lancement et notée avec la partie.
   const [mode] = useState(() => getSettings().gameMode);
   // Fin de séance (#120) : une partie neuve compte ; une partie reprise, déjà comptée.
@@ -65,10 +81,14 @@ export function useRounds(
   const [progress, setProgress] = useSaved<Progress>(
     gameId,
     'progress',
-    () => ({ played: 0, stars: 0 }),
-    restoreProgress,
+    () => (party ? { played: 0, stars: 0, found: [] } : { played: 0, stars: 0 }),
+    (saved) => {
+      const p = restoreProgress(saved);
+      return p && !!party === !!p.found ? p : undefined;
+    },
   );
-  const { played, stars } = progress;
+  const { played, stars, found: foundRounds } = progress;
+  const scores = party && teamScores(party.teams, party.order, foundRounds ?? []);
   // Partie reprise après un rafraîchissement : on continue son enregistrement.
   const [resumed] = useState(() => {
     const id = readSaved(gameId, 'record');
@@ -96,10 +116,14 @@ export function useRounds(
     (found: boolean) => {
       if (played >= rounds) return;
       const progressed = { played: played + 1, stars: stars + (found ? 1 : 0) };
-      setProgress(progressed);
-      const data = order?.length
-        ? { ...progressed, turns: rotation(order, progressed.played) }
-        : progressed;
+      const foundNow = party ? [...(foundRounds ?? []), found] : undefined;
+      setProgress(foundNow ? { ...progressed, found: foundNow } : progressed);
+      const data = {
+        ...progressed,
+        ...(order?.length && { turns: rotation(order, progressed.played) }),
+        // Étoiles par équipe ; le total commun (`stars`) rejoint celles de la famille.
+        ...(party && foundNow && { teams: teamScores(party.teams, party.order, foundNow) }),
+      };
       const total = others.current === null ? null : others.current + data.stars;
       const finished = data.played >= rounds;
       const sound = answerSound(found, finished, total, REWARDS);
@@ -120,11 +144,15 @@ export function useRounds(
         if (found) vibrate('found');
       }
       if (!record.current) {
-        record.current = startRecord({ gameId, rounds, mode, ...data });
+        // En équipes, seuls les enfants de la famille sont notés : les invités ne sont pas gardés.
+        const family = party
+          ? allMembers(party.teams).flatMap((m) => (m.playerId === undefined ? [] : [m.playerId]))
+          : undefined;
+        record.current = startRecord({ gameId, rounds, mode, ...data }, family);
         void record.current.then((id) => writeSaved(gameId, 'record', id, true));
       } else void record.current.then((id) => updateRecord(id, data));
     },
-    [gameId, mode, order, played, rounds, setProgress, stars],
+    [gameId, mode, order, party, foundRounds, played, rounds, setProgress, stars],
   );
 
   // Quitter ou rejouer la partie coupe la félicitation en cours.
@@ -139,5 +167,10 @@ export function useRounds(
     stars,
     finished: played >= rounds,
     answer,
+    ...(party &&
+      scores && {
+        team: scores[turnAt(party.order, Math.min(played + 1, rounds))],
+        teams: scores,
+      }),
   };
 }

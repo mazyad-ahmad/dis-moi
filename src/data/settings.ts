@@ -1,6 +1,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import type { Level } from '../games/levels';
 import { DEFAULT_MODE, forcesNight, forcesSoftVolume, type GameMode } from '../games/modes';
+import type { Team } from '../games/teams';
 import type { TurnMode } from '../games/turns';
 import type { SpeechSpeed } from '../voice/speech';
 import { db, type Theme } from './db';
@@ -43,6 +44,11 @@ export interface Settings {
   showChoices: boolean;
   /** En équipe (par défaut) ou chacun son tour (#38), choisi sur l'accueil. */
   turnMode: TurnMode;
+  /**
+   * Jouer en équipes (#44) : les équipes de la fête, invités compris ; `null` : pas d'équipes.
+   * Gardé sur le téléphone, hors sauvegarde (les prénoms des invités ne sont pas exportés).
+   */
+  teams: Team[] | null;
 }
 
 export type Volume = 'soft' | 'normal';
@@ -71,6 +77,7 @@ export const DEFAULT_SETTINGS: Settings = {
   gameMode: DEFAULT_MODE,
   showChoices: false,
   turnMode: 'team',
+  teams: null,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

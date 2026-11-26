@@ -101,13 +101,14 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
         : drawForLevel(SONGS, wanted, getSettings().gameLevel, (s) => s.level),
     (s) => s.id,
   );
-  const { round, rounds, stars, finished, answer } = useRounds(
+  const { round, rounds, stars, finished, answer, team, teams } = useRounds(
     'chanson',
     songs.length,
     turns?.order,
   );
 
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
   const song = songs[round - 1];
   return (
@@ -119,6 +120,7 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
         category="Musique"
         title="Quelle chanson ?"
         player={turns?.playerAt(round)}
+        team={team}
       />
       {/* key : nouvelle manche = lecteur, indices et réponse remis à zéro. */}
       <TurnPlayer.Provider value={turns?.playerAt(round)}>

@@ -218,3 +218,146 @@
   --avatar-bg: var(--avatar-ember);
   --avatar-ring: var(--avatar-ember-ring);
 }
+
+/* En équipes (#44) : pastille de l'équipe du tour, ses étoiles sur sa couleur. */
+.team-badge {
+  flex-direction: column;
+  gap: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Fin de partie en équipes : chaque équipe fêtée, sans classement. */
+.team-cheers {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.team-cheers__title {
+  margin: 0;
+  font-size: 18px;
+}
+.team-cheers__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.team-cheer {
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  border: 3px solid var(--avatar-ring);
+  background: var(--avatar-bg);
+  color: var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-weight: 700;
+}
+.team-cheer__name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.team-cheer__stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Écran des équipes (#44) : une carte par équipe, sur sa couleur. */
+.team-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.card.team-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 3px solid var(--avatar-ring);
+  background: var(--avatar-bg);
+}
+.team-card__name {
+  font-weight: 700;
+}
+.team-card__colors {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+.team-card__color {
+  background: var(--paper);
+}
+.team-card__color:has(input:disabled) {
+  cursor: default;
+}
+.avatar-choice__swatch.is-taken {
+  opacity: 0.3;
+}
+.team-card__members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.team-member {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-full);
+  background: var(--paper);
+  max-width: 100%;
+}
+.team-member__move {
+  min-height: var(--tap);
+  padding: 0 4px 0 16px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.team-member__guest {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+.team-member__move:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+  border-radius: var(--radius-full);
+}
+.team-add {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* Accueil : lien vers les équipes, ou les équipes en cours. */
+.teams-line {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.teams-line > a {
+  align-self: flex-start;
+}
+.teams-line__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}

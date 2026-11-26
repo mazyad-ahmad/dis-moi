@@ -17,6 +17,7 @@ import {
 } from './gameFile';
 import { isLevel } from '../games/levels';
 import { isGameMode } from '../games/modes';
+import type { TeamScore } from '../games/teams';
 import { TURN_MODES } from '../games/turns';
 import { cleanName, isAnimal, isPlayerColor, MAX_PLAYERS, PlayerError } from './players';
 import {
@@ -72,6 +73,9 @@ export interface Backup {
   customGames: CustomGame[];
 }
 
+/** Réglages gardés sur le téléphone seulement : les équipes de la fête (#44), invités compris. */
+const LOCAL_ONLY = new Set<string>(['teams']);
+
 export async function createBackupFile(now = Date.now()): Promise<File> {
   const [players, games, customGames] = await Promise.all([
     db.players.toArray(),
@@ -80,7 +84,8 @@ export async function createBackupFile(now = Date.now()): Promise<File> {
   ]);
   const settings: Partial<Settings> = {};
   for (const { key, value } of await db.settings.toArray())
-    if (key in DEFAULT_SETTINGS) (settings as Record<string, unknown>)[key] = value;
+    if (key in DEFAULT_SETTINGS && !LOCAL_ONLY.has(key))
+      (settings as Record<string, unknown>)[key] = value;
 
   const content: BackupFile = {
     format: BACKUP_FORMAT,
@@ -153,6 +158,20 @@ function readPlayer(raw: unknown, index: number): Player {
   };
 }
 
+function isTeamScores(v: unknown): v is TeamScore[] {
+  return (
+    Array.isArray(v) &&
+    v.every(
+      (t) =>
+        isObject(t) &&
+        typeof t.name === 'string' &&
+        isPlayerColor(t.color) &&
+        Number.isInteger(t.stars) &&
+        Number.isInteger(t.children),
+    )
+  );
+}
+
 function readRecord(raw: unknown): GameRecord {
   if (!isObject(raw) || !isId(raw.id) || typeof raw.gameId !== 'string') fail();
   const { played, rounds, stars, startedAt, updatedAt } = raw;
@@ -171,6 +190,8 @@ function readRecord(raw: unknown): GameRecord {
     ...(isGameMode(raw.mode) && { mode: raw.mode }),
     // Tour par tour (#38) : facultatif, ignoré s'il est illisible.
     ...(Array.isArray(raw.turns) && raw.turns.every(isId) && { turns: raw.turns }),
+    // En équipes (#44) : facultatif, ignoré s'il est illisible.
+    ...(isTeamScores(raw.teams) && { teams: raw.teams }),
   };
 }
 

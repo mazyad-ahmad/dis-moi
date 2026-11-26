@@ -24,6 +24,7 @@ import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
 import { Players } from '../screens/Players';
+import { Teams } from '../screens/Teams';
 import { Stars } from '../screens/Stars';
 import { Privacy } from '../screens/Privacy';
 import { UpdateBanner } from '../pwa/UpdateBanner';
@@ -120,6 +121,8 @@ function screenFor(route: Route) {
       return <Parent />;
     case 'players':
       return <Players />;
+    case 'teams':
+      return <Teams />;
     case 'add-game':
       return <AddGame />;
     case 'privacy':

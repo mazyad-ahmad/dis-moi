@@ -5,6 +5,7 @@ import { useRecords } from '../data/history';
 import { useSeance } from '../data/seance';
 import { starsLabel } from '../games/format';
 import { gentleEnd } from '../games/modes';
+import type { TeamScore } from '../games/teams';
 import { usePlayableGames } from '../games/useGames';
 import { useSettings } from '../data/settings';
 import { Button } from './Button';
@@ -24,7 +25,32 @@ import {
 interface Props {
   stars: number;
   rounds: number;
+  /** En équipes (#44) : les étoiles de chaque équipe ; toutes sont fêtées, sans classement. */
+  teams?: TeamScore[];
   onReplay: () => void;
+}
+
+/** En équipes (#44) : chaque équipe est fêtée, dans l'ordre de l'écran des équipes. */
+function TeamCheers({ teams }: { teams: TeamScore[] }) {
+  return (
+    <section className="team-cheers" aria-labelledby="team-cheers-title">
+      <h2 id="team-cheers-title" className="team-cheers__title">
+        Bravo à toutes les équipes !
+      </h2>
+      <ul className="team-cheers__list">
+        {teams.map((t, i) => (
+          <li key={i} className={`team-cheer turn-banner--${t.color}`}>
+            <span className="team-cheer__name">Bravo, {t.name} !</span>
+            {t.stars > 0 && (
+              <span className="team-cheer__stars">
+                <IconStar size={18} /> {starsLabel(t.stars)}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }
 
 /** Fin de séance (#120) : un dernier bravo, une respiration, et on range. */
@@ -68,7 +94,7 @@ function useStarCount(stars: number) {
 }
 
 /** Écran de fin de partie : étoiles gagnées ensemble, récompenses, Rejouer ou un autre jeu. */
-export function GameResult({ stars, rounds, onReplay }: Props) {
+export function GameResult({ stars, rounds, teams, onReplay }: Props) {
   const seance = useSeance();
   const route = useRoute();
   const records = useRecords();
@@ -107,6 +133,7 @@ export function GameResult({ stars, rounds, onReplay }: Props) {
         {message}
         {stars > 0 && ` Sur ${rounds} manches.`}
       </p>
+      {teams && <TeamCheers teams={teams} />}
       {rewards?.unlocked.map((r) => (
         <p key={r.stars} className="result__reward">
           <span className="result__reward-emoji" aria-hidden="true">

@@ -11,12 +11,14 @@ import { activePlayers, setPlayerActive, usePlayers } from '../data/players';
 import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
 import { AnswerModeChoice } from '../games/choices/AnswerModeChoice';
+import { teamsReady } from '../games/teams';
 import { MIN_TURN_PLAYERS, type TurnMode } from '../games/turns';
 import { usePlayableGames } from '../games/useGames';
 import { DailyCard } from './DailyCard';
 import { HomeGames } from './HomeGames';
 import { LastGame } from './LastGame';
 import { SeanceOverCard } from './SeanceOver';
+import { TeamsLine } from './TeamsLine';
 
 const TURN_CHOICES: { value: TurnMode; label: string }[] = [
   { value: 'team', label: 'En équipe' },
@@ -53,7 +55,7 @@ export function Home() {
   const games = usePlayableGames();
   const { over } = useSeance();
   const night = useNightTheme();
-  const { gameLevel, gameMode, turnMode } = useSettings();
+  const { gameLevel, gameMode, turnMode, teams } = useSettings();
   const playing = players ? activePlayers(players, absentPlayers).length : 0;
 
   return (
@@ -114,7 +116,9 @@ export function Home() {
             })}
           </div>
         )}
-        {playing >= MIN_TURN_PLAYERS && <TurnChoice value={turnMode} />}
+        {/* En équipes (#44), les équipes jouent à tour de rôle à la place du tour par tour. */}
+        {playing >= MIN_TURN_PLAYERS && !teamsReady(teams) && <TurnChoice value={turnMode} />}
+        {!over && <TeamsLine />}
       </Card>
 
       {!over && <DailyCard />}

@@ -16,6 +16,10 @@ export function Privacy() {
           <li>
             les prénoms des joueurs (et leur niveau : petits, moyens ou grands, s’il est choisi) ;
           </li>
+          <li>
+            en équipes, les noms des équipes et les prénoms des invités, jusqu’à ce que le parent
+            arrête les équipes (ils ne vont pas dans la sauvegarde) ;
+          </li>
           <li>les parties jouées et les étoiles gagnées ;</li>
           <li>les jeux créés, avec leurs photos et les sons enregistrés ;</li>
           <li>les félicitations enregistrées par le parent ;</li>

@@ -1,14 +1,20 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type GameRecord } from './db';
-import { listActivePlayers } from './players';
+import { listActivePlayers, listPlayers } from './players';
 import { requestPersistentStorage } from './storage';
 
 type NewRecord = Omit<GameRecord, 'id' | 'startedAt' | 'updatedAt' | 'playerIds'>;
 
-/** Crée la partie à la première manche jouée, avec les joueurs actifs (choisis sur l'accueil). */
-export async function startRecord(data: NewRecord): Promise<number> {
+/**
+ * Crée la partie à la première manche jouée, avec les joueurs actifs (choisis sur l'accueil).
+ * En équipes (#44), `familyIds` : les enfants de la famille placés dans les équipes (les
+ * invités ne sont pas enregistrés).
+ */
+export async function startRecord(data: NewRecord, familyIds?: number[]): Promise<number> {
   const now = Date.now();
-  const playerIds = (await listActivePlayers()).map((p) => p.id);
+  const playerIds = familyIds
+    ? (await listPlayers()).filter((p) => familyIds.includes(p.id)).map((p) => p.id)
+    : (await listActivePlayers()).map((p) => p.id);
   // Première partie : l'appli a désormais quelque chose à garder.
   void requestPersistentStorage();
   return db.games.add({ ...data, startedAt: now, updatedAt: now, playerIds } as GameRecord);
@@ -16,7 +22,7 @@ export async function startRecord(data: NewRecord): Promise<number> {
 
 export async function updateRecord(
   id: number,
-  data: Pick<GameRecord, 'played' | 'stars' | 'turns'>,
+  data: Pick<GameRecord, 'played' | 'stars' | 'turns' | 'teams'>,
 ) {
   await db.games.update(id, { ...data, updatedAt: Date.now() });
 }

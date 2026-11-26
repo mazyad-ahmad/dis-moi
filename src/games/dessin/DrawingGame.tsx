@@ -57,7 +57,7 @@ function DrawingSession({
   );
   const setting = useRoundSetting();
   // Pas plus de manches que de mots (jeux créés avec peu de mots).
-  const { round, rounds, stars, finished, answer } = useRounds(
+  const { round, rounds, stars, finished, answer, team, teams } = useRounds(
     gameId,
     Math.min(setting, words.length),
     turns?.order,
@@ -85,9 +85,10 @@ function DrawingSession({
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
   );
 
-  if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
-  const heading = { round, rounds, stars, category, title, player: turns?.playerAt(round) };
+  const heading = { round, rounds, stars, category, title, player: turns?.playerAt(round), team };
   if (turns && shown.length) {
     const show = (forRound: number) =>
       setShown([...shown, nextForLevel(words, turns.levelAt(forRound), levelOf, shown)!]);

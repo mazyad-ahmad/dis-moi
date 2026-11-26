@@ -3,6 +3,7 @@ import type { Activity } from '../games/activities';
 import type { DeckItem, DeckKind } from '../games/deck/types';
 import type { Level } from '../games/levels';
 import type { GameMode } from '../games/modes';
+import type { TeamScore } from '../games/teams';
 
 export interface Player {
   id: number;
@@ -53,6 +54,11 @@ export interface GameRecord {
   mode?: GameMode;
   /** Tour par tour (#38) : qui a joué chaque manche, dans l'ordre (aucun score par joueur). */
   turns?: number[];
+  /**
+   * En équipes (#44) : nom, couleur, étoiles et nombre d'enfants de chaque équipe, dans l'ordre
+   * de l'écran des équipes. Les étoiles de la partie (`stars`) sont le total commun.
+   */
+  teams?: TeamScore[];
 }
 
 /** Jeu créé par le parent (#10). Les photos et sons sont des Blob dans les cartes. */
