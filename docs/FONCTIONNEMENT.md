@@ -250,6 +250,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 1. **Accueil** — titre « On joue à quoi ? », joueurs (prénoms, modifiables), grille des jeux,
    rappel de la dernière partie, barre de navigation _Jeux · Étoiles · Parent_.
+   Cette barre reste collée au bas de l'écran : seul le contenu au-dessus défile, et le
+   défilement s'arrête à la fin du contenu, sur toutes les pages (#145).
 2. **Quelle chanson ?** — manche _n_ sur 10, compteur d'étoiles, lecteur d'extrait (10 s),
    bloc parent avec titre caché + indice, bouton « Voir la réponse ».
 3. **Quelle lettre, quel chiffre ?** — bascule Lettres / Chiffres, glyphe en grand
