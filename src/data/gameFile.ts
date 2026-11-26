@@ -41,7 +41,7 @@ export interface GameFile {
 /** Ce qu'un fichier de jeu (ou une sauvegarde) garde d'un jeu créé. */
 export type SharedGame = Pick<CustomGame, 'name' | 'kind' | 'items' | 'activity' | 'level'>;
 
-async function blobToDataUrl(blob: Blob): Promise<string> {
+export async function blobToDataUrl(blob: Blob): Promise<string> {
   const bytes = new Uint8Array(await blob.arrayBuffer());
   let binary = '';
   const CHUNK = 0x8000;
@@ -51,7 +51,7 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
 }
 
 /** Relit un média du fichier ; refuse tout ce qui n'est pas une image ou un son. */
-function dataUrlToBlob(value: unknown, family: 'image' | 'audio'): Blob | undefined {
+export function dataUrlToBlob(value: unknown, family: 'image' | 'audio'): Blob | undefined {
   if (value === undefined) return undefined;
   // Le type peut porter des paramètres : « audio/webm;codecs=opus » des enregistrements Android.
   const match =

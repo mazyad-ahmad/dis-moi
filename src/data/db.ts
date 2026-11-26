@@ -82,6 +82,20 @@ export interface Praise {
   createdAt: number;
 }
 
+/**
+ * Dessin gardé (#52) : l'image telle qu'elle était à l'écran (PNG), le mot, la date et
+ * l'enfant (ou les enfants présents) de la manche.
+ */
+export interface Drawing {
+  id: number;
+  word: string;
+  /** Image PNG du dessin, sur le fond de la zone de dessin. */
+  image: Blob;
+  /** Enfant de la manche (chacun son tour), sinon les joueurs actifs. */
+  playerIds: number[];
+  createdAt: number;
+}
+
 export interface Setting {
   key: string;
   value: unknown;
@@ -94,6 +108,7 @@ export const db = new Dexie('dis-moi') as Dexie & {
   games: EntityTable<GameRecord, 'id'>;
   customGames: EntityTable<CustomGame, 'id'>;
   praises: EntityTable<Praise, 'id'>;
+  drawings: EntityTable<Drawing, 'id'>;
 };
 
 db.version(1).stores({
@@ -130,3 +145,8 @@ db.version(5)
       ),
     );
   });
+
+// Galerie des dessins gardés (#52).
+db.version(6).stores({
+  drawings: '++id, createdAt',
+});

@@ -29,6 +29,8 @@ interface Props {
   hint: ReactNode;
   /** Dessin figé (temps écoulé) : ni trait ni outil. */
   disabled?: boolean;
+  /** Bouton posé dans un coin du dessin (« Garder », #52), selon le nombre de traits. */
+  corner?: (strokes: number) => ReactNode;
   ref?: Ref<DrawingCanvasHandle>;
 }
 
@@ -37,7 +39,7 @@ interface Props {
  * couleur, épaisseur, gomme, annuler le dernier trait, tout effacer. Couleurs et
  * épaisseurs s'ouvrent au-dessus de la ligne, et se referment au choix.
  */
-export function DrawingPad({ hint, disabled, ref }: Props) {
+export function DrawingPad({ hint, disabled, corner, ref }: Props) {
   const [pen, setPen] = useState<(typeof PENS)[number]>(PENS[0]);
   const [size, setSize] = useState<(typeof WIDTHS)[number]>(WIDTHS[1]);
   const [erase, setErase] = useState(false);
@@ -50,6 +52,7 @@ export function DrawingPad({ hint, disabled, ref }: Props) {
   useImperativeHandle(ref, () => ({
     clear: () => canvas.current?.clear(),
     undo: () => canvas.current?.undo(),
+    snapshot: () => canvas.current?.snapshot() ?? Promise.resolve(null),
   }));
   const toggle = (panel: 'color' | 'width') => setOpen(open === panel ? null : panel);
 
@@ -67,6 +70,7 @@ export function DrawingPad({ hint, disabled, ref }: Props) {
         <span className="drawing-area__hint muted" aria-live="polite">
           {hint}
         </span>
+        {corner?.(count)}
       </div>
 
       <div

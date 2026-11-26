@@ -14,6 +14,7 @@ import {
   type RestoreMode,
 } from '../data/backup';
 import { useCustomGames } from '../data/customGames';
+import { useDrawingCount } from '../data/drawings';
 import { PlayerError } from '../data/players';
 import { useSettings } from '../data/settings';
 import { formatSize, useStorageStatus } from '../data/storage';
@@ -72,7 +73,8 @@ function RestoreChoice({ backup, onDone }: { backup: Backup; onDone: (message: s
       </h3>
       <p className="muted">
         {plural(s.players, 'joueur')}, {plural(s.games, 'partie')} ({plural(s.stars, 'étoile')}),{' '}
-        {plural(s.customGames, 'jeu créé', 'jeux créés')}.
+        {plural(s.customGames, 'jeu créé', 'jeux créés')}
+        {s.drawings > 0 && `, ${plural(s.drawings, 'dessin')}`}.
       </p>
       <Button variant="danger" block disabled={busy} onClick={() => void restore('replace')}>
         Tout remplacer
@@ -101,10 +103,12 @@ function RestoreChoice({ backup, onDone }: { backup: Backup; onDone: (message: s
 export function BackupSection() {
   const { lastBackupAt } = useSettings();
   const customGames = useCustomGames();
+  const drawings = useDrawingCount();
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [pending, setPending] = useState<Backup | null>(null);
-  const reminder = customGames && needsBackupReminder(lastBackupAt, customGames.length);
+  const reminder =
+    customGames && needsBackupReminder(lastBackupAt, customGames.length + (drawings ?? 0));
 
   async function save() {
     setStatus('');
@@ -141,13 +145,14 @@ export function BackupSection() {
       {reminder && (
         <p className="backup-reminder">
           {lastBackupAt === null
-            ? 'Les jeux créés ne sont gardés que sur ce téléphone. Pense à les sauvegarder.'
+            ? 'Les jeux créés et les dessins ne sont gardés que sur ce téléphone. Pense à les sauvegarder.'
             : 'Dernière sauvegarde il y a plus d’un mois. Pense à en refaire une.'}
         </p>
       )}
       <p className="muted">
-        Un fichier avec les joueurs, les étoiles, les réglages et les jeux créés (photos et sons
-        compris), pour les garder ailleurs ou les retrouver sur un autre téléphone.{' '}
+        Un fichier avec les joueurs, les étoiles, les réglages, les jeux créés (photos et sons
+        compris) et les dessins gardés, pour les garder ailleurs ou les retrouver sur un autre
+        téléphone.{' '}
         {lastBackupAt
           ? `Dernière sauvegarde : ${longDate(lastBackupAt)}.`
           : 'Aucune sauvegarde pour l’instant.'}

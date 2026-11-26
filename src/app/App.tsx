@@ -27,6 +27,7 @@ import { Players } from '../screens/Players';
 import { Teams } from '../screens/Teams';
 import { Stars } from '../screens/Stars';
 import { Privacy } from '../screens/Privacy';
+import { Drawings } from '../screens/Drawings';
 import { UpdateBanner } from '../pwa/UpdateBanner';
 import { TurnsGate } from '../games/TurnsGate';
 import { useRoute, type Route } from './router';
@@ -127,6 +128,8 @@ function screenFor(route: Route) {
       return <AddGame />;
     case 'privacy':
       return <Privacy />;
+    case 'drawings':
+      return <Drawings />;
     case 'edit-game':
       return <EditGame key={route.id} id={route.id} />;
     case 'game':

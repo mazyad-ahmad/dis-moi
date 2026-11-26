@@ -9,11 +9,14 @@ import {
   type Size,
   type Stroke,
 } from './strokes';
+import { canvasToPng } from './snapshot';
 
 export interface DrawingCanvasHandle {
   clear: () => void;
   /** Retire le dernier trait. */
   undo: () => void;
+  /** Image PNG du dessin tel qu'il est à l'écran (#52) ; `null` s'il est vide. */
+  snapshot: () => Promise<Blob | null>;
 }
 
 interface Props {
@@ -101,6 +104,10 @@ export function DrawingCanvas({ color, width, erase = false, disabled, onCount, 
       if (!strokes.current.length) return;
       strokes.current.pop();
       changed();
+    },
+    snapshot() {
+      const c = canvasRef.current;
+      return c && strokes.current.length ? canvasToPng(c) : Promise.resolve(null);
     },
   }));
 

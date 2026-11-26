@@ -276,7 +276,27 @@
   passent par les milieux des points).
 - Les mêmes outils servent dans Dessine ça, les mots à dessiner créés, le Grand Jeu et le Défi
   du jour. Temps écoulé : dessin et outils figés, le parent valide.
-- Le dessin n'est jamais enregistré : il disparaît au mot suivant.
+- Le dessin disparaît au mot suivant, sauf si le parent l'a gardé (ci-dessous).
+
+### Dessins gardés (#52)
+
+- Dès le premier trait, un bouton **« Garder »** apparaît dans le coin du dessin (Dessine ça, mots
+  à dessiner créés, Grand Jeu), y compris quand le temps est écoulé. Le dessin part dans la
+  galerie et le bouton devient « Gardé » ; si l'enfant continue, « Garder » revient et met à
+  jour le **même** dessin. Rien n'est gardé sans ce geste (pas de conservation automatique).
+- Ce qui est gardé : l'image **PNG** du dessin tel qu'il est à l'écran, sur le fond de la zone de
+  dessin (clair le jour, sombre la nuit), au plus 1280 px de côté ; le **mot** ; la **date** ;
+  l'**enfant** de la manche en « chacun son tour », sinon les joueurs actifs. Table IndexedDB
+  `drawings` (version 6 de la base).
+- **Galerie** : espace Parent → « Dessins gardés » (derrière le verrou parent). Les plus récents
+  d'abord, avec mot, prénom(s) et date ; un dessin s'ouvre en grand, avec **Partager l'image**
+  (partage Android, sinon téléchargement `dessin-<mot>-AAAA-MM-JJ.png`) et **Supprimer**
+  (confirmé). Rien n'est partagé sans ce bouton.
+- **Limite** : 200 dessins. À partir de 150, la galerie propose de supprimer les 50 plus anciens
+  (confirmé) ; à 200, « Garder » affiche « Galerie pleine ». Nombre et place prise sont affichés.
+- Les dessins sont dans la **sauvegarde complète** (image en base64) ; « Effacer toutes les
+  données » vide la galerie ; « Remettre les étoiles à zéro » n'y touche pas.
+- Le Défi du jour ne propose pas « Garder ».
 
 ### Contenu de Dessine ça (#54)
 
@@ -405,15 +425,17 @@ turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
   au navigateur un stockage persistant (`navigator.storage.persist()`) pour qu'il ne l'efface pas
   si le téléphone manque de place. L'espace Parent affiche l'état et la place utilisée.
 - **Sauvegarder tout** (espace Parent) : un fichier `dis-moi-AAAA-MM-JJ.dismoi-sauvegarde.json`
-  avec joueurs, parties, réglages et jeux créés (photos et sons en base64, au même format que les
-  fichiers de jeu). Format `dis-moi/sauvegarde`, version 1. Même canal que le partage d'un jeu :
+  avec joueurs, parties, réglages, jeux créés (photos et sons en base64, au même format que les
+  fichiers de jeu) et dessins gardés (PNG en base64 ; champ absent des sauvegardes plus anciennes,
+  qui restent lisibles). Format `dis-moi/sauvegarde`, version 1. Même canal que le partage d'un jeu :
   partage Android, sinon téléchargement.
 - **Restaurer une sauvegarde** : le fichier est entièrement vérifié avant toute écriture (format,
   version, chaque joueur, partie et jeu, 200 Mo maximum) ; un fichier refusé ne change rien. Le
   parent voit le contenu et choisit :
   - **Tout remplacer** : les données du téléphone sont remplacées à l'identique ;
   - **Fusionner** : la sauvegarde s'ajoute sans doublon (joueurs reconnus par leur prénom, parties
-    par leur jeu et leur heure de début, jeux créés par leur type, leur date et leurs réponses) ;
+    par leur jeu et leur heure de début, jeux créés par leur type, leur date et leurs réponses,
+    dessins par leur mot et leur date) ;
     les réglages du téléphone sont gardés, les jeux du catalogue s'additionnent ; refusé s'il y
     aurait plus de 6 joueurs.
 - **Rappel** : s'il y a des jeux créés et aucune sauvegarde depuis plus de 30 jours (ou jamais), un
@@ -504,7 +526,7 @@ turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
 
 ## Espace Parent (proposition)
 
-- Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
+- Joueurs, jeux, dessins gardés, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
   **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **jeux du Grand Jeu**, **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **défi du jour**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.

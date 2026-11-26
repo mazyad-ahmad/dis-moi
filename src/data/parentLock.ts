@@ -12,8 +12,18 @@ import { parseHash, type Route } from '../app/router';
  */
 export const UNLOCK_MS = 5 * 60_000;
 
-/** Écrans derrière le verrou : réglages et effacements, joueurs, équipes, jeux et leur édition. */
-const PROTECTED = new Set<Route['name']>(['parent', 'players', 'teams', 'add-game', 'edit-game']);
+/**
+ * Écrans derrière le verrou : réglages et effacements, joueurs, équipes, jeux et leur édition,
+ * dessins gardés (partage et suppression).
+ */
+const PROTECTED = new Set<Route['name']>([
+  'parent',
+  'players',
+  'teams',
+  'add-game',
+  'edit-game',
+  'drawings',
+]);
 
 export function isProtected(route: Route): boolean {
   return PROTECTED.has(route.name);

@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState, type ComponentProps } from 'react';
+import { useEffect, useRef, useState, type ComponentProps, type RefObject } from 'react';
 import { playSound } from '../../audio/sounds';
+import type { Player } from '../../data/db';
+import { DrawingError, keepDrawing, updateDrawingImage } from '../../data/drawings';
+import { listActivePlayers } from '../../data/players';
 import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
@@ -123,6 +126,69 @@ function DrawingSession({
   );
 }
 
+/**
+ * « Garder » (#52) : le dessin part dans la galerie, avec le mot, la date et l'enfant.
+ * Si l'enfant continue après, un nouvel appui met à jour le même dessin ; après « Tout
+ * effacer », c'est un nouveau dessin.
+ */
+function KeepButton({
+  word,
+  strokes,
+  player,
+  canvas,
+}: {
+  word: string;
+  strokes: number;
+  player?: Player;
+  canvas: RefObject<DrawingCanvasHandle | null>;
+}) {
+  const [kept, setKept] = useState<{ id: number; strokes: number } | null>(null);
+  const [state, setState] = useState<'idle' | 'busy' | 'full' | 'failed'>('idle');
+  // « Tout effacer » puis un nouveau dessin : c'est un autre dessin, gardé à part.
+  if (!strokes && kept) setKept(null);
+  if (!strokes) return null;
+  const done = kept?.strokes === strokes;
+
+  async function keep() {
+    setState('busy');
+    try {
+      const image = await canvas.current?.snapshot();
+      if (!image) throw new Error('image');
+      if (kept) await updateDrawingImage(kept.id, image);
+      const id =
+        kept?.id ??
+        (await keepDrawing({
+          word,
+          image,
+          playerIds: player ? [player.id] : (await listActivePlayers()).map((p) => p.id),
+        }));
+      setKept({ id, strokes });
+      setState('idle');
+    } catch (e) {
+      setState(e instanceof DrawingError ? 'full' : 'failed');
+    }
+  }
+
+  const label =
+    state === 'full'
+      ? 'Galerie pleine'
+      : state === 'failed'
+        ? 'Pas gardé'
+        : done
+          ? 'Gardé'
+          : 'Garder';
+  return (
+    <button
+      type="button"
+      className="btn btn--secondary keep-btn"
+      disabled={done || state === 'busy' || state === 'full'}
+      onClick={() => void keep()}
+    >
+      {label}
+    </button>
+  );
+}
+
 interface BoardProps {
   heading: Omit<ComponentProps<typeof GameHeader>, 'aside'>;
   word: string;
@@ -202,6 +268,15 @@ export function DrawingBoard({ heading, word, turn, seconds, onOtherWord, onAnsw
       <DrawingPad
         ref={canvas}
         disabled={timeUp}
+        corner={(strokes) => (
+          <KeepButton
+            key={`${String(turn)}:${word}`}
+            word={word}
+            strokes={strokes}
+            player={heading.player}
+            canvas={canvas}
+          />
+        )}
         hint={
           timeUp ? 'Temps écoulé ! Le parent valide le dessin.' : "L'enfant dessine avec le doigt"
         }
