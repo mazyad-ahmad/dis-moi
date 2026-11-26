@@ -386,6 +386,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Remets dans l’ordre**       | Des images mélangées (routines, graine, saisons…) : l'enfant dit l'ordre ou les déplace, le parent valide. Voir ci-dessous.                |
 | **Que fais-tu si… ?**         | Le parent lit une petite situation, l'enfant dit ce qu'il ferait ; pas de bonne réponse, on en parle. Voir ci-dessous.                     |
 | **Ni oui ni non**             | Répondre aux questions sans dire « oui » ni « non » ; cinq questions tenues, une étoile. Voir ci-dessous.                                  |
+| **Quelle heure est-il ?**     | Une horloge à aiguilles dessinée par l'appli : l'enfant lit l'heure (pile, et quart, et demie, moins le quart). Voir ci-dessous.           |
+| **Le petit marché**           | Un article et son prix (moins de 10 €) : l'enfant dit quelles pièces donner. Voir ci-dessous.                                              |
 
 ### Les émotions (#58)
 
@@ -756,6 +758,54 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   jour, où une carte seule ne fait pas une manche de cinq questions. Règles dans
   `src/games/nioui/nioui.ts`.
 
+### Quelle heure est-il ? (#136)
+
+- Jeu du catalogue, rangé dans « Lire et compter », pour les grands (dès 5 ans) : le parent lit
+  « Quelle heure est-il ? », l'enfant lit l'heure sur une **horloge à aiguilles** et la dit ; le
+  parent valide avec **Trouvé** / **Pas encore**.
+- **Horloge dessinée par l'appli** (SVG, `src/games/heure/HeureGame.tsx`) : cadran, chiffres
+  de 1 à 12, petite aiguille courte et épaisse, grande aiguille longue et fine d'une autre
+  couleur (on les distingue sans voir les couleurs). Couleurs des jetons du thème (cadran
+  `--paper`, chiffres et petite aiguille `--ink`, grande aiguille `--river`) : lisible de jour
+  comme **en mode sombre** (contraste vérifié par l'e2e). La petite aiguille avance avec les
+  minutes (à 3 h 30, elle est entre le 3 et le 4).
+- 48 heures (`src/content/catalogue-heure.json`) : **Moyens** les 12 heures pile ; **Grands**
+  les quarts, demies et « moins le quart ». Pas de carte Petits : avec un enfant de 3-4 ans, le
+  tirage prend les heures pile. Carte : `text` l'heure en chiffres (« 3:15 »), `answer` en
+  toutes lettres (« 3 heures et quart » ; « midi », « midi et demi »).
+- « Pour le parent » : la réponse (« 4 heures moins le quart, 3:45 : la petite aiguille est
+  presque sur le 4. Le matin ou l'après-midi, les deux comptent. ») derrière « Voir la
+  réponse », et deux indices : « La petite aiguille montre les heures, la grande les
+  minutes. », puis où est la grande aiguille (sur le 12 : l'heure pile ; sur le 6 : et demie…).
+- **En montrant** : l'heure en chiffres, comme sur une montre numérique (« 3:15 »), parmi des
+  heures proches (même heure avec d'autres minutes, l'heure d'à côté), rangées dans l'ordre.
+- Se regarde : proposé au Coucher, pas en Voiture. Se joue aussi dans le Grand Jeu et le Défi
+  du jour (sans choix). Pas d'Image cachée.
+
+### Le petit marché (#136)
+
+- Jeu du catalogue, rangé dans « Lire et compter », pour les grands (dès 5 ans) : un article
+  (emoji) avec son **étiquette de prix**, le porte-monnaie dessous ; le parent lit « Une
+  baguette coûte 1 euro. Quelles pièces donnes-tu ? », l'enfant dit ou montre les pièces.
+  Toute façon de faire le bon compte est juste : c'est le parent qui valide.
+- 25 articles (`src/content/catalogue-marche.json`), prix **réalistes et petits** (de 0,50 € à
+  8,50 €, toujours **moins de 10 €**), dans `text` (« 1,20 € ») : **Moyens** des euros ronds
+  jusqu'à 5 €, avec des pièces de 1 € et 2 € ; **Grands** des centimes aussi (multiples de
+  10 centimes), avec des pièces de 10, 20 et 50 centimes en plus.
+- **Pièces dessinées par l'appli** (SVG, `src/games/marche/coins.ts`) : un disque doré ou
+  argenté (1 € cœur argenté, 2 € cœur doré), la valeur écrite au centre (« 2 € », « 50 c »),
+  tailles proches des vraies pièces. Aucune photo de pièce ni de billet ; pas de billet du tout.
+- « Pour le parent » : une façon de payer avec le moins de pièces (« Par exemple 1 € + 20 c :
+  2 pièces pour 1,20 €. Une autre façon de faire 1,20 € compte aussi. »), avec les pièces
+  dessinées, derrière « Voir la réponse » ; indices : « Commencez par la plus grosse pièce qui
+  ne dépasse pas le prix, puis complétez. », puis compter à voix haute.
+- **En montrant** : des poignées de pièces dessinées, une seule fait le prix, les autres un peu
+  plus ou un peu moins (2, 3 ou 4 choix selon le niveau).
+- Se regarde : proposé au Coucher, pas en Voiture. Se joue aussi dans le Grand Jeu et le Défi
+  du jour (sans choix). Pas d'Image cachée.
+- Images : emoji dessinés par la police du téléphone et pièces en SVG écrites pour l'appli,
+  aucun fichier, aucun droit tiers.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -969,7 +1019,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
    Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?,
    Devine avec tes mains, La suite logique,
-   Remets dans l’ordre, Que fais-tu si… ?, Ni oui ni non)
+   Remets dans l’ordre, Que fais-tu si… ?, Ni oui ni non, Quelle heure est-il ?, Le petit marché)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

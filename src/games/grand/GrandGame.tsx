@@ -28,6 +28,10 @@ import { SuiteRound } from '../suite/SuiteGame';
 import { SUITE_ID } from '../suite/suite';
 import { OrdreRound } from '../ordre/OrdreGame';
 import { ORDRE_ID } from '../ordre/ordre';
+import { HeureRound } from '../heure/HeureGame';
+import { HEURE_ID } from '../heure/heure';
+import { MarcheRound } from '../marche/MarcheGame';
+import { MARCHE_ID } from '../marche/marche';
 import { useSaved } from '../session';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns } from '../useTurns';
@@ -179,6 +183,8 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
   const compte = card.type === 'deck' && game.id === COMPTE_ID;
   const suite = card.type === 'deck' && game.id === SUITE_ID;
   const ordre = card.type === 'deck' && game.id === ORDRE_ID;
+  const heure = card.type === 'deck' && game.id === HEURE_ID;
+  const marche = card.type === 'deck' && game.id === MARCHE_ID;
   const later =
     card.type === 'song' ||
     intrus ||
@@ -186,6 +192,8 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
     compte ||
     suite ||
     ordre ||
+    heure ||
+    marche ||
     (card.type === 'deck' && card.kind === 'question');
   return (
     <main className="screen">
@@ -209,13 +217,17 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
         {card.type === 'deck' && compte && <CompteRound key={round} item={card.item} />}
         {card.type === 'deck' && suite && <SuiteRound key={round} item={card.item} />}
         {card.type === 'deck' && ordre && <OrdreRound key={round} item={card.item} />}
+        {card.type === 'deck' && heure && <HeureRound key={round} item={card.item} />}
+        {card.type === 'deck' && marche && <MarcheRound key={round} item={card.item} />}
         {card.type === 'deck' &&
           game.id !== TREASURE_ID &&
           !intrus &&
           !disparu &&
           !compte &&
           !suite &&
-          !ordre && (
+          !ordre &&
+          !heure &&
+          !marche && (
             <DeckRound
               key={round}
               kind={card.kind}

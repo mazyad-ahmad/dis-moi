@@ -35,6 +35,10 @@ import { SuiteRound } from '../suite/SuiteGame';
 import { SUITE_ID } from '../suite/suite';
 import { OrdreRound } from '../ordre/OrdreGame';
 import { ORDRE_ID } from '../ordre/ordre';
+import { HeureRound } from '../heure/HeureGame';
+import { HEURE_ID } from '../heure/heure';
+import { MarcheRound } from '../marche/MarcheGame';
+import { MARCHE_ID } from '../marche/marche';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -192,6 +196,10 @@ function DailyRound({ day }: { day: string }) {
         <SuiteRound item={card.item} random={seeded(day)} choices={false} />
       ) : source.game === ORDRE_ID && card.kind === 'image' ? (
         <OrdreRound item={card.item} random={seeded(day)} />
+      ) : source.game === HEURE_ID && card.kind === 'image' ? (
+        <HeureRound item={card.item} choices={false} />
+      ) : source.game === MARCHE_ID && card.kind === 'image' ? (
+        <MarcheRound item={card.item} choices={false} />
       ) : (
         <CardBody card={card} />
       )}

@@ -104,6 +104,8 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-ordre.json`         | Remets dans l’ordre        | `image`    |
 | `catalogue-situation.json`     | Que fais-tu si… ?          | `question` |
 | `catalogue-ni-oui-ni-non.json` | Ni oui ni non              | `question` |
+| `catalogue-heure.json`         | Quelle heure est-il ?      | `image`    |
+| `catalogue-marche.json`        | Le petit marché            | `image`    |
 
 ## Cartes « Compte avec moi »
 
@@ -196,3 +198,18 @@ non** (« Tu aimes le chocolat ? ») : `text` la question, `answer` une idée de
 les deux mots (« J'adore ça ! »), montrée au parent à la demande. Le thème `astuce` marque les
 relances piégeuses (« Tu es sûr ? »). Toutes de niveau 3 (Grands). Règles dans
 `src/games/nioui/nioui.ts`.
+
+## Heures de « Quelle heure est-il ? »
+
+Une carte de `catalogue-heure.json` (#136) est une **heure** : `text` en chiffres, au quart
+près, sur un cadran de 12 heures (« 3:15 »), `answer` comme on la dit (« 3 heures et quart »,
+« 4 heures moins le quart », « midi et demi »), vérifiée par les tests, et `id` l'heure
+(« 3h15 »). Niveau 2 pour les heures pile, 3 pour les quarts et demies. L'horloge est dessinée
+par l'appli. Règles dans `src/games/heure/heure.ts`.
+
+## Articles du « Petit marché »
+
+Une carte de `catalogue-marche.json` (#136) est un **article** : `emoji`, `answer` avec « un »
+ou « une » (« une baguette ») et le prix dans `text` (« 1 € », « 1,20 € »), réaliste, **moins de
+10 €** et multiple de 10 centimes. Niveau 2 : euros ronds, 5 € au plus ; niveau 3 : avec des
+centimes. Règles dans `src/games/marche/marche.ts`.

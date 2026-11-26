@@ -70,6 +70,8 @@ describe('façons de jouer', () => {
       'ordre',
       'situation',
       'ni-oui-ni-non',
+      'heure',
+      'marche',
     ]);
   });
 

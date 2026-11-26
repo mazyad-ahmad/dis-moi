@@ -43,6 +43,10 @@ import { SituationGame } from '../games/situation/SituationGame';
 import { SITUATION_ID } from '../games/situation/situation';
 import { NiOuiGame } from '../games/nioui/NiOuiGame';
 import { NIOUI_ID } from '../games/nioui/nioui';
+import { HeureGame } from '../games/heure/HeureGame';
+import { HEURE_ID } from '../games/heure/heure';
+import { MarcheGame } from '../games/marche/MarcheGame';
+import { MARCHE_ID } from '../games/marche/marche';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -135,6 +139,10 @@ function GameScreen({ id }: { id: string }) {
           <SituationGame game={catalogue} />
         ) : catalogue.id === NIOUI_ID ? (
           <NiOuiGame game={catalogue} />
+        ) : catalogue.id === HEURE_ID ? (
+          <HeureGame game={catalogue} />
+        ) : catalogue.id === MARCHE_ID ? (
+          <MarcheGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}

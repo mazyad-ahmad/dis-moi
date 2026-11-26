@@ -6,6 +6,7 @@ import type { DeckItem } from '../deck/types';
 import { DISPARU_ID } from '../disparu/disparu';
 import { COMPTE_ID } from '../compte/compte';
 import { SUITE_ID } from '../suite/suite';
+import { MARCHE_ID } from '../marche/marche';
 
 /**
  * Image cachée (#62) : l'image d'une carte se dévoile par paliers, le parent avance d'un
@@ -50,7 +51,8 @@ export function canReveal(item: DeckItem): boolean {
  * Jeux du catalogue où l'option a un sens : type Image, sans mime (l'enfant doit voir ce
  * qu'il mime), avec des cartes à dévoiler (pas les pastilles de couleur) et hors Ombres (#61),
  * qui cache déjà l'image à sa façon, et hors L'intrus (#63), Qu'est-ce qui a disparu ? (#64),
- * Compte avec moi (#65) et La suite logique (#129), qui ont leur propre écran.
+ * Compte avec moi (#65), La suite logique (#129) et Le petit marché (#136), qui ont leur propre
+ * écran.
  */
 export function revealsInCatalogue(game: CatalogueGame): boolean {
   return (
@@ -58,6 +60,7 @@ export function revealsInCatalogue(game: CatalogueGame): boolean {
     !game.needs.moves &&
     game.id !== COMPTE_ID &&
     game.id !== SUITE_ID &&
+    game.id !== MARCHE_ID &&
     !game.items.some((item) => item.shadow || item.others) &&
     game.id !== DISPARU_ID &&
     game.items.some(canReveal)
