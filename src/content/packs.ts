@@ -78,6 +78,7 @@ const ITEM_FIELDS = new Set([
   'text',
   'hint',
   'hints',
+  'talk',
   'emoji',
   'color',
   'level',
@@ -131,7 +132,7 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
   if (typeof item.id !== 'string' || !ID.test(item.id))
     return 'identifiant (« id ») manquant ou invalide (minuscules, chiffres, tirets)';
   if (!isText(item.answer)) return 'réponse (« answer ») vide, trop longue ou mal espacée';
-  for (const field of ['text', 'hint'] as const)
+  for (const field of ['text', 'hint', 'talk'] as const)
     if (item[field] !== undefined && !isText(item[field]))
       return `« ${field} » vide, trop long (${MAX_TEXT} max) ou mal espacé`;
   if (

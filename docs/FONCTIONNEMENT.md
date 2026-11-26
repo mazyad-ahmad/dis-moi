@@ -136,7 +136,7 @@
   la carte (emoji et nom ; une chanson a son emoji ; sans image, le texte de la réponse).
 - Couleurs, lettres et chiffres, jeux créés de type Image : l'enfant verrait la réponse, donc les
   choix (pastilles, glyphes, photos) **remplacent** l'image et le parent demande « Montre-moi… ».
-- Pas de choix dans les jeux de dessin ni dans Mime ça, ni dans le Défi du jour. Ils marchent
+- Pas de choix dans les jeux de dessin ni dans Mime ça (ni Mime l’émotion), ni dans le Défi du jour. Ils marchent
   aussi dans le Grand Jeu.
 - Chaque choix est un bouton d'au moins 64 px, nommé pour le lecteur d'écran (« La vache »,
   « Lettre A », « Rouge »). Images : emoji dessinés par la police du téléphone, aucun fichier.
@@ -230,6 +230,21 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Quelle couleur ?** | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
 | **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
 | **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
+| **Quelle émotion ?** | Un visage (emoji) en grand, l'enfant nomme l'émotion. Voir « Les émotions ».                                                               |
+| **Mime l’émotion**   | L'écran montre à l'enfant l'émotion à mimer (visage + consigne), le parent devine. Voir « Les émotions ».                                  |
+
+### Les émotions (#58)
+
+- Deux sens de jeu, deux jeux du catalogue tirés des mêmes 14 émotions : **Quelle émotion ?**
+  (reconnaître) et **Mime l’émotion** (mimer). Des plus simples aux plus fines selon le niveau :
+  Petits (joie, tristesse, colère, peur, surprise), Moyens (amour, dégoût, ennui, inquiétude,
+  calme), Grands (fierté, jalousie, déception, gêne).
+- Chaque émotion a une **question pour en parler** (« Quand est-ce que tu es fier de toi ? »),
+  ouverte et bienveillante : jamais de « pourquoi », jamais de reproche. Elle apparaît dans le
+  bloc parent avec la réponse (champ `talk` des packs), aussi dans le Grand Jeu et le Défi du jour.
+- Mime l’émotion fait bouger (pas au Coucher) et n'a pas de choix « En montrant », comme Mime ça.
+  Quelle émotion ? convient au Coucher ; en montrant, les visages au choix remplacent le visage.
+- Visages : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
 ### Le Grand Jeu (#41)
 
@@ -436,7 +451,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    (« Montre l'écran à l'enfant »), consigne parent, boutons Passer / Trouvé.
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
    boutons Passer / C'est fini.
-5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes)
+5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
+   Quelle émotion ?, Mime l’émotion)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

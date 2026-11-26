@@ -79,8 +79,15 @@ it('formate les étoiles et le minuteur', () => {
 });
 
 describe('catalogue', () => {
-  it('a 4 jeux avec assez de cartes et des réponses uniques', () => {
-    expect(CATALOGUE.map((g) => g.id)).toEqual(['animal', 'couleur', 'mime', 'devinette']);
+  it('a 6 jeux avec assez de cartes et des réponses uniques', () => {
+    expect(CATALOGUE.map((g) => g.id)).toEqual([
+      'animal',
+      'couleur',
+      'mime',
+      'devinette',
+      'emotion',
+      'emotion-mime',
+    ]);
     for (const g of CATALOGUE) {
       expect(g.items.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);
       expect(new Set(g.items.map((i) => i.answer)).size).toBe(g.items.length);

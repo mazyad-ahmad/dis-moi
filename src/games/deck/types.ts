@@ -38,6 +38,11 @@ export interface DeckItem {
   hint?: string;
   /** Indices suivants, donnés un à un si l'enfant sèche (#34). */
   hints?: string[];
+  /**
+   * Question pour en parler ensemble, ouverte et bienveillante (Les émotions, #58), montrée
+   * au parent avec la réponse.
+   */
+  talk?: string;
   /** Visuels intégrés (catalogue) : emoji ou couleur montrés en grand. */
   emoji?: string;
   color?: string;

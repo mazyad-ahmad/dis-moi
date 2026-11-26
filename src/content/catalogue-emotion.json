@@ -1,0 +1,31 @@
+{
+  "format": "dis-moi/jeu",
+  "version": 1,
+  "id": "emotion",
+  "revision": 1,
+  "kind": "image",
+  "name": "Quelle émotion ?",
+  "lang": "fr",
+  "category": "Émotions",
+  "desc": "L’enfant nomme l’émotion du visage",
+  "mark": "Ém",
+  "tint": "dawn",
+  "activities": ["parler"],
+  "skill": "Apprend à reconnaître et à nommer ses émotions",
+  "items": [
+    {"id": "joie", "level": 1, "answer": "La joie", "emoji": "😄", "hint": "Comme quand on reçoit un cadeau.", "hints": ["On a envie de rire et de sauter."], "talk": "Qu’est-ce qui te rend joyeux, toi ?"},
+    {"id": "tristesse", "level": 1, "answer": "La tristesse", "emoji": "😢", "hint": "Comme quand on perd son doudou.", "hints": ["Parfois, on a envie de pleurer."], "talk": "Qu’est-ce qui t’aide quand tu es triste ?"},
+    {"id": "colere", "level": 1, "answer": "La colère", "emoji": "😠", "hint": "Comme quand on nous prend notre jouet.", "hints": ["On a envie de crier ou de taper du pied."], "talk": "Qu’est-ce qui t’aide à te calmer quand tu es en colère ?"},
+    {"id": "peur", "level": 1, "answer": "La peur", "emoji": "😨", "hint": "Comme quand on entend un gros bruit dans le noir.", "hints": ["On a envie de se cacher ou d’un câlin."], "talk": "Qui peut t’aider quand tu as peur ?"},
+    {"id": "surprise", "level": 1, "answer": "La surprise", "emoji": "😮", "hint": "Comme quand quelqu’un crie « Coucou ! » derrière toi.", "hints": ["La bouche s’ouvre en rond : « Oh ! »"], "talk": "Quelle a été ta plus belle surprise ?"},
+    {"id": "amour", "level": 2, "answer": "L’amour", "emoji": "🥰", "hint": "Comme pendant un gros câlin.", "hints": ["On le ressent pour sa famille et ses amis."], "talk": "Comment montres-tu aux gens que tu les aimes ?"},
+    {"id": "degout", "level": 2, "answer": "Le dégoût", "emoji": "🤢", "hint": "Comme quand ça sent très mauvais.", "hints": ["On fait « Beurk ! »"], "talk": "Qu’est-ce qui te fait dire « Beurk » ?"},
+    {"id": "ennui", "level": 2, "answer": "L’ennui", "emoji": "🥱", "hint": "Comme quand on attend longtemps sans rien à faire.", "hints": ["On trouve le temps long."], "talk": "Qu’aimes-tu inventer quand tu t’ennuies ?"},
+    {"id": "inquietude", "level": 2, "answer": "L’inquiétude", "emoji": "😟", "hint": "Comme quand on attend quelqu’un qui est en retard.", "hints": ["Une petite peur qui reste dans la tête."], "talk": "À qui peux-tu parler quand quelque chose t’inquiète ?"},
+    {"id": "calme", "level": 2, "answer": "Le calme", "emoji": "😌", "hint": "Comme dans un bain tout chaud.", "hints": ["Le cœur bat doucement, on respire lentement."], "talk": "Où te sens-tu bien calme ?"},
+    {"id": "fierte", "level": 3, "answer": "La fierté", "emoji": "😤", "hint": "Comme quand on réussit quelque chose de difficile.", "hints": ["On a envie de dire : « J’ai réussi ! »"], "talk": "Quand est-ce que tu es fier de toi ?"},
+    {"id": "jalousie", "level": 3, "answer": "La jalousie", "emoji": "😒", "hint": "Comme quand on voudrait avoir le jouet d’un autre.", "hints": ["On voudrait être à la place de quelqu’un."], "talk": "Qu’est-ce qui peut aider quand on se sent jaloux ?"},
+    {"id": "deception", "level": 3, "answer": "La déception", "emoji": "😞", "hint": "Comme quand une sortie est annulée à cause de la pluie.", "hints": ["Ça arrive quand on attendait autre chose."], "talk": "Que fais-tu quand les choses ne se passent pas comme prévu ?"},
+    {"id": "gene", "level": 3, "answer": "La gêne", "emoji": "😳", "hint": "Comme quand on renverse son verre devant tout le monde.", "hints": ["Les joues deviennent toutes rouges."], "talk": "Que peut-on dire à quelqu’un qui se sent gêné ?"}
+  ]
+}

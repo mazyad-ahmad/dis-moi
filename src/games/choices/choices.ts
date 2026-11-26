@@ -113,16 +113,20 @@ export function songOption(song: Song): ChoiceOption {
   };
 }
 
+/** Jeux où l'enfant mime : c'est le parent qui devine, pas de choix à montrer. */
+const MIME_GAMES = new Set(['mime', 'emotion-mime']);
+
 /**
  * Cartes d'un jeu à cartes parmi lesquelles tirer les choix, ou rien si le jeu ne s'y prête
- * pas : un dessin, ou « Mime ça » (l'enfant mime, c'est le parent qui devine).
+ * pas : un dessin, ou un mime (Mime ça, Mime l'émotion).
  */
+
 export function deckChoicePool(deck: {
   id: string;
   kind: DeckKind;
   items: readonly DeckItem[];
 }): readonly DeckItem[] | undefined {
-  return deck.kind === 'draw' || deck.id === 'mime' ? undefined : deck.items;
+  return deck.kind === 'draw' || MIME_GAMES.has(deck.id) ? undefined : deck.items;
 }
 
 /**

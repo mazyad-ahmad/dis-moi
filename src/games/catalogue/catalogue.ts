@@ -19,7 +19,14 @@ export interface CatalogueGame extends Deck {
  * Contenu écrit pour l'appli, dans `src/content/catalogue-<id>.json` :
  * pas d'enregistrement ni d'image téléchargée, donc pas de droits à vérifier.
  */
-export const CATALOGUE_PACKS = ['animal', 'couleur', 'mime', 'devinette'];
+export const CATALOGUE_PACKS = [
+  'animal',
+  'couleur',
+  'mime',
+  'devinette',
+  'emotion',
+  'emotion-mime',
+];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
   const pack = getPack(id);

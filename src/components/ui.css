@@ -158,6 +158,12 @@
 .parent-block__answer {
   font: var(--text-h2);
 }
+/* Question pour en parler ensemble (#58), sous la réponse. */
+.parent-block__talk {
+  margin: var(--space-1) 0 0;
+  font: var(--text-body);
+  color: var(--ink);
+}
 .parent-block__reveal {
   align-self: flex-start;
   min-height: var(--tap);

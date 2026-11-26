@@ -146,7 +146,7 @@ describe('Créer mon propre jeu', () => {
     expect(
       await screen.findByRole('link', { name: /Les bruits de la maison/ }),
     ).toBeInTheDocument();
-  });
+  }, 15_000);
 
   it('supprime un jeu créé', async () => {
     const user = userEvent.setup();

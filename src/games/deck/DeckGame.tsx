@@ -99,6 +99,25 @@ function answerOf(item: DeckItem) {
   return item.emoji && !item.color ? `${item.emoji} ${item.answer}` : item.answer;
 }
 
+/** Question pour en parler ensemble (#58), sous la réponse du parent. */
+export function TalkAbout({ item }: { item: DeckItem }) {
+  return item.talk ? (
+    <p className="parent-block__talk">
+      Pour en parler : <strong>{item.talk}</strong>
+    </p>
+  ) : null;
+}
+
+/** Réponse cachée d'une carte, avec sa question pour en parler s'il y en a une. */
+export function DeckAnswer({ item }: { item: DeckItem }) {
+  return (
+    <>
+      {answerOf(item)}
+      <TalkAbout item={item} />
+    </>
+  );
+}
+
 /**
  * Une manche : la carte et la zone du parent (aussi jouée dans le Grand Jeu).
  * `pool` : cartes du jeu où tirer les choix de « Répondre en montrant » (#123).
@@ -125,11 +144,12 @@ export function DeckRound({
       {showMe ? (
         <ParentBlock>
           Demande à l’enfant de montrer : <strong>{item.answer}</strong>
+          <TalkAbout item={item} />
         </ParentBlock>
       ) : (
         /* Premier indice écrit visible d'emblée, les suivants à la demande. */
         <ParentBlock
-          hidden={answerOf(item)}
+          hidden={<DeckAnswer item={item} />}
           hints={hintLadder(item)}
           openHints={writtenHints(item).length ? 1 : 0}
         >

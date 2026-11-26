@@ -31,7 +31,7 @@ it('Ajouter un jeu : groupé par type, avec âge et ce que le jeu fait travaille
     expect(within(catalogue).getByRole('heading', { name: type })).toBeInTheDocument();
   expect(within(catalogue).getByText(/Fait bouger et s’exprimer/)).toBeInTheDocument();
   expect(within(catalogue).getAllByText(/Dès 3 ans/).length).toBeGreaterThan(0);
-  expect(shownGames()).toHaveLength(4);
+  expect(shownGames()).toHaveLength(6);
   // Recherche seulement au-delà de 20 jeux.
   expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
 });
@@ -48,8 +48,14 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
   const parler = within(types).getByRole('button', { name: 'Parler' });
   await user.click(parler);
   expect(parler).toHaveAttribute('aria-pressed', 'true');
-  expect(shownGames()).toEqual(['Quel animal ?', 'Quelle couleur ?', 'Devinettes']);
-  expect(status).toHaveTextContent('3 jeux sur 4');
+  expect(shownGames()).toEqual([
+    'Quel animal ?',
+    'Quelle couleur ?',
+    'Devinettes',
+    'Quelle émotion ?',
+    'Mime l’émotion',
+  ]);
+  expect(status).toHaveTextContent('5 jeux sur 6');
 
   await user.click(within(moments).getByRole('button', { name: 'Pour la voiture' }));
   expect(shownGames()).toEqual(['Quel animal ?', 'Devinettes']);
@@ -63,7 +69,7 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
 
   // Ou tout retirer d'un coup.
   await user.click(screen.getByRole('button', { name: 'Retirer les filtres' }));
-  expect(shownGames()).toHaveLength(4);
+  expect(shownGames()).toHaveLength(6);
   expect(status).toHaveTextContent('');
   for (const group of [types, ages, moments])
     expect(within(group).queryAllByRole('button', { pressed: true })).toHaveLength(0);

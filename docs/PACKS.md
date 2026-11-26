@@ -56,6 +56,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)                                           |
 | `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)                                          |
 | `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »                                    |
+| `talk`            | facultatif : question pour en parler ensemble, ouverte et bienveillante, montrée au parent avec la réponse        |
 | `emoji`, `color`  | visuel montré en grand (`image`), ou image des choix (« Répondre en montrant ») ; couleur `#rrggbb` en minuscules |
 | `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`                                        |
 | `level`           | niveau par âge, obligatoire : `1` Petits (3-4 ans), `2` Moyens (5-6), `3` Grands (7+)                             |
@@ -67,13 +68,15 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 
 ## Packs actuels
 
-| Fichier                    | Jeu                        | Type       |
-| -------------------------- | -------------------------- | ---------- |
-| `chansons.json`            | Quelle chanson ?           | `melody`   |
-| `lettres.json`             | Quelle lettre ?            | `glyph`    |
-| `chiffres.json`            | Quelle lettre ? (chiffres) | `glyph`    |
-| `dessin.json`              | Dessine ça                 | `draw`     |
-| `catalogue-animal.json`    | Quel animal ?              | `sound`    |
-| `catalogue-couleur.json`   | Quelle couleur ?           | `image`    |
-| `catalogue-mime.json`      | Mime ça                    | `image`    |
-| `catalogue-devinette.json` | Devinettes                 | `question` |
+| Fichier                       | Jeu                        | Type       |
+| ----------------------------- | -------------------------- | ---------- |
+| `chansons.json`               | Quelle chanson ?           | `melody`   |
+| `lettres.json`                | Quelle lettre ?            | `glyph`    |
+| `chiffres.json`               | Quelle lettre ? (chiffres) | `glyph`    |
+| `dessin.json`                 | Dessine ça                 | `draw`     |
+| `catalogue-animal.json`       | Quel animal ?              | `sound`    |
+| `catalogue-couleur.json`      | Quelle couleur ?           | `image`    |
+| `catalogue-mime.json`         | Mime ça                    | `image`    |
+| `catalogue-devinette.json`    | Devinettes                 | `question` |
+| `catalogue-emotion.json`      | Quelle émotion ?           | `image`    |
+| `catalogue-emotion-mime.json` | Mime l’émotion             | `image`    |

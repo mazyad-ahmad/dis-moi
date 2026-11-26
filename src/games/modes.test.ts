@@ -36,6 +36,7 @@ describe('façons de jouer', () => {
       'animal',
       'couleur',
       'devinette',
+      'emotion',
     ]);
   });
 
