@@ -214,6 +214,41 @@
   niveau de l’enfant) ou en équipes. Pas dans le Grand Jeu ni le Défi du jour (ils demandent une
   bonne réponse), ni de « Répondre en montrant ».
 
+## Voix rigolotes (#70)
+
+- L'enfant dit une phrase proposée, puis **se réentend déformé** : robot, souris, géant ou écho.
+  Tuile **Voix rigolotes** sur l'accueil (jeu de base, `#/jeu/voix`), types Parler et Écouter.
+- **36 phrases** rigolotes avec une image (`src/content/voix.json`), 12 par niveau : courtes pour
+  les Petits, plus folles pour les Moyens, virelangues pour les Grands.
+- Deux défis en alternance : **Devine la voix** (manches impaires : le parent lit la phrase,
+  l'enfant l'enregistre, « Écouter la voix surprise » la rejoue avec une voix tirée au hasard ;
+  « Voir la voix » la dit au parent, puis les quatre voix se réécoutent) et **Devine ma phrase**
+  (manches paires : l'écran montre la phrase à l'enfant, le parent se bouche les oreilles ; une
+  fois enregistrée, la phrase se cache et l'enfant choisit la voix ; le parent devine la phrase,
+  ou celle que l'enfant a inventée). **Trouvé** donne l'étoile, gagnée ensemble ; **Pas encore**
+  passe sans rien retirer.
+- **Micro** : demandé seulement au premier appui sur « Enregistrer la phrase », 8 s au plus, comme
+  les autres enregistrements (contexte audio recréé ensuite, #141). Les effets sont calculés par
+  Web Audio **sur le téléphone** (`src/games/voix/effects.ts`) : souris et géant changent la
+  vitesse de lecture (× 1,6 et × 0,65, la voix monte ou descend), le robot module la voix par une
+  note grave de 55 Hz, l'écho la répète tous les 0,28 s, de plus en plus bas.
+- **Rien n'est gardé** : l'enregistrement ne vit que dans la manche, en mémoire. À la manche
+  suivante, à la fin de la partie ou en quittant, la voix s'arrête et le son est oublié ; il
+  n'est jamais écrit dans la base, dans la partie enregistrée ni dans l'onglet, jamais envoyé.
+  Pas d'option pour le garder pour l'instant.
+- **Volume limité** : le son est ramené au niveau commun (comme les enregistrements du parent),
+  l'écho est baissé d'autant que ses répétitions s'ajoutent (la crête ne dépasse jamais celle
+  d'un son mis à niveau), puis tout passe par la sortie commune : plafond et volume de l'appli
+  (voir « Volume »), doux au coucher.
+- **Sans micro** (refusé, absent, ou « Jouer sans micro ») : on fait les voix soi-même. Devine la
+  voix : le parent dit la phrase avec la voix cachée (« Voir la voix à imiter », avec comment la
+  faire), l'enfant devine. Devine ma phrase : l'enfant choisit une voix sans la montrer et dit la
+  phrase avec, le parent devine la voix. « Jouer avec le micro » revient en arrière.
+- L'enfant regarde l'écran (phrase, voix à choisir) : proposé au Coucher (volume doux imposé),
+  pas en Voiture. Chacun son tour et en équipes comme les autres jeux. Pas dans le Grand Jeu ni
+  le Défi du jour (il faut enregistrer), ni de « Répondre en montrant ».
+- Voix : emoji dessinés par la police du téléphone, aucun fichier, aucun son livré, aucun droit tiers.
+
 ## Mascotte (proposition)
 
 - Une petite bulle qui parle, dessinée pour l'appli en SVG dans le code (pas d'image à charger,

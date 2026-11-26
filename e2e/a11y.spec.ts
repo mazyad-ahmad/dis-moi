@@ -16,6 +16,7 @@ const SCREENS = [
   ['Défi du jour', '/jeu/defi'],
   ['Respire comme…', '/respire'],
   ['Raconte-moi', '/jeu/raconte'],
+  ['Voix rigolotes', '/jeu/voix'],
   ['Jacques a dit', '/jeu/jacques'],
 ] as const;
 

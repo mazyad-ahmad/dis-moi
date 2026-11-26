@@ -43,6 +43,7 @@ describe('façons de jouer', () => {
       'lettres',
       'dessin',
       'raconte',
+      'voix',
       'animal',
       'couleur',
       'devinette',

@@ -72,6 +72,17 @@ export const GAMES: GameInfo[] = [
     levels: packLevels('raconte'),
     skill: 'Aide à mettre des mots sur sa journée et ses idées',
   },
+  {
+    id: 'voix',
+    name: 'Voix rigolotes',
+    category: 'Voix',
+    tint: 'sky',
+    mark: '🎤',
+    needs: needsOf('image'),
+    activities: ['parler', 'ecouter'],
+    levels: packLevels('voix'),
+    skill: 'Fait jouer avec sa voix et tendre l’oreille',
+  },
 ];
 
 export function findGame(id: string): GameInfo | undefined {

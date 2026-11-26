@@ -69,7 +69,7 @@ describe('textes et calculs', () => {
   it('« Un autre jeu » propose le jeu suivant de l’accueil', () => {
     expect(nextGame(GAMES, 'chanson')?.id).toBe('lettres');
     expect(nextGame(GAMES, 'dessin')?.id).toBe('raconte');
-    expect(nextGame(GAMES, 'raconte')?.id).toBe('chanson');
+    expect(nextGame(GAMES, 'raconte')?.id).toBe('voix');
     expect(nextGame(GAMES.slice(0, 1), 'chanson')).toBeUndefined();
   });
 });

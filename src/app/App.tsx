@@ -13,6 +13,7 @@ import { DrawingGame } from '../games/dessin/DrawingGame';
 import { LettersGame } from '../games/lettres/LettersGame';
 import { GrandGame } from '../games/grand/GrandGame';
 import { RaconteGame } from '../games/raconte/RaconteGame';
+import { VoixGame } from '../games/voix/VoixGame';
 import { GRAND_ID } from '../games/grand/pool';
 import { NotForMode, NotFound } from '../screens/Placeholder';
 import { AddGame } from '../screens/AddGame';
@@ -46,6 +47,7 @@ const GAME_SCREENS: Record<string, () => React.ReactElement> = {
   lettres: LettersGame,
   dessin: DrawingGame,
   raconte: RaconteGame,
+  voix: VoixGame,
   [GRAND_ID]: GrandGame,
   defi: DailyGame,
 };

@@ -78,6 +78,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `chiffres.json`               | Quelle lettre ? (chiffres) | `glyph`    |
 | `dessin.json`                 | Dessine ça                 | `draw`     |
 | `raconte.json`                | Raconte-moi                | `chat`     |
+| `voix.json`                   | Voix rigolotes             | `image`    |
 | `catalogue-animal.json`       | Quel animal ?              | `sound`    |
 | `catalogue-couleur.json`      | Quelle couleur ?           | `image`    |
 | `catalogue-mime.json`         | Mime ça                    | `image`    |

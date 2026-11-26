@@ -48,9 +48,14 @@ export function Privacy() {
         <h2 className="h3">Micro, photos et voix</h2>
         <p>
           Les photos ne servent qu'à « Créer mon propre jeu », quand le parent ajoute une image à
-          une carte. Le micro sert à deux choses : enregistrer le son d'une carte, et enregistrer
-          les félicitations du parent (« Bravo ! »), dans l'espace Parent. Android demande alors
-          l'autorisation ; on peut la refuser et jouer sans enregistrement.
+          une carte. Le micro sert à trois choses : enregistrer le son d'une carte, enregistrer les
+          félicitations du parent (« Bravo ! »), dans l'espace Parent, et rejouer une phrase avec
+          une voix rigolote dans « Voix rigolotes ». Android demande alors l'autorisation ; on peut
+          la refuser et jouer sans enregistrement.
+        </p>
+        <p>
+          Dans « Voix rigolotes », la voix est transformée sur le téléphone et l'enregistrement
+          n'est jamais gardé : il est oublié à la fin de chaque manche.
         </p>
         <p>
           Les félicitations enregistrées restent sur ce téléphone : elles ne sont jamais envoyées,
