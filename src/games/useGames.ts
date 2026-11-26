@@ -5,6 +5,7 @@ import { ALL_LEVELS, KIND_ACTIVITY } from './activities';
 import { CATALOGUE, findCatalogueGame } from './catalogue/catalogue';
 import { GRAND_ID, GRAND_NAME } from './grand/pool';
 import { DAILY_ID, DAILY_NAME } from './defi/daily';
+import { BREATHE_ID, BREATHE_NAME } from './respire/exercises';
 import { needsOf, suitsMode } from './modes';
 import { GAMES, type GameInfo } from './registry';
 
@@ -58,6 +59,7 @@ export function toggleCatalogueGame(id: string): Promise<void> {
 /** Nom d'un jeu pour l'historique (un jeu créé a pu être supprimé depuis). */
 export function gameName(gameId: string, custom: CustomGame[] = []): string {
   if (gameId === GRAND_ID) return GRAND_NAME;
+  if (gameId === BREATHE_ID) return BREATHE_NAME;
   return (
     GAMES.find((g) => g.id === gameId)?.name ??
     findCatalogueGame(gameId)?.name ??

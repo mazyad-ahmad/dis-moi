@@ -1,0 +1,13 @@
+/* ---------- Que fais-tu si… ? (#133) ---------- */
+
+.situation-emoji {
+  align-self: center;
+  font-size: 72px;
+  line-height: 1.1;
+}
+.situation-ideas {
+  margin: 0;
+  padding-left: 1.25em;
+  font: var(--text-body);
+  color: var(--ink);
+}

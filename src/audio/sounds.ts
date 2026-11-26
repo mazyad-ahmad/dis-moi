@@ -5,7 +5,7 @@ import { audioBusy, audioOutput, FADE_IN, runningAudioContext } from './context'
  * Sons d'interface, synthétisés (aucun fichier audio) : courts, doux, jamais négatifs.
  * Notes en Hz, temps en secondes.
  */
-export type UiSound = 'star' | 'skip' | 'timer' | 'end' | 'reward';
+export type UiSound = 'star' | 'skip' | 'pass' | 'timer' | 'end' | 'reward';
 
 interface Tone {
   freq: number;
@@ -40,6 +40,16 @@ export const UI_SOUNDS: Record<UiSound, SoundSpec> = {
   star: { tones: arpeggio([C6, E6, G6], 0.08, 0.3), gain: 0.22, type: 'sine' },
   // Passer : une seule note douce et brève, ni montante ni descendante.
   skip: { tones: [{ freq: G5, start: 0, duration: 0.16 }], gain: 0.12, type: 'sine' },
+  // Passer en Devine-tête (#67), quand l'enfant n'a pas l'écran sous les yeux : deux notes
+  // égales bien audibles (« toc-toc »), neutres, nettement différentes de l'arpège de l'étoile.
+  pass: {
+    tones: [
+      { freq: E5, start: 0, duration: 0.12 },
+      { freq: E5, start: 0.16, duration: 0.14 },
+    ],
+    gain: 0.2,
+    type: 'triangle',
+  },
   // Fin du minuteur : deux tintements égaux, comme une clochette.
   timer: {
     tones: [
@@ -100,14 +110,18 @@ export async function playSound(name: UiSound): Promise<void> {
  * Son joué après une réponse du parent : une récompense débloquée l'emporte,
  * puis la fin de partie, puis l'étoile ou le son neutre de « Passer ».
  * `total` : étoiles gagnées ensemble après cette réponse (inconnu : `null`).
+ * `gesture` (Devine-tête, #67) : l'enfant ne voit pas l'écran, chaque geste a son propre son,
+ * même à la dernière manche : l'étoile (ou la récompense) pour trouvé, « toc-toc » pour passer.
  */
 export function answerSound(
   found: boolean,
   finished: boolean,
   total: number | null,
   rewards: readonly { stars: number }[],
+  gesture = false,
 ): UiSound {
   if (found && total !== null && rewards.some((r) => r.stars === total)) return 'reward';
+  if (gesture) return found ? 'star' : 'pass';
   if (finished) return 'end';
   return found ? 'star' : 'skip';
 }

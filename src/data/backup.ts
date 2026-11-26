@@ -240,6 +240,8 @@ function readSettings(raw: unknown): Partial<Settings> {
     out.turnMode = raw.turnMode as Settings['turnMode'];
   if (Array.isArray(raw.grandExcluded) && raw.grandExcluded.every((c) => typeof c === 'string'))
     out.grandExcluded = raw.grandExcluded;
+  if (Array.isArray(raw.revealCatalogue) && raw.revealCatalogue.every((c) => typeof c === 'string'))
+    out.revealCatalogue = raw.revealCatalogue;
   return out;
 }
 

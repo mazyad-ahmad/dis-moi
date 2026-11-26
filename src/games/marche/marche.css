@@ -1,0 +1,50 @@
+/* ---------- Le petit marché (#136) ---------- */
+
+.marche-card {
+  min-height: 0;
+}
+/* L'article et son étiquette de prix, comme sur l'étal. */
+.marche-stall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 20px;
+  background: var(--sky);
+}
+.marche-item {
+  font-size: 72px;
+  line-height: 1.1;
+  user-select: none;
+}
+.marche-price {
+  padding: 6px 14px;
+  border-radius: 12px;
+  border: 2px dashed var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.marche-purse {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.marche-coins {
+  display: block;
+  height: auto;
+  margin: 4px auto 0;
+}
+/* Choix « en montrant » : les pièces prennent toute la place de la case. */
+.marche-choices .choice__photo {
+  width: 100%;
+  max-height: 96px;
+  border-radius: 0;
+}

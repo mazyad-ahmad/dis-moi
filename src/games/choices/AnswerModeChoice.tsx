@@ -12,7 +12,8 @@ function CountHint() {
   const count = useChoiceCount();
   return (
     <p className="muted answer-mode__hint">
-      L’enfant touche la réponse parmi {count} choix (sauf dans les jeux de dessin et de mime).
+      L’enfant touche la réponse parmi {count} choix (sauf dans les jeux de dessin, de mime et la
+      chasse au trésor).
     </p>
   );
 }

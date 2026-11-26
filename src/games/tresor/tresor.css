@@ -1,0 +1,20 @@
+/* ---------- Chasse au trésor (#60) ---------- */
+
+.treasure-card {
+  min-height: 0;
+}
+.treasure-card__way {
+  margin: 0;
+  font-weight: 600;
+}
+.treasure-timer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.treasure-music {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

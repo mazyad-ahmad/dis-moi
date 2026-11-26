@@ -3,6 +3,7 @@ import { Mascot } from '../components/Mascot';
 import { useNightTheme } from '../components/useNightTheme';
 import { usePlayers } from '../data/players';
 import { useSeance } from '../data/seance';
+import { BreatheCard } from '../games/respire/BreatheCard';
 import { usePlayableGames } from '../games/useGames';
 import { HomeGames } from './HomeGames';
 import { LastGame } from './LastGame';
@@ -40,6 +41,8 @@ export function Home() {
       <PartyLine />
 
       {over ? <SeanceOverCard /> : <HomeGames games={games} />}
+      {/* Respire comme… (#126) : à part des jeux ; après la séance, dans « Revenir plus tard ». */}
+      {!over && <BreatheCard />}
 
       <div className="spacer" />
 

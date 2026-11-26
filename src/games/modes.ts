@@ -50,6 +50,11 @@ export interface PlayNeeds {
   looks: boolean;
   /** L'enfant doit bouger (mime, chasse au trésor…). */
   moves: boolean;
+  /**
+   * Le jeu qui fait bouger a une version sans bouger (chasse au trésor « sans courir ») :
+   * c'est elle qui se joue au Coucher et en Voiture.
+   */
+  still?: boolean;
 }
 
 export const ORAL: PlayNeeds = { looks: false, moves: false };
@@ -60,6 +65,8 @@ export const KIND_NEEDS: Record<PackKind, PlayNeeds> = {
   melody: ORAL,
   sound: ORAL,
   question: ORAL,
+  chat: ORAL,
+  story: ORAL,
   glyph: ON_SCREEN,
   image: ON_SCREEN,
   draw: ON_SCREEN,
@@ -77,10 +84,15 @@ export function suitsMode(needs: PlayNeeds | undefined, mode: GameMode): boolean
     case 'express':
       return true;
     case 'coucher':
-      return needs !== undefined && !needs.moves;
+      return needs !== undefined && (!needs.moves || !!needs.still);
     case 'voiture':
-      return needs !== undefined && !needs.looks;
+      return needs !== undefined && !needs.looks && (!needs.moves || !!needs.still);
   }
+}
+
+/** Le mode impose-t-il la version sans bouger des jeux qui en ont une (`still`) ? */
+export function playsStill(mode: GameMode): boolean {
+  return mode === 'coucher' || mode === 'voiture';
 }
 
 /** Nombre de manches d'une partie dans ce mode. */

@@ -1,0 +1,28 @@
+/* ---------- L'intrus (#63) ---------- */
+
+.intrus-card {
+  min-height: 0;
+}
+/* Grille de deux sur deux, cibles bien plus grandes que 64 px pour un doigt d'enfant. */
+.intrus-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.intrus-grid .choice {
+  min-height: 128px;
+}
+.intrus-grid .choice__emoji {
+  font-size: 64px;
+}
+/* Montrée par l'enfant : mise en avant neutre, ni juste ni faux (le parent décide). */
+.choice.is-shown {
+  border-color: var(--river);
+  box-shadow: 0 0 0 3px var(--river);
+}
+.intrus-status {
+  margin: 0;
+  min-height: 22px;
+  text-align: center;
+  font-weight: 600;
+}

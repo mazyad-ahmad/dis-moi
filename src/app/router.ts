@@ -14,6 +14,7 @@ export type Route =
   | { name: 'teams' }
   | { name: 'add-game' }
   | { name: 'privacy' }
+  | { name: 'breathe' }
   | { name: 'game'; id: string }
   | { name: 'edit-game'; id: number }
   | { name: 'not-found'; path: string };
@@ -27,6 +28,7 @@ export function parseHash(hash: string): Route {
   if (path === '/equipes') return { name: 'teams' };
   if (path === '/ajouter') return { name: 'add-game' };
   if (path === '/confidentialite') return { name: 'privacy' };
+  if (path === '/respire') return { name: 'breathe' };
   const section = /^\/parent\/([a-z]+)$/.exec(path)?.[1] as ParentSectionId | undefined;
   if (section && PARENT_SECTIONS.includes(section)) return { name: 'parent-section', id: section };
   const edit = /^\/creer\/(\d+)$/.exec(path);

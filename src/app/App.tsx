@@ -12,6 +12,9 @@ import { SongGame } from '../games/chanson/SongGame';
 import { DrawingGame } from '../games/dessin/DrawingGame';
 import { LettersGame } from '../games/lettres/LettersGame';
 import { GrandGame } from '../games/grand/GrandGame';
+import { RaconteGame } from '../games/raconte/RaconteGame';
+import { VoixGame } from '../games/voix/VoixGame';
+import { HistoireGame } from '../games/histoire/HistoireGame';
 import { GRAND_ID } from '../games/grand/pool';
 import { NotForMode, NotFound } from '../screens/Placeholder';
 import { AddGame } from '../screens/AddGame';
@@ -20,6 +23,30 @@ import { customDeck, parseCustomRouteId, useCustomGame } from '../data/customGam
 import { findCatalogueGame } from '../games/catalogue/catalogue';
 import { DeckGame } from '../games/deck/DeckGame';
 import { DailyGame } from '../games/defi/DailyGame';
+import { TreasureGame } from '../games/tresor/TreasureGame';
+import { TREASURE_ID } from '../games/tresor/treasure';
+import { DisparuGame } from '../games/disparu/DisparuGame';
+import { DISPARU_ID } from '../games/disparu/disparu';
+import { IntrusGame } from '../games/intrus/IntrusGame';
+import { INTRUS_ID } from '../games/intrus/intrus';
+import { CompteGame } from '../games/compte/CompteGame';
+import { COMPTE_ID } from '../games/compte/compte';
+import { TeteGame } from '../games/tete/TeteGame';
+import { TETE_ID } from '../games/tete/tilt';
+import { MainsGame } from '../games/mains/MainsGame';
+import { MAINS_ID } from '../games/mains/mains';
+import { SuiteGame } from '../games/suite/SuiteGame';
+import { SUITE_ID } from '../games/suite/suite';
+import { OrdreGame } from '../games/ordre/OrdreGame';
+import { ORDRE_ID } from '../games/ordre/ordre';
+import { SituationGame } from '../games/situation/SituationGame';
+import { SITUATION_ID } from '../games/situation/situation';
+import { NiOuiGame } from '../games/nioui/NiOuiGame';
+import { NIOUI_ID } from '../games/nioui/nioui';
+import { HeureGame } from '../games/heure/HeureGame';
+import { HEURE_ID } from '../games/heure/heure';
+import { MarcheGame } from '../games/marche/MarcheGame';
+import { MARCHE_ID } from '../games/marche/marche';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -27,6 +54,7 @@ import { Players } from '../screens/Players';
 import { Teams } from '../screens/Teams';
 import { Stars } from '../screens/Stars';
 import { Privacy } from '../screens/Privacy';
+import { BreatheGame } from '../games/respire/BreatheGame';
 import { UpdateBanner } from '../pwa/UpdateBanner';
 import { TurnsGate } from '../games/TurnsGate';
 import { useRoute, type Route } from './router';
@@ -35,6 +63,9 @@ const GAME_SCREENS: Record<string, () => React.ReactElement> = {
   chanson: SongGame,
   lettres: LettersGame,
   dessin: DrawingGame,
+  raconte: RaconteGame,
+  voix: VoixGame,
+  histoire: HistoireGame,
   [GRAND_ID]: GrandGame,
   defi: DailyGame,
 };
@@ -88,7 +119,33 @@ function GameScreen({ id }: { id: string }) {
   if (catalogue)
     return (
       <ModeGuard title={catalogue.name} needs={catalogue.needs}>
-        <DeckGame deck={catalogue} />
+        {catalogue.id === TREASURE_ID ? (
+          <TreasureGame game={catalogue} />
+        ) : catalogue.id === INTRUS_ID ? (
+          <IntrusGame game={catalogue} />
+        ) : catalogue.id === DISPARU_ID ? (
+          <DisparuGame game={catalogue} />
+        ) : catalogue.id === COMPTE_ID ? (
+          <CompteGame game={catalogue} />
+        ) : catalogue.id === TETE_ID ? (
+          <TeteGame game={catalogue} />
+        ) : catalogue.id === MAINS_ID ? (
+          <MainsGame game={catalogue} />
+        ) : catalogue.id === SUITE_ID ? (
+          <SuiteGame game={catalogue} />
+        ) : catalogue.id === ORDRE_ID ? (
+          <OrdreGame game={catalogue} />
+        ) : catalogue.id === SITUATION_ID ? (
+          <SituationGame game={catalogue} />
+        ) : catalogue.id === NIOUI_ID ? (
+          <NiOuiGame game={catalogue} />
+        ) : catalogue.id === HEURE_ID ? (
+          <HeureGame game={catalogue} />
+        ) : catalogue.id === MARCHE_ID ? (
+          <MarcheGame game={catalogue} />
+        ) : (
+          <DeckGame deck={catalogue} />
+        )}
       </ModeGuard>
     );
   const custom = parseCustomRouteId(id);
@@ -129,6 +186,9 @@ function screenFor(route: Route) {
       return <AddGame />;
     case 'privacy':
       return <Privacy />;
+    case 'breathe':
+      // Respire comme… (#126) : proposé aussi après la fin de séance et au coucher.
+      return <BreatheGame />;
     case 'edit-game':
       return <EditGame key={route.id} id={route.id} />;
     case 'game':

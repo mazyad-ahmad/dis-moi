@@ -1,0 +1,96 @@
+/* ---------- Remets dans l'ordre (#131) ---------- */
+
+.ordre-card {
+  min-height: 0;
+}
+.ordre-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* Une ligne : la place, l'image (cible large pour un doigt d'enfant), avant / après. */
+.ordre-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.ordre-row__place {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-align: center;
+}
+.ordre-tile {
+  min-height: 72px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 2px solid var(--stone);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ordre-tile:focus-visible,
+.ordre-move:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+}
+.ordre-tile__emoji {
+  font-size: 44px;
+  line-height: 1;
+}
+.ordre-tile__text {
+  font-weight: 600;
+  min-width: 0;
+}
+/* Étape sans image (jours de la semaine) : le mot en grand. */
+.ordre-tile--word .ordre-tile__text {
+  font-family: var(--font-serif);
+  font-size: 26px;
+}
+/* Image touchée, en attente de sa place : mise en avant neutre (le parent décide). */
+.ordre-tile.is-shown {
+  border-color: var(--river);
+  box-shadow: 0 0 0 3px var(--river);
+}
+.ordre-row__moves {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ordre-move {
+  width: 48px;
+  height: 34px;
+  border-radius: 12px;
+  border: 2px solid var(--stone);
+  background: var(--sky);
+  color: var(--ink);
+  font-size: 16px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ordre-move:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.ordre-status {
+  margin: 8px 0 0;
+  min-height: 22px;
+  text-align: center;
+  font-weight: 600;
+}
+.ordre-answer {
+  margin: 4px 0 12px;
+  padding-left: 24px;
+  font: var(--text-body);
+}

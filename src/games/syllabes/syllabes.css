@@ -1,0 +1,23 @@
+/* ---------- Tape les syllabes (#127) ---------- */
+
+.syllabes-cue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--river);
+  background: var(--paper);
+  color: var(--ink);
+}
+.syllabes-cue strong {
+  font: var(--text-h3);
+}
+.syllabes-cue__claps {
+  letter-spacing: 2px;
+}
+.syllabes-cue__how {
+  margin: 8px 0 0;
+}
