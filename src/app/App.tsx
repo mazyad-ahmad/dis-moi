@@ -35,6 +35,8 @@ import { TeteGame } from '../games/tete/TeteGame';
 import { TETE_ID } from '../games/tete/tilt';
 import { MainsGame } from '../games/mains/MainsGame';
 import { MAINS_ID } from '../games/mains/mains';
+import { SuiteGame } from '../games/suite/SuiteGame';
+import { SUITE_ID } from '../games/suite/suite';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -119,6 +121,8 @@ function GameScreen({ id }: { id: string }) {
           <TeteGame game={catalogue} />
         ) : catalogue.id === MAINS_ID ? (
           <MainsGame game={catalogue} />
+        ) : catalogue.id === SUITE_ID ? (
+          <SuiteGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}

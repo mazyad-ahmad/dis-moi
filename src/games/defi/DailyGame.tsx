@@ -31,6 +31,8 @@ import { DisparuRound } from '../disparu/DisparuGame';
 import { DISPARU_ID } from '../disparu/disparu';
 import { CompteRound } from '../compte/CompteGame';
 import { COMPTE_ID, seeded } from '../compte/compte';
+import { SuiteRound } from '../suite/SuiteGame';
+import { SUITE_ID } from '../suite/suite';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -184,6 +186,8 @@ function DailyRound({ day }: { day: string }) {
         <DisparuRound item={card.item} />
       ) : source.game === COMPTE_ID && card.kind === 'image' ? (
         <CompteRound item={card.item} random={seeded(day)} choices={false} />
+      ) : source.game === SUITE_ID && card.kind === 'image' ? (
+        <SuiteRound item={card.item} random={seeded(day)} choices={false} />
       ) : (
         <CardBody card={card} />
       )}

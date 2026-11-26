@@ -99,6 +99,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-syllabes.json`     | Tape les syllabes          | `question` |
 | `catalogue-tri.json`          | Où ça va ?                 | `question` |
 | `catalogue-devine-mains.json` | Devine avec tes mains      | `question` |
+| `catalogue-suite.json`        | La suite logique           | `image`    |
 
 ## Cartes « Compte avec moi »
 
@@ -156,3 +157,12 @@ toucher (« Ronde, un peu poilue, elle rebondit. »). Chaque objet ajouté doit 
 de sécurité, pour tous les âges : **4 cm au moins** (plus gros qu'une balle de ping-pong), rien de
 coupant ni de pointu, rien de chaud, rien à pile, rien de fragile, pas de ficelle. Au moins
 6 objets par niveau, pour qu'une liste ne change pas de niveau. Règles dans `src/games/mains/mains.ts`.
+
+## Images de « La suite logique »
+
+Les cartes de `catalogue-suite.json` (#129) sont des **images à mettre en suite** : `emoji` et
+`answer`, le nom avec « un » ou « une » (« une pomme »), dont le pluriel s'obtient en ajoutant un
+`s` à chaque mot (« 4 carrés bleus »), et un seul thème dans `tags`, la famille (`formes`,
+`fruits`…), où le jeu prend les autres images de la suite. Une famille compte au moins quatre
+images ; dans `formes`, chaque couleur a sa propre forme. Le niveau de l'image règle le motif
+(AB ; ABC, AAB, ABB ; suites qui grandissent). Règles dans `src/games/suite/suite.ts`.

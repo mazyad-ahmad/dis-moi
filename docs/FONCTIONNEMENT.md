@@ -382,6 +382,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Tape les syllabes**         | Le parent dit un mot, l'enfant tape dans ses mains à chaque syllabe (« cho-co-lat » = 3). Voir ci-dessous.                                 |
 | **Où ça va ?**                | Un élément (emoji et mot) et deux ou trois familles : l'enfant dit où il va et pourquoi, le parent valide. Voir ci-dessous.                |
 | **Devine avec tes mains**     | Des objets dans un sac : on touche sans regarder, on décrit, on devine. Voir ci-dessous.                                                   |
+| **La suite logique**          | Une suite d'images avec une case vide à la fin : l'enfant dit ou montre ce qui vient ensuite. Voir ci-dessous.                             |
 
 ### Les émotions (#58)
 
@@ -650,6 +651,40 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Se joue à l'oral : au Coucher et en Voiture aussi. Ni dans le Grand Jeu ni dans le Défi du
   jour, qui ne prévoient pas de sac préparé. Images : emoji, aucun fichier, aucun droit tiers.
 
+### La suite logique (#129)
+
+- Jeu du catalogue, rangé dans « Lire et compter » : compléter une suite (rouge, bleu, rouge,
+  bleu… ?) travaille la logique et l'observation, bien avant les maths. Le parent lit « Qu’est-ce
+  qui vient ensuite ? », l'enfant dit ou montre ce qui va dans la **case vide** (pointillés et
+  point d'interrogation) ; le parent valide avec **Trouvé** / **Pas encore**.
+- **Suites générées** : le pack (`src/content/catalogue-suite.json`) ne contient que des images
+  (emoji et nom, « une pomme »), 10 par niveau, en cinq familles (`tags` : formes, fruits,
+  animaux, véhicules, nature). Chaque manche tire le motif et prend les autres images dans la
+  famille de l'image tirée : jamais à court de cartes (`src/games/suite/suite.ts`, fonctions
+  pures).
+- Selon le niveau de l'image tirée (donc celui de la partie, ou de l'enfant en « Chacun son
+  tour ») : **Petits** motif AB ; **Moyens** ABC, AAB ou ABB ; **Grands** suites qui grandissent
+  (1, 2, 3 pommes… et ensuite ?) ou deux règles à la fois (les images alternent **et** leur
+  nombre grandit : 1 pomme, 2 bananes, 3 pommes, 4 bananes… ?).
+- Le motif complet est toujours montré **au moins deux fois** avant la case vide (AB : deux ou
+  trois fois, parfois suivi d'un bout du motif) ; une suite qui grandit montre la règle « une de
+  plus » deux fois au moins. Huit cases au plus, sur une ou deux lignes, sans défilement de côté.
+- **Couleurs et formes** : la famille des formes n'a que des formes colorées où chaque couleur a
+  sa propre forme (rond rouge, carré bleu, étoile jaune, cœur vert, triangle rouge, losange
+  bleu) ; aucune pastille de couleur seule. Un enfant daltonien suit la suite par les formes
+  (vérifié par les tests).
+- « Pour le parent » : la réponse et la règle (« 🍎 une pomme : le motif 🍎 🍌 se répète. »)
+  derrière « Voir la réponse », et un indice (« Dites la suite à voix haute ensemble : pomme,
+  banane, pomme, banane… »).
+- **En montrant** : des images de la même famille, celles du motif d'abord (2, 3 ou 4 choix
+  selon le niveau) ; pour une suite qui grandit, la même image en plus ou moins grand nombre ;
+  pour deux règles, aussi l'autre image. Un mauvais choix ne fait rien.
+- Se regarde : proposé au Coucher, pas en Voiture. Se joue aussi dans le Grand Jeu et le Défi du
+  jour (sans choix ; la même suite toute la journée, tirée d'après la date). Pas d'Image cachée.
+- Après un rafraîchissement, les images tirées sont gardées, mais la suite en cours est
+  regénérée, comme dans Compte avec moi.
+- Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -862,7 +897,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
    Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?,
-   Devine avec tes mains)
+   Devine avec tes mains, La suite logique)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).
