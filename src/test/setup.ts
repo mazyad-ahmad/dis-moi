@@ -13,3 +13,9 @@ if (typeof HTMLDialogElement !== 'undefined' && !HTMLDialogElement.prototype.sho
     this.dispatchEvent(new Event('close'));
   };
 }
+
+// La partie en cours est gardée dans sessionStorage (reprise après rafraîchissement) :
+// chaque test repart d'un onglet neuf, sinon il reprend la partie du test précédent.
+beforeEach(() => {
+  if (typeof sessionStorage !== 'undefined') sessionStorage.clear();
+});
