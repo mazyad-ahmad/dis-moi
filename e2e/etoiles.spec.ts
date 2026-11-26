@@ -28,7 +28,7 @@ test('remise à zéro, nouvelle partie, puis onglet Étoiles', async ({ page }) 
 
   // Nouvelle partie, sans recharger l'appli : les étoiles s'affichent.
   await nav.getByRole('link', { name: 'Jeux' }).click();
-  await page.getByRole('link', { name: /^Quelle lettre/ }).click();
+  await page.getByRole('link', { name: /Quelle lettre/ }).click();
   for (let i = 0; i < 10; i++)
     await page.getByRole('button', { name: i < 3 ? 'Trouvé' : 'Passer' }).click();
   await expect(page.getByRole('heading', { name: '3 étoiles gagnées ensemble !' })).toBeVisible();
