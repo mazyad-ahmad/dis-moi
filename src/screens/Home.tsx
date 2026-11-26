@@ -1,6 +1,8 @@
 import { href } from '../app/router';
 import { Card } from '../components/Card';
 import { Logo } from '../components/Logo';
+import { Mascot } from '../components/Mascot';
+import { useNightTheme } from '../components/useNightTheme';
 import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
 import { usePlayers } from '../data/players';
 import { useSeance } from '../data/seance';
@@ -26,6 +28,7 @@ export function Home() {
   const players = usePlayers();
   const games = useHomeGames();
   const { over } = useSeance();
+  const night = useNightTheme();
 
   return (
     <main className="screen">
@@ -36,11 +39,15 @@ export function Home() {
         </a>
       </div>
 
-      <div>
-        <h1 className="h1">On joue à quoi ?</h1>
-        <p className="lead">
-          Le parent tient le téléphone et pose les questions. L'enfant répond à voix haute.
-        </p>
+      <div className="home__hello">
+        <div>
+          <h1 className="h1">On joue à quoi ?</h1>
+          <p className="lead">
+            Le parent tient le téléphone et pose les questions. L'enfant répond à voix haute.
+          </p>
+        </div>
+        {/* Après la séance, la mascotte dort dans la carte « Revenir plus tard ». */}
+        {!over && <Mascot mood={night ? 'sleep' : 'hello'} />}
       </div>
 
       <Card className="players-card">

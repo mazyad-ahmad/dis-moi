@@ -109,3 +109,107 @@
     display: none;
   }
 }
+
+/* ---------- Mascotte (#36) ----------
+   Petits mouvements en transform et opacity ; global.css les coupe avec « réduire les
+   animations » et la mascotte reste alors immobile, entièrement dessinée. */
+.mascot {
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+.mascot__body,
+.mascot__eyes,
+.mascot__wave,
+.mascot__dots circle,
+.mascot__sparkles path,
+.mascot__z path {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* Un clignement de temps en temps. */
+.mascot__eyes {
+  animation: mascot-blink 5s 1s infinite;
+}
+@keyframes mascot-blink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  97% {
+    transform: scaleY(0.1);
+  }
+}
+/* Bonjour : quelques signes de la main, puis plus rien. */
+.mascot__wave {
+  transform-origin: 0% 100%;
+  animation: mascot-wave 900ms 300ms ease-in-out 3;
+}
+@keyframes mascot-wave {
+  50% {
+    transform: rotate(-14deg);
+  }
+}
+/* Réfléchit : les petites bulles s'allument l'une après l'autre. */
+.mascot__dots circle {
+  animation: mascot-dot 1.8s ease-in-out infinite;
+}
+.mascot__dots circle:nth-child(2) {
+  animation-delay: 300ms;
+}
+.mascot__dots circle:nth-child(3) {
+  animation-delay: 600ms;
+}
+@keyframes mascot-dot {
+  50% {
+    opacity: 0.3;
+  }
+}
+/* Bravo : trois petits sauts, les étincelles scintillent. */
+.mascot--bravo .mascot__body {
+  animation: mascot-hop 600ms 200ms ease-out 3;
+}
+@keyframes mascot-hop {
+  40% {
+    transform: translateY(-8%);
+  }
+}
+.mascot__sparkles path {
+  animation: mascot-twinkle 1.2s ease-in-out 3;
+}
+@keyframes mascot-twinkle {
+  50% {
+    transform: scale(0.5);
+    opacity: 0.4;
+  }
+}
+/* Dort : respire lentement, les « z » montent. */
+.mascot--sleep .mascot__body {
+  animation: mascot-breathe 4s ease-in-out infinite;
+}
+@keyframes mascot-breathe {
+  50% {
+    transform: scale(1.03);
+  }
+}
+.mascot__z path {
+  animation: mascot-z 4s ease-in-out infinite;
+}
+.mascot__z path:nth-child(2) {
+  animation-delay: 2s;
+}
+@keyframes mascot-z {
+  0% {
+    transform: translate(0, 4px);
+    opacity: 0;
+  }
+  30%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(4px, -6px);
+    opacity: 0;
+  }
+}

@@ -3,6 +3,7 @@ import { registerAudioSource } from '../../audio/context';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
+import { Mascot } from '../../components/Mascot';
 import { IconEar, IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
 import { ReadAloud } from '../../components/ReadAloud';
@@ -184,6 +185,7 @@ function EmptyDeck({ deck }: { deck: Deck }) {
     <main className="screen">
       <GameHeader category={deck.category} title={deck.name} />
       <div className="empty">
+        <Mascot mood="think" />
         <strong>Ce jeu n’a pas encore de carte</strong>
         <span className="muted">Ajoute des questions depuis « Ajouter un jeu ».</span>
       </div>

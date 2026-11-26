@@ -250,6 +250,11 @@
   align-items: center;
   justify-content: space-between;
 }
+.home__hello {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
 .players-card {
   display: flex;
   align-items: center;
@@ -1201,10 +1206,6 @@ a.pill {
 }
 .seance-over p {
   margin: 0;
-}
-.seance-over__moon {
-  font-size: 56px;
-  line-height: 1;
 }
 .seance-over__title {
   margin: 0;

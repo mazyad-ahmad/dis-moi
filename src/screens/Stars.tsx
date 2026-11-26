@@ -1,4 +1,5 @@
 import { Card } from '../components/Card';
+import { Mascot } from '../components/Mascot';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { IconStar } from '../components/icons';
 import { useCustomGames } from '../data/customGames';
@@ -22,7 +23,7 @@ export function Stars() {
       <main className="screen">
         <ScreenHeader title="Étoiles" />
         <div className="empty">
-          <IconStar size={48} />
+          <Mascot mood="think" />
           <strong>Pas encore d'étoiles</strong>
           <span className="muted">Les étoiles gagnées pendant les parties s'afficheront ici.</span>
         </div>

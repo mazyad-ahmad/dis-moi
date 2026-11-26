@@ -4,6 +4,7 @@ import { starsLabel } from '../games/format';
 import { Button } from './Button';
 import { Confetti } from './Confetti';
 import { IconStar } from './icons';
+import { Mascot } from './Mascot';
 
 interface Props {
   stars: number;
@@ -44,6 +45,7 @@ export function GameResult({ stars, rounds, onReplay }: Props) {
       <div className="result__stars" aria-hidden="true">
         <IconStar size={96} />
       </div>
+      <Mascot mood="bravo" />
       <h1 className="h1">
         {stars > 0 ? `${starsLabel(stars)} gagnées ensemble !` : 'Bravo d’avoir joué !'}
       </h1>

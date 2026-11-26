@@ -41,6 +41,17 @@
   Elles ne retardent jamais la manche suivante (on peut enchaîner vite) et sont toutes coupées
   quand le téléphone demande de « réduire les animations ».
 
+## Mascotte (proposition)
+
+- Une petite bulle qui parle, dessinée pour l'appli en SVG dans le code (pas d'image à charger,
+  pas de droits tiers), aux couleurs du thème jour / nuit. Son nom reste à choisir : il n'est
+  affiché nulle part.
+- Discrète, jamais pendant une manche : elle **dit bonjour** sur l'accueil (elle **dort** en thème
+  nuit et après la fin de séance), **réfléchit** sur les écrans vides (pas encore d'étoiles, jeu
+  sans carte) et dit **bravo** sur l'écran de fin.
+- Décorative (cachée aux lecteurs d'écran) ; ses petits mouvements (clignement, signe de la main,
+  sauts, « z ») s'arrêtent avec « réduire les animations ».
+
 ## Plusieurs enfants (proposition)
 
 - Les prénoms sont enregistrés une fois (6 maximum, 20 caractères, pas de doublon).
