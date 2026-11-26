@@ -11,6 +11,8 @@ export interface Settings {
   catalogue: string[];
   /** Date de la dernière sauvegarde complète (« Sauvegarder tout »). */
   lastBackupAt: number | null;
+  /** Verrou parent : une opération avant l'espace Parent, les joueurs et les jeux. */
+  parentLock: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -19,6 +21,7 @@ export const DEFAULT_SETTINGS: Settings = {
   drawSeconds: 60,
   catalogue: [],
   lastBackupAt: null,
+  parentLock: false,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

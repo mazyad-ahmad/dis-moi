@@ -1,8 +1,10 @@
 import { BottomNav, type Tab } from '../components/BottomNav';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { useApplyTheme } from '../data/settings';
+import { useApplyTheme, useSettings } from '../data/settings';
+import { isProtected, useUnlocked } from '../data/parentLock';
 import { Home } from '../screens/Home';
 import { Parent } from '../screens/Parent';
+import { ParentGate } from '../screens/ParentGate';
 import { SongGame } from '../games/chanson/SongGame';
 import { DrawingGame } from '../games/dessin/DrawingGame';
 import { LettersGame } from '../games/lettres/LettersGame';
@@ -65,6 +67,13 @@ function screenFor(route: Route) {
   }
 }
 
+/** Verrou parent : vrai si l'écran demandé doit d'abord passer par l'opération. */
+function useLocked(route: Route): boolean {
+  const { parentLock } = useSettings();
+  const unlocked = useUnlocked();
+  return parentLock && isProtected(route) && !unlocked;
+}
+
 const TAB_OF: Partial<Record<Route['name'], Tab>> = {
   home: 'home',
   stars: 'stars',
@@ -74,11 +83,14 @@ const TAB_OF: Partial<Record<Route['name'], Tab>> = {
 export function App() {
   useApplyTheme();
   const route = useRoute();
+  const locked = useLocked(route);
   const tab = TAB_OF[route.name];
   return (
     <div className="app">
       <UpdateBanner />
-      <ErrorBoundary resetKey={JSON.stringify(route)}>{screenFor(route)}</ErrorBoundary>
+      <ErrorBoundary resetKey={JSON.stringify(route)}>
+        {locked ? <ParentGate /> : screenFor(route)}
+      </ErrorBoundary>
       {tab && <BottomNav active={tab} />}
     </div>
   );
