@@ -1,8 +1,8 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import type { Activity } from '../games/activities';
 import type { Deck, DeckItem, DeckKind } from '../games/deck/types';
 import type { Level } from '../games/levels';
 import { db, type CustomGame } from './db';
+import { useLiveRead } from './live';
 import { requestPersistentStorage } from './storage';
 
 export const MAX_GAME_NAME = 30;
@@ -121,12 +121,12 @@ export function listCustomGames(): Promise<CustomGame[]> {
 
 /** `undefined` tant que la base n'a pas répondu. */
 export function useCustomGames(): CustomGame[] | undefined {
-  return useLiveQuery(listCustomGames, []);
+  return useLiveRead(listCustomGames, []);
 }
 
 /** `undefined` pendant le chargement, `null` si le jeu n'existe pas. */
 export function useCustomGame(id: number): CustomGame | null | undefined {
-  return useLiveQuery(async () => (await db.customGames.get(id)) ?? null, [id]);
+  return useLiveRead(async () => (await db.customGames.get(id)) ?? null, [id]);
 }
 
 export function customRouteId(id: number): string {

@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import type { Level } from '../games/levels';
 import {
   db,
@@ -9,6 +8,7 @@ import {
   type PlayerColor,
 } from './db';
 import { getSettings, setSetting, useSettings } from './settings';
+import { useLiveRead } from './live';
 
 export const MAX_PLAYERS = 6;
 export const MAX_NAME_LENGTH = 20;
@@ -111,7 +111,7 @@ export async function setPlayerLevel(id: number, level: Level | null): Promise<v
 
 /** `undefined` tant que la base n'a pas répondu. */
 export function usePlayers(): Player[] | undefined {
-  return useLiveQuery(listPlayers, []);
+  return useLiveRead(listPlayers, []);
 }
 
 /* ---------- Joueurs actifs (#37) ----------

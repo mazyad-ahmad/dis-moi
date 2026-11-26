@@ -87,8 +87,13 @@ export interface Setting {
   value: unknown;
 }
 
-/** Base locale : rien ne quitte l'appareil. */
-export const db = new Dexie('dis-moi') as Dexie & {
+/**
+ * Base locale : rien ne quitte l'appareil.
+ * Cache des requêtes en direct désactivé : il partage une même lecture entre les écrans, et
+ * une lecture interrompue y laissait l'onglet Étoiles bloqué après une remise à zéro (#143).
+ * Quelques dizaines de lignes : relire la base coûte moins que ce risque.
+ */
+export const db = new Dexie('dis-moi', { cache: 'disabled' }) as Dexie & {
   players: EntityTable<Player, 'id'>;
   settings: EntityTable<Setting, 'key'>;
   games: EntityTable<GameRecord, 'id'>;

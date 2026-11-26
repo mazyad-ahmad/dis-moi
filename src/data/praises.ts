@@ -1,5 +1,5 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Praise } from './db';
+import { useLiveRead } from './live';
 
 /** Félicitations enregistrées par le parent (#116) : quelques-unes suffisent. */
 export const MAX_PRAISES = 5;
@@ -9,7 +9,7 @@ export function listPraises(): Promise<Praise[]> {
 }
 
 export function usePraises(): Praise[] | undefined {
-  return useLiveQuery(listPraises, []);
+  return useLiveRead(listPraises, []);
 }
 
 /** Garde un enregistrement sur le téléphone ; refusé au-delà de MAX_PRAISES. */
