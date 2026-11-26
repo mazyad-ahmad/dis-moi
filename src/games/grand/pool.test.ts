@@ -116,6 +116,22 @@ describe('manches du Grand Jeu', () => {
     expect(created[0].cards[0].level).toBeUndefined();
   });
 
+  it('chacun son tour : la carte au niveau de l’enfant de la manche, sans répétition', () => {
+    const levels = Array.from({ length: 15 }, (_, i) => (i % 2 ? 3 : 1) as 1 | 3);
+    const plan = planRounds(games, 15, seeded(3), levels);
+    expect(plan).toHaveLength(15);
+    expect(noRepeat(plan)).toBe(true);
+    const resolved = resolvePlan(plan, games)!;
+    // Au niveau voulu, ou au niveau voisin quand le jeu n'en a plus (2 chansons « Grands »).
+    const gaps = resolved.map((r, i) => Math.abs((r.card.level ?? levels[i]) - levels[i]));
+    gaps.forEach((gap) => expect(gap).toBeLessThanOrEqual(1));
+    expect(gaps.filter((gap) => gap === 0).length).toBeGreaterThan(10);
+    for (const g of games) {
+      const cards = plan.filter((r) => r.game === g.id).map((r) => r.card);
+      expect(new Set(cards).size).toBe(cards.length);
+    }
+  });
+
   it('reprend les manches prévues, ou rien si un jeu a disparu', () => {
     const plan = planRounds(games, 10, seeded(3));
     const rounds = resolvePlan(plan, games)!;

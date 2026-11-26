@@ -16,6 +16,7 @@ import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
 import { useSaved } from '../session';
 import { useRoundSetting, useRounds } from '../useRounds';
+import { TurnPlayer, useTurns } from '../useTurns';
 import {
   GRAND_ID,
   announce,
@@ -99,15 +100,22 @@ function DrawRound({
 
 function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void }) {
   const setting = useRoundSetting();
+  const turns = useTurns(GRAND_ID);
   // Manches prévues au lancement, retrouvées après un rafraîchissement.
   const [plan] = useSaved<PlannedRound[]>(
     GRAND_ID,
     'plan',
-    () => planRounds(games, setting, Math.random, getSettings().gameLevel),
+    // Chacun son tour (#38) : niveau de l'enfant de chaque manche ; en équipe, niveau de la partie.
+    () =>
+      planRounds(games, setting, Math.random, turns?.levels(setting) ?? getSettings().gameLevel),
     (saved) => (resolvePlan(saved, games) ? (saved as PlannedRound[]) : undefined),
   );
   const [planned] = useState(() => resolvePlan(plan, games)!);
-  const { round, rounds, stars, finished, answer } = useRounds(GRAND_ID, planned.length);
+  const { round, rounds, stars, finished, answer } = useRounds(
+    GRAND_ID,
+    planned.length,
+    turns?.order,
+  );
   // Durée du minuteur de dessin (aucun en mode Coucher), figée pour la partie.
   const [seconds] = useState(() =>
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
@@ -120,7 +128,14 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
 
   const current = planned[round - 1];
   const { game, card } = current;
-  const heading: Heading = { round, rounds, stars, category: GRAND_NAME, title: titleOf(current) };
+  const heading: Heading = {
+    round,
+    rounds,
+    stars,
+    category: GRAND_NAME,
+    title: titleOf(current),
+    player: turns?.playerAt(round),
+  };
 
   if (announced < round) return <Flash key={round} heading={heading} game={game} onGo={go} />;
 
@@ -142,13 +157,15 @@ function GrandSession({ games, onReplay }: { games: Game[]; onReplay: () => void
     <main className="screen">
       <GameHeader {...heading} />
       {/* key : nouvelle manche = carte, indices et réponse remis à zéro. */}
-      {card.type === 'song' && <SongRound key={round} song={card.song} pool={SONGS} />}
-      {card.type === 'glyph' && (
-        <GlyphRound key={round} card={card.glyph} pool={glyphPool(card.glyph)} />
-      )}
-      {card.type === 'deck' && (
-        <DeckRound key={round} kind={card.kind} item={card.item} pool={deckPool(game)} />
-      )}
+      <TurnPlayer.Provider value={heading.player}>
+        {card.type === 'song' && <SongRound key={round} song={card.song} pool={SONGS} />}
+        {card.type === 'glyph' && (
+          <GlyphRound key={round} card={card.glyph} pool={glyphPool(card.glyph)} />
+        )}
+        {card.type === 'deck' && (
+          <DeckRound key={round} kind={card.kind} item={card.item} pool={deckPool(game)} />
+        )}
+      </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}

@@ -7,12 +7,13 @@ import { Logo } from '../components/Logo';
 import { Mascot } from '../components/Mascot';
 import { useNightTheme } from '../components/useNightTheme';
 import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
-import { setPlayerActive, usePlayers } from '../data/players';
+import { activePlayers, setPlayerActive, usePlayers } from '../data/players';
 import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
 import { AnswerModeChoice } from '../games/choices/AnswerModeChoice';
 import { GrandTile } from '../games/grand/GrandTile';
 import type { GameInfo } from '../games/registry';
+import { MIN_TURN_PLAYERS, type TurnMode } from '../games/turns';
 import { usePlayableGames } from '../games/useGames';
 import { DailyCard } from './DailyCard';
 import { LastGame } from './LastGame';
@@ -31,6 +32,34 @@ export function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
   );
 }
 
+const TURN_CHOICES: { value: TurnMode; label: string }[] = [
+  { value: 'team', label: 'En équipe' },
+  { value: 'turns', label: 'Chacun son tour' },
+];
+
+/** Tour par tour (#38) : proposé dès deux joueurs actifs ; avec un seul, on joue en équipe. */
+function TurnChoice({ value }: { value: TurnMode }) {
+  return (
+    <fieldset className="setting turn-choice">
+      <legend className="sr-only">Comment on joue ?</legend>
+      <div className="segmented segmented--2">
+        {TURN_CHOICES.map((c) => (
+          <label key={c.value}>
+            <input
+              type="radio"
+              name="facon-de-jouer"
+              value={c.value}
+              checked={value === c.value}
+              onChange={() => void setSetting('turnMode', c.value)}
+            />
+            {c.label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
 export function Home() {
   const players = usePlayers();
   const { absentPlayers } = useSettings();
@@ -38,7 +67,8 @@ export function Home() {
   const games = usePlayableGames();
   const { over } = useSeance();
   const night = useNightTheme();
-  const { gameLevel, gameMode } = useSettings();
+  const { gameLevel, gameMode, turnMode } = useSettings();
+  const playing = players ? activePlayers(players, absentPlayers).length : 0;
 
   return (
     <main className="screen">
@@ -98,6 +128,7 @@ export function Home() {
             })}
           </div>
         )}
+        {playing >= MIN_TURN_PLAYERS && <TurnChoice value={turnMode} />}
       </Card>
 
       {!over && <DailyCard />}

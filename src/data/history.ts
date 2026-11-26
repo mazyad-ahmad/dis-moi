@@ -14,7 +14,10 @@ export async function startRecord(data: NewRecord): Promise<number> {
   return db.games.add({ ...data, startedAt: now, updatedAt: now, playerIds } as GameRecord);
 }
 
-export async function updateRecord(id: number, data: Pick<GameRecord, 'played' | 'stars'>) {
+export async function updateRecord(
+  id: number,
+  data: Pick<GameRecord, 'played' | 'stars' | 'turns'>,
+) {
   await db.games.update(id, { ...data, updatedAt: Date.now() });
 }
 

@@ -27,6 +27,7 @@ import { Players } from '../screens/Players';
 import { Stars } from '../screens/Stars';
 import { Privacy } from '../screens/Privacy';
 import { UpdateBanner } from '../pwa/UpdateBanner';
+import { TurnsGate } from '../games/TurnsGate';
 import { useRoute, type Route } from './router';
 
 const GAME_SCREENS: Record<string, () => React.ReactElement> = {
@@ -100,7 +101,13 @@ function GameScreen({ id }: { id: string }) {
  */
 function GuardedGame({ id }: { id: string }) {
   const [over] = useState(() => isSeanceOver());
-  return over ? <SeanceOver /> : <GameScreen id={id} />;
+  return over ? (
+    <SeanceOver />
+  ) : (
+    <TurnsGate>
+      <GameScreen id={id} />
+    </TurnsGate>
+  );
 }
 
 function screenFor(route: Route) {

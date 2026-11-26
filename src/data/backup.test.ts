@@ -28,16 +28,19 @@ async function snapshot() {
 
 /** Un téléphone avec joueurs, parties, réglages et un jeu créé (médias : voir e2e). */
 async function fillPhone() {
-  await setPlayerLevel(await addPlayer('Léa'), 1);
-  await addPlayer('Sami');
+  const lea = await addPlayer('Léa');
+  await setPlayerLevel(lea, 1);
+  const sami = await addPlayer('Sami');
   const r = await startRecord({ gameId: 'lettres', rounds: 5, played: 1, stars: 1 });
-  await updateRecord(r, { played: 5, stars: 4 });
+  // Chacun son tour (#38) : qui a joué chaque manche.
+  await updateRecord(r, { played: 5, stars: 4, turns: [sami, lea, sami, lea, sami] });
   await startRecord({ gameId: 'chanson', rounds: 3, played: 1, stars: 0, mode: 'express' });
   await setSetting('theme', 'night');
   await setSetting('rounds', 15);
   await setSetting('catalogue', ['devinette']);
   await setSetting('gameLevel', 3);
   await setSetting('gameMode', 'voiture');
+  await setSetting('turnMode', 'turns');
   const id = await createCustomGame('Devinettes de Léa', 'question');
   await addItem(id, { answer: 'Un chat', text: 'Il miaule', hint: 'Il a des moustaches' });
 }
@@ -78,6 +81,7 @@ describe('Sauvegarde complète', () => {
       catalogue: ['devinette'],
       gameLevel: 3,
       gameMode: 'voiture',
+      turnMode: 'turns',
       lastBackupAt: createdAt,
     });
   });

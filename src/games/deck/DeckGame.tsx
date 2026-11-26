@@ -15,7 +15,9 @@ import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
 import { getSettings } from '../../data/settings';
 import { cardLevel, drawForLevel } from '../levels';
+import { drawForTurns } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
+import { TurnPlayer, useTurns } from '../useTurns';
 import { cardKey } from './cardKey';
 import type { Deck, DeckItem, DeckKind } from './types';
 import { useObjectUrl } from './useObjectUrl';
@@ -140,15 +142,20 @@ export function DeckRound({
 
 function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
   const setting = useRoundSetting();
+  const turns = useTurns(deck.id);
   // Tirage figé pour la partie, même si le jeu est modifié entre-temps ou la page rafraîchie.
+  // Chacun son tour (#38) : chaque carte au niveau de l'enfant de la manche.
   const items = useSavedDraw(
     deck.id,
     'draw',
     deck.items,
-    () => drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel),
+    () =>
+      turns
+        ? drawForTurns(deck.items, turns.levels(Math.min(setting, deck.items.length)), cardLevel)
+        : drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel),
     cardKey,
   );
-  const { round, rounds, stars, finished, answer } = useRounds(deck.id, items.length);
+  const { round, rounds, stars, finished, answer } = useRounds(deck.id, items.length, turns?.order);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
@@ -161,9 +168,12 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         stars={stars}
         category={deck.category}
         title={deck.name}
+        player={turns?.playerAt(round)}
       />
       {/* key : nouvelle manche = carte et réponse remises à zéro. */}
-      <DeckRound key={round} kind={deck.kind} item={item} pool={deckChoicePool(deck)} />
+      <TurnPlayer.Provider value={turns?.playerAt(round)}>
+        <DeckRound key={round} kind={deck.kind} item={item} pool={deckChoicePool(deck)} />
+      </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar
         onSkip={() => answer(false)}

@@ -1,6 +1,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import type { Level } from '../games/levels';
 import { DEFAULT_MODE, forcesNight, forcesSoftVolume, type GameMode } from '../games/modes';
+import type { TurnMode } from '../games/turns';
 import type { SpeechSpeed } from '../voice/speech';
 import { db, type Theme } from './db';
 
@@ -40,6 +41,8 @@ export interface Settings {
   gameMode: GameMode;
   /** « Répondre en montrant » (#123), choisi sur l'accueil : l'enfant touche la réponse parmi des choix. */
   showChoices: boolean;
+  /** En équipe (par défaut) ou chacun son tour (#38), choisi sur l'accueil. */
+  turnMode: TurnMode;
 }
 
 export type Volume = 'soft' | 'normal';
@@ -67,6 +70,7 @@ export const DEFAULT_SETTINGS: Settings = {
   dailyChallenge: true,
   gameMode: DEFAULT_MODE,
   showChoices: false,
+  turnMode: 'team',
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

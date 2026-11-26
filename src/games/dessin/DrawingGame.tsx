@@ -12,7 +12,9 @@ import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
 import { orderByLevel, type Level } from '../levels';
 import { modeDrawSeconds } from '../modes';
+import { nextForLevel } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
+import { useTurns } from '../useTurns';
 import { DrawingCanvas, type DrawingCanvasHandle } from './DrawingCanvas';
 import { useCountdown } from './useCountdown';
 import { DRAW_LEVELS, DRAW_WORDS } from './words';
@@ -43,6 +45,7 @@ function DrawingSession({
   words: bank = DRAW_WORDS,
   levelOf = (word) => DRAW_LEVELS.get(word),
 }: DrawingProps & { onReplay: () => void }) {
+  const turns = useTurns(gameId);
   // Tirage figé pour la partie (la banque peut venir d'une requête qui se met à jour),
   // retrouvé après un rafraîchissement.
   const words = useSavedDraw(
@@ -57,6 +60,7 @@ function DrawingSession({
   const { round, rounds, stars, finished, answer } = useRounds(
     gameId,
     Math.min(setting, words.length),
+    turns?.order,
   );
   // Index du mot affiché : avance à chaque manche et avec « Autre mot ».
   const [index, setIndex] = useSaved(
@@ -65,6 +69,17 @@ function DrawingSession({
     () => 0,
     (i) => (Number.isInteger(i) && (i as number) >= 0 ? (i as number) : undefined),
   );
+  // Chacun son tour (#38) : mots montrés dans l'ordre, chacun tiré au niveau de l'enfant
+  // de la manche (« Autre mot » aussi) ; le dernier est le mot affiché.
+  const [shown, setShown] = useSaved<string[]>(
+    gameId,
+    'shown',
+    () => (turns ? [nextForLevel(words, turns.levelAt(1), levelOf, [])!] : []),
+    (saved) =>
+      Array.isArray(saved) && saved.every((w) => words.includes(w as string))
+        ? (saved as string[])
+        : undefined,
+  );
   // Durée réglée dans l'espace Parent (aucun minuteur en mode Coucher), figée pour la partie.
   const [seconds] = useState(() =>
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
@@ -72,9 +87,28 @@ function DrawingSession({
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
+  const heading = { round, rounds, stars, category, title, player: turns?.playerAt(round) };
+  if (turns && shown.length) {
+    const show = (forRound: number) =>
+      setShown([...shown, nextForLevel(words, turns.levelAt(forRound), levelOf, shown)!]);
+    return (
+      <DrawingBoard
+        heading={heading}
+        word={shown[shown.length - 1]}
+        turn={shown.length}
+        seconds={seconds}
+        onOtherWord={words.length > 1 ? () => show(round) : undefined}
+        onAnswer={(found) => {
+          if (round < rounds) show(round + 1);
+          answer(found);
+        }}
+      />
+    );
+  }
+
   return (
     <DrawingBoard
-      heading={{ round, rounds, stars, category, title }}
+      heading={heading}
       word={words[index % words.length]}
       turn={index}
       seconds={seconds}

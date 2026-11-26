@@ -10,6 +10,7 @@ import {
 import { decodeGame, encodeGame, shareFile, uniqueGameName, type GameFile } from './gameFile';
 import { isLevel } from '../games/levels';
 import { isGameMode } from '../games/modes';
+import { TURN_MODES } from '../games/turns';
 import { cleanName, isAnimal, isPlayerColor, MAX_PLAYERS, PlayerError } from './players';
 import {
   DEFAULT_SETTINGS,
@@ -161,6 +162,8 @@ function readRecord(raw: unknown): GameRecord {
     playerIds: raw.playerIds,
     // Façon de jouer (#42) : facultative, ignorée si elle est inconnue.
     ...(isGameMode(raw.mode) && { mode: raw.mode }),
+    // Tour par tour (#38) : facultatif, ignoré s'il est illisible.
+    ...(Array.isArray(raw.turns) && raw.turns.every(isId) && { turns: raw.turns }),
   };
 }
 
@@ -205,6 +208,8 @@ function readSettings(raw: unknown): Partial<Settings> {
     out.volume = raw.volume as Settings['volume'];
   if (raw.gameLevel === null || isLevel(raw.gameLevel)) out.gameLevel = raw.gameLevel;
   if (isGameMode(raw.gameMode)) out.gameMode = raw.gameMode;
+  if ((TURN_MODES as readonly unknown[]).includes(raw.turnMode))
+    out.turnMode = raw.turnMode as Settings['turnMode'];
   if (Array.isArray(raw.grandExcluded) && raw.grandExcluded.every((c) => typeof c === 'string'))
     out.grandExcluded = raw.grandExcluded;
   return out;
@@ -310,6 +315,9 @@ async function mergeInto(backup: Backup) {
       .map((g) => ({
         ...withoutId(g),
         playerIds: g.playerIds.flatMap((id) => (playerId.has(id) ? [playerId.get(id)!] : [])),
+        ...(g.turns && {
+          turns: g.turns.flatMap((id) => (playerId.has(id) ? [playerId.get(id)!] : [])),
+        }),
       }));
     await db.games.bulkAdd(games as GameRecord[]);
 

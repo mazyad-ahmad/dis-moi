@@ -13,7 +13,9 @@ import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
 import { getSettings } from '../../data/settings';
 import { drawForLevel } from '../levels';
+import { drawForTurns } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
+import { TurnPlayer, useTurns } from '../useTurns';
 import { EXTRACT_SECONDS, SONGS, type Song } from './songs';
 import { useMelody } from './useMelody';
 
@@ -88,14 +90,22 @@ export function SongRound({ song, pool }: { song: Song; pool?: readonly Song[] }
 
 function SongSession({ onReplay }: { onReplay: () => void }) {
   const wanted = useRoundSetting();
+  const turns = useTurns('chanson');
   const songs = useSavedDraw(
     'chanson',
     'draw',
     SONGS,
-    () => drawForLevel(SONGS, wanted, getSettings().gameLevel, (s) => s.level),
+    () =>
+      turns
+        ? drawForTurns(SONGS, turns.levels(Math.min(wanted, SONGS.length)), (s) => s.level)
+        : drawForLevel(SONGS, wanted, getSettings().gameLevel, (s) => s.level),
     (s) => s.id,
   );
-  const { round, rounds, stars, finished, answer } = useRounds('chanson', songs.length);
+  const { round, rounds, stars, finished, answer } = useRounds(
+    'chanson',
+    songs.length,
+    turns?.order,
+  );
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
@@ -108,9 +118,12 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
         stars={stars}
         category="Musique"
         title="Quelle chanson ?"
+        player={turns?.playerAt(round)}
       />
       {/* key : nouvelle manche = lecteur, indices et réponse remis à zéro. */}
-      <SongRound key={song.id} song={song} pool={SONGS} />
+      <TurnPlayer.Provider value={turns?.playerAt(round)}>
+        <SongRound key={song.id} song={song} pool={SONGS} />
+      </TurnPlayer.Provider>
       <div className="spacer" />
       <AnswerBar onSkip={() => answer(false)} onFound={() => answer(true)} skipLabel="Pas encore" />
     </main>

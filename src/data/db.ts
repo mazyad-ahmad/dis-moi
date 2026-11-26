@@ -50,6 +50,8 @@ export interface GameRecord {
   playerIds: number[];
   /** Façon de jouer (#42) ; absente : partie normale (ou d'avant les modes). */
   mode?: GameMode;
+  /** Tour par tour (#38) : qui a joué chaque manche, dans l'ordre (aucun score par joueur). */
+  turns?: number[];
 }
 
 /** Jeu créé par le parent (#10). Les photos et sons sont des Blob dans les cartes. */

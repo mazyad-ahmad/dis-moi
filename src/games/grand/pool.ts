@@ -9,6 +9,7 @@ import { DIGITS, LETTERS, type GlyphCard } from '../lettres/bank';
 import { cardLevel, orderByLevel, type Level } from '../levels';
 import type { GameInfo } from '../registry';
 import { shuffle } from '../shuffle';
+import { nextForLevel } from '../turns';
 
 /**
  * Le Grand Jeu (#41) : chaque manche tire un jeu de l'accueil, puis une carte de ce jeu.
@@ -107,12 +108,14 @@ export interface PlannedRound {
  * deux manches de suite utilisent le même jeu (dès qu'il y en a au moins deux). Dans chaque
  * jeu, les cartes sont tirées sans répétition tant qu'il en reste, celles du niveau de la
  * partie (#40) d'abord, puis les niveaux voisins, comme dans les autres jeux.
+ * Chacun son tour (#38) : `level` est une liste, le niveau de chaque manche (celui de
+ * l'enfant du tour) ; la carte de la manche est alors prise à ce niveau d'abord.
  */
 export function planRounds(
   games: GrandGame[],
   rounds: number,
   random: () => number = Math.random,
-  level: Level | null = null,
+  level: Level | null | readonly (Level | null | undefined)[] = null,
 ): PlannedRound[] {
   if (!games.length) return [];
   const order: GrandGame[] = [];
@@ -121,11 +124,25 @@ export function planRounds(
     if (cycle.length > 1 && cycle[0] === order[order.length - 1]) cycle.push(cycle.shift()!);
     order.push(...cycle);
   }
+  if (Array.isArray(level)) {
+    const levels = level as readonly (Level | null | undefined)[];
+    const used = new Map<string, GrandCard[]>();
+    return order.slice(0, rounds).map((game, i) => {
+      let seen = used.get(game.id) ?? [];
+      if (seen.length >= game.cards.length) seen = seen.slice(-1);
+      const card = nextForLevel(game.cards, levels[i], (c) => c.level, seen, random)!;
+      used.set(game.id, [...seen, card]);
+      return { game: game.id, card: card.key };
+    });
+  }
   const queues = new Map<string, GrandCard[]>();
   return order.slice(0, rounds).map((game) => {
     let queue = queues.get(game.id);
     if (!queue?.length)
-      queues.set(game.id, (queue = orderByLevel(game.cards, level, (c) => c.level, random)));
+      queues.set(
+        game.id,
+        (queue = orderByLevel(game.cards, level as Level | null, (c) => c.level, random)),
+      );
     return { game: game.id, card: queue.shift()!.key };
   });
 }

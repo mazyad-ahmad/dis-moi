@@ -137,8 +137,17 @@
   Sans joueur enregistré, rien ne change. Pour les autres modes : `useActivePlayers()` /
   `listActivePlayers()` de `src/data/players.ts`.
 - Par défaut, on joue **en équipe**.
-- Option ultérieure : **tour par tour**, le prénom de l'enfant dont c'est le tour s'affiche
-  en haut de la manche.
+- **Chacun son tour** (#38) : dès deux joueurs actifs, l'accueil propose « En équipe » ou
+  « Chacun son tour » (réglage `turnMode`, gardé d'une partie à l'autre et dans la sauvegarde).
+  Au lancement, l'ordre de passage est tiré au sort, puis on suit la rotation : avec 3 joueurs
+  et 10 manches, 4-3-3. En haut de chaque manche, l'avatar, le prénom et la couleur de l'enfant
+  s'affichent en grand (« À toi, Léa ! »). Marche dans tous les jeux à manches, Grand Jeu compris
+  (pas le défi du jour, une seule carte). « Autre mot » garde le même enfant.
+- Les étoiles restent **communes** ; la partie note seulement qui a joué chaque manche
+  (`turns` de la partie, sur l'appareil). Aucun score par enfant, aucun classement nulle part.
+- Avec un seul joueur actif (ou aucun), « Chacun son tour » se joue comme en équipe.
+- La rotation est une fonction pure (`src/games/turns.ts` : `startOrder`, `turnAt`, `rotation`),
+  réutilisable pour des équipes.
 
 ## Jeux
 
@@ -299,7 +308,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   Petits, Moyens ou Grands. Il s'applique à la partie suivante.
 - Un tirage ne manque jamais de cartes : les cartes du niveau choisi passent d'abord, puis celles
   du niveau voisin (le plus facile d'abord à égale distance), puis les autres.
-- Tour par tour (à venir) : `pickForLevel` tire une carte au niveau de l'enfant dont c'est le tour.
+- Chacun son tour : chaque carte est tirée au niveau de l'enfant dont c'est le tour (repli sur le
+  niveau voisin comme ci-dessus) ; un enfant sans niveau suit le niveau de la partie.
 - Interface en **français uniquement** pour la v1.
 
 ## Espace Parent (proposition)
