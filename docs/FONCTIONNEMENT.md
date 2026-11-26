@@ -112,7 +112,7 @@
   en douceur : ni confettis ni vibration de fête, la mascotte dort, « C'est l'heure de dormir.
   Bonne nuit ! », pas de bouton « Un autre jeu ».
 - **Voiture** : seulement des cartes orales (Quelle chanson ?, Raconte-moi, Histoire à inventer, Quel animal ?, Devinettes,
-  Vrai ou faux rigolo, Ça rime avec…, Les contraires, Tape les syllabes (en comptant à voix haute), jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
+  Vrai ou faux rigolo, Ça rime avec…, Les contraires, Tape les syllabes (en comptant à voix haute), Que fais-tu si… ?, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
   regarder ni à dessiner.
 - L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
   conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
@@ -384,6 +384,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Devine avec tes mains**     | Des objets dans un sac : on touche sans regarder, on décrit, on devine. Voir ci-dessous.                                                   |
 | **La suite logique**          | Une suite d'images avec une case vide à la fin : l'enfant dit ou montre ce qui vient ensuite. Voir ci-dessous.                             |
 | **Remets dans l’ordre**       | Des images mélangées (routines, graine, saisons…) : l'enfant dit l'ordre ou les déplace, le parent valide. Voir ci-dessous.                |
+| **Que fais-tu si… ?**         | Le parent lit une petite situation, l'enfant dit ce qu'il ferait ; pas de bonne réponse, on en parle. Voir ci-dessous.                     |
 
 ### Les émotions (#58)
 
@@ -714,6 +715,27 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   du jour (même mélange toute la journée).
 - Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
+### Que fais-tu si… ? (#133)
+
+- Jeu du catalogue rangé dans « Parler », en complément des émotions (#58) : le parent lit une
+  petite situation du quotidien (« Ton copain est triste à la récré. », « Tu as renversé ton
+  verre. »), suivie de « Que fais-tu ? » (bouton « Lire »), et l'enfant dit ce qu'il ferait.
+- **Pas de bonne ou de mauvaise réponse**, rappelé dans « Pour le parent ». Derrière **Voir des
+  pistes**, 2 ou 3 idées de réponse bienveillantes et une question pour en parler (champ
+  `talk`, comme les émotions). **On en a parlé** remplace « Trouvé » et donne l'étoile, gagnée
+  ensemble ; **Passer** change de situation sans rien retirer. Une partie toute passée finit sur
+  « Merci pour ce moment ensemble. On en reparlera une autre fois ! ».
+- **40 situations** (`src/content/catalogue-situation.json`), 14 Petits, 13 Moyens, 13 Grands,
+  positives ou faciles à résoudre, relues pour rassurer et jamais faire peur : rien de danger,
+  d'abandon ni de violence pour les Petits et les Moyens (mots écartés vérifiés par les tests),
+  pistes sans reproche (« Le dire à un grand : ça arrive à tout le monde. »). « Perdu au
+  magasin » est réservé aux Grands, avec une issue rassurante (« Il te cherche déjà ! », « On se
+  retrouve toujours »), et n'est jamais tiré au Coucher (thème `rassurer`).
+- Oral : se joue en **Voiture** et au **Coucher**, chacun son tour (situation au niveau de
+  l'enfant) ou en équipes. Pas dans le Grand Jeu ni le Défi du jour (ils demandent une bonne
+  réponse), ni de « Répondre en montrant ».
+- Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -927,7 +949,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
    Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?,
    Devine avec tes mains, La suite logique,
-   Remets dans l’ordre)
+   Remets dans l’ordre, Que fais-tu si… ?)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

@@ -8,6 +8,7 @@ import { DIGITS, LETTERS, type GlyphCard } from '../lettres/bank';
 import { needsOf, type PlayNeeds } from '../modes';
 import { TETE_ID } from '../tete/tilt';
 import { MAINS_ID } from '../mains/mains';
+import { SITUATION_ID } from '../situation/situation';
 
 /**
  * Défi du jour (#43) : une carte surprise par jour, tirée de tous les jeux intégrés.
@@ -66,14 +67,16 @@ export const DAILY_SOURCES: DailySource[] = [
     cards: DRAW_WORDS.map((word) => ({ kind: 'draw', word })),
   },
   // Devine-tête (#67) demande le téléphone sur le front, Devine avec tes mains (#134) un sac
-  // d'objets préparé : pas des cartes surprises.
-  ...CATALOGUE.filter((g) => g.id !== TETE_ID && g.id !== MAINS_ID).map((g): DailySource => ({
-    game: g.id,
-    name: g.name,
-    category: g.category,
-    needs: g.needs,
-    cards: g.items.map((item) => ({ kind: g.kind as 'sound' | 'image' | 'question', item })),
-  })),
+  // d'objets préparé : pas des cartes surprises. Que fais-tu si… ? (#133) n'a pas de bonne réponse.
+  ...CATALOGUE.filter((g) => ![TETE_ID, MAINS_ID, SITUATION_ID].includes(g.id)).map(
+    (g): DailySource => ({
+      game: g.id,
+      name: g.name,
+      category: g.category,
+      needs: g.needs,
+      cards: g.items.map((item) => ({ kind: g.kind as 'sound' | 'image' | 'question', item })),
+    }),
+  ),
 ];
 
 /** Jour du téléphone (heure locale), « 2026-11-26 » : change à minuit. */

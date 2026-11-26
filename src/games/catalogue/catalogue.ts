@@ -41,6 +41,7 @@ export const CATALOGUE_PACKS = [
   'devine-mains',
   'suite',
   'ordre',
+  'situation',
 ];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {

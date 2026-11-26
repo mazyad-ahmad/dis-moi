@@ -31,8 +31,8 @@ it('Ajouter un jeu : groupé par type, avec âge et ce que le jeu fait travaille
     expect(within(catalogue).getByRole('heading', { name: type })).toBeInTheDocument();
   expect(within(catalogue).getByText(/Fait bouger et s’exprimer/)).toBeInTheDocument();
   expect(within(catalogue).getAllByText(/Dès 3 ans/).length).toBeGreaterThan(0);
-  expect(shownGames()).toHaveLength(21);
-  // Recherche au-delà de 20 jeux : le catalogue en compte 21.
+  expect(shownGames()).toHaveLength(22);
+  // Recherche au-delà de 20 jeux : le catalogue en compte 22.
   expect(screen.getByRole('searchbox', { name: 'Chercher un jeu' })).toBeInTheDocument();
 });
 
@@ -60,9 +60,10 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Devine-tête',
     'Où ça va ?',
     'Devine avec tes mains',
+    'Que fais-tu si… ?',
     'Mime l’émotion',
   ]);
-  expect(status).toHaveTextContent('12 jeux sur 21');
+  expect(status).toHaveTextContent('13 jeux sur 22');
 
   await user.click(within(moments).getByRole('button', { name: 'Pour la voiture' }));
   const oral = [
@@ -73,6 +74,7 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Les contraires',
     'Où ça va ?',
     'Devine avec tes mains',
+    'Que fais-tu si… ?',
   ];
   expect(shownGames()).toEqual(oral);
   await user.click(within(ages).getByRole('button', { name: '7 ans et plus' }));
@@ -90,13 +92,14 @@ it('les filtres se cumulent, se retirent d’un geste et sont nommés pour le le
     'Les contraires',
     'Où ça va ?',
     'Devine avec tes mains',
+    'Que fais-tu si… ?',
     'Tape les syllabes',
     'Chasse au trésor',
   ]);
 
   // Ou tout retirer d'un coup.
   await user.click(screen.getByRole('button', { name: 'Retirer les filtres' }));
-  expect(shownGames()).toHaveLength(21);
+  expect(shownGames()).toHaveLength(22);
   expect(status).toHaveTextContent('');
   for (const group of [types, ages, moments])
     expect(within(group).queryAllByRole('button', { pressed: true })).toHaveLength(0);

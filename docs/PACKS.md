@@ -127,6 +127,17 @@ les mains »), `text` la question lue par le parent, `steps` ses étapes dans l'
 chacune avec son texte et, si possible, son emoji (sans doublon dans la séquence). Petits :
 3 étapes, Moyens : 4, Grands : 5. Règles dans `src/games/ordre/ordre.ts`.
 
+## Situations « Que fais-tu si… ? »
+
+Une carte de `catalogue-situation.json` (#133) est une **petite situation du quotidien**, sans
+bonne réponse : `text` la situation lue par le parent (« Ton copain est triste à la récré. »),
+`answer` son nom court, `emoji` son image, `hint` puis `hints` les pistes de réponse proposées au
+parent (2 ou 3, bienveillantes, jamais culpabilisantes), `talk` la question pour en parler.
+Petits et Moyens : rien de danger, d'abandon ni de violence (mots écartés vérifiés par les tests).
+Une situation qui demande d'être rassuré (« perdu au magasin ») porte le thème `rassurer` : Grands
+seulement, toujours avec une issue rassurante, et jamais jouée au Coucher. Règles dans
+`src/games/situation/situation.ts`.
+
 ## Éléments d'histoire
 
 Un pack `story` (Histoire à inventer, #68) range des héros, des lieux et des objets : `answer` est le

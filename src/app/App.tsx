@@ -39,6 +39,8 @@ import { SuiteGame } from '../games/suite/SuiteGame';
 import { SUITE_ID } from '../games/suite/suite';
 import { OrdreGame } from '../games/ordre/OrdreGame';
 import { ORDRE_ID } from '../games/ordre/ordre';
+import { SituationGame } from '../games/situation/SituationGame';
+import { SITUATION_ID } from '../games/situation/situation';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -127,6 +129,8 @@ function GameScreen({ id }: { id: string }) {
           <SuiteGame game={catalogue} />
         ) : catalogue.id === ORDRE_ID ? (
           <OrdreGame game={catalogue} />
+        ) : catalogue.id === SITUATION_ID ? (
+          <SituationGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}
