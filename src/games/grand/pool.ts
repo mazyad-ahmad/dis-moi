@@ -12,6 +12,7 @@ import { shuffle } from '../shuffle';
 import { TETE_ID } from '../tete/tilt';
 import { MAINS_ID } from '../mains/mains';
 import { SITUATION_ID } from '../situation/situation';
+import { NIOUI_ID } from '../nioui/nioui';
 import { nextForLevel } from '../turns';
 
 /**
@@ -80,10 +81,12 @@ function cardsOf(game: GameInfo, custom: CustomGame[]): GrandCard[] {
   if (base) return base();
   const catalogue = findCatalogueGame(game.id);
   // Devine-tête (#67) se joue avec le téléphone sur le front, Devine avec tes mains (#134) avec
-  // un sac d'objets préparé : pas des manches parmi d'autres. Que fais-tu si… ? (#133) n'a pas
-  // de bonne réponse.
+  // un sac d'objets préparé, Ni oui ni non (#135) avec une suite de questions : pas des manches
+  // parmi d'autres. Que fais-tu si… ? (#133) n'a pas de bonne réponse.
   if (catalogue)
-    return [TETE_ID, MAINS_ID, SITUATION_ID].includes(catalogue.id) ? [] : deckCards(catalogue);
+    return [TETE_ID, MAINS_ID, SITUATION_ID, NIOUI_ID].includes(catalogue.id)
+      ? []
+      : deckCards(catalogue);
   const created = custom.find((g) => customRouteId(g.id) === game.id);
   return created ? deckCards(customDeck(created)) : [];
 }

@@ -385,6 +385,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **La suite logique**          | Une suite d'images avec une case vide à la fin : l'enfant dit ou montre ce qui vient ensuite. Voir ci-dessous.                             |
 | **Remets dans l’ordre**       | Des images mélangées (routines, graine, saisons…) : l'enfant dit l'ordre ou les déplace, le parent valide. Voir ci-dessous.                |
 | **Que fais-tu si… ?**         | Le parent lit une petite situation, l'enfant dit ce qu'il ferait ; pas de bonne réponse, on en parle. Voir ci-dessous.                     |
+| **Ni oui ni non**             | Répondre aux questions sans dire « oui » ni « non » ; cinq questions tenues, une étoile. Voir ci-dessous.                                  |
 
 ### Les émotions (#58)
 
@@ -736,6 +737,25 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   réponse), ni de « Répondre en montrant ».
 - Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
+### Ni oui ni non (#135)
+
+- Jeu du catalogue pour les **Grands** : ses 60 questions
+  (`src/content/catalogue-ni-oui-ni-non.json`) sont toutes de niveau 3, donc le jeu est marqué
+  « Dès 7 ans » et rangé sous « Pour d'autres âges » quand les joueurs du jour sont plus petits.
+- Le parent lit la question (« Tu aimes le chocolat ? »), l'enfant répond sans dire « oui » ni
+  « non ». Une manche = des questions enchaînées : **cinq questions tenues rapportent une
+  étoile** (pastilles « Tenu : 2 sur 5 »), un « oui » ou un « non » échappé termine la manche
+  sans étoile, avec « Raté, on rit ! ». **Pas de minuteur.**
+- Au début de chaque manche, **Qui répond ?** : l'enfant (le parent pose les questions) ou le
+  parent (l'enfant les pose, le parent qui se trompe fait rire tout le monde). « Pour le
+  parent » : la règle, « Question piège ! » pour les relances (« Tu es sûr ? », thème
+  `astuce`) et, derrière « Une idée de réponse », une réponse qui évite oui et non.
+- Le parent valide avec **Tenu !** / **Oups, un oui ou un non**. Les questions sont mélangées
+  une fois par partie, sans répétition (50 au plus pour 10 manches).
+- Se joue à l'oral : en Voiture et au Coucher aussi. Ni dans le Grand Jeu ni dans le Défi du
+  jour, où une carte seule ne fait pas une manche de cinq questions. Règles dans
+  `src/games/nioui/nioui.ts`.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -949,7 +969,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
    Compte avec moi, Devine-tête, Tape les syllabes, Où ça va ?,
    Devine avec tes mains, La suite logique,
-   Remets dans l’ordre, Que fais-tu si… ?)
+   Remets dans l’ordre, Que fais-tu si… ?, Ni oui ni non)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

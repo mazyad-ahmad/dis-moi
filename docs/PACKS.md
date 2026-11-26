@@ -72,36 +72,38 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 
 ## Packs actuels
 
-| Fichier                       | Jeu                        | Type       |
-| ----------------------------- | -------------------------- | ---------- |
-| `chansons.json`               | Quelle chanson ?           | `melody`   |
-| `lettres.json`                | Quelle lettre ?            | `glyph`    |
-| `chiffres.json`               | Quelle lettre ? (chiffres) | `glyph`    |
-| `dessin.json`                 | Dessine ça                 | `draw`     |
-| `raconte.json`                | Raconte-moi                | `chat`     |
-| `voix.json`                   | Voix rigolotes             | `image`    |
-| `histoire.json`               | Histoire à inventer        | `story`    |
-| `catalogue-animal.json`       | Quel animal ?              | `sound`    |
-| `catalogue-couleur.json`      | Quelle couleur ?           | `image`    |
-| `catalogue-mime.json`         | Mime ça                    | `image`    |
-| `catalogue-devinette.json`    | Devinettes                 | `question` |
-| `catalogue-emotion.json`      | Quelle émotion ?           | `image`    |
-| `catalogue-emotion-mime.json` | Mime l’émotion             | `image`    |
-| `catalogue-tresor.json`       | Chasse au trésor           | `question` |
-| `catalogue-vrai-faux.json`    | Vrai ou faux rigolo        | `question` |
-| `catalogue-jacques.json`      | Jacques a dit              | `question` |
-| `catalogue-rime.json`         | Ça rime avec…              | `question` |
-| `catalogue-contraire.json`    | Les contraires             | `question` |
-| `catalogue-ombre.json`        | Ombres                     | `image`    |
-| `catalogue-intrus.json`       | L’intrus                   | `image`    |
-| `catalogue-disparu.json`      | Qu’est-ce qui a disparu ?  | `image`    |
-| `catalogue-compte.json`       | Compte avec moi            | `image`    |
-| `catalogue-devine-tete.json`  | Devine-tête                | `image`    |
-| `catalogue-syllabes.json`     | Tape les syllabes          | `question` |
-| `catalogue-tri.json`          | Où ça va ?                 | `question` |
-| `catalogue-devine-mains.json` | Devine avec tes mains      | `question` |
-| `catalogue-suite.json`        | La suite logique           | `image`    |
-| `catalogue-ordre.json`        | Remets dans l’ordre        | `image`    |
+| Fichier                        | Jeu                        | Type       |
+| ------------------------------ | -------------------------- | ---------- |
+| `chansons.json`                | Quelle chanson ?           | `melody`   |
+| `lettres.json`                 | Quelle lettre ?            | `glyph`    |
+| `chiffres.json`                | Quelle lettre ? (chiffres) | `glyph`    |
+| `dessin.json`                  | Dessine ça                 | `draw`     |
+| `raconte.json`                 | Raconte-moi                | `chat`     |
+| `voix.json`                    | Voix rigolotes             | `image`    |
+| `histoire.json`                | Histoire à inventer        | `story`    |
+| `catalogue-animal.json`        | Quel animal ?              | `sound`    |
+| `catalogue-couleur.json`       | Quelle couleur ?           | `image`    |
+| `catalogue-mime.json`          | Mime ça                    | `image`    |
+| `catalogue-devinette.json`     | Devinettes                 | `question` |
+| `catalogue-emotion.json`       | Quelle émotion ?           | `image`    |
+| `catalogue-emotion-mime.json`  | Mime l’émotion             | `image`    |
+| `catalogue-tresor.json`        | Chasse au trésor           | `question` |
+| `catalogue-vrai-faux.json`     | Vrai ou faux rigolo        | `question` |
+| `catalogue-jacques.json`       | Jacques a dit              | `question` |
+| `catalogue-rime.json`          | Ça rime avec…              | `question` |
+| `catalogue-contraire.json`     | Les contraires             | `question` |
+| `catalogue-ombre.json`         | Ombres                     | `image`    |
+| `catalogue-intrus.json`        | L’intrus                   | `image`    |
+| `catalogue-disparu.json`       | Qu’est-ce qui a disparu ?  | `image`    |
+| `catalogue-compte.json`        | Compte avec moi            | `image`    |
+| `catalogue-devine-tete.json`   | Devine-tête                | `image`    |
+| `catalogue-syllabes.json`      | Tape les syllabes          | `question` |
+| `catalogue-tri.json`           | Où ça va ?                 | `question` |
+| `catalogue-devine-mains.json`  | Devine avec tes mains      | `question` |
+| `catalogue-suite.json`         | La suite logique           | `image`    |
+| `catalogue-ordre.json`         | Remets dans l’ordre        | `image`    |
+| `catalogue-situation.json`     | Que fais-tu si… ?          | `question` |
+| `catalogue-ni-oui-ni-non.json` | Ni oui ni non              | `question` |
 
 ## Cartes « Compte avec moi »
 
@@ -186,3 +188,11 @@ Les cartes de `catalogue-suite.json` (#129) sont des **images à mettre en suite
 `fruits`…), où le jeu prend les autres images de la suite. Une famille compte au moins quatre
 images ; dans `formes`, chaque couleur a sa propre forme. Le niveau de l'image règle le motif
 (AB ; ABC, AAB, ABB ; suites qui grandissent). Règles dans `src/games/suite/suite.ts`.
+
+## Questions « Ni oui ni non »
+
+Les cartes de `catalogue-ni-oui-ni-non.json` (#135) sont des **questions qui appellent oui ou
+non** (« Tu aimes le chocolat ? ») : `text` la question, `answer` une idée de réponse qui évite
+les deux mots (« J'adore ça ! »), montrée au parent à la demande. Le thème `astuce` marque les
+relances piégeuses (« Tu es sûr ? »). Toutes de niveau 3 (Grands). Règles dans
+`src/games/nioui/nioui.ts`.
