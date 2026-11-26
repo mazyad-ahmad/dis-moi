@@ -43,7 +43,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `format`, `version`                | `"dis-moi/jeu"` et `1`, comme un fichier de jeu                                                                                                                     |
 | `id`                               | identifiant (minuscules, chiffres, tirets) ; fichier `<id>.json`                                                                                                    |
 | `revision`                         | révision du contenu, à augmenter à chaque changement de cartes                                                                                                      |
-| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`, `chat` (questions ouvertes)                                                                |
+| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`, `chat` (questions ouvertes), `story` (éléments d'histoire)                                 |
 | `name`, `lang`                     | nom (30 caractères max) et langue (`fr`)                                                                                                                            |
 | `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS`                                                                                     |
 | `moves`                            | facultatif : `true` si le jeu fait bouger l'enfant (mime) ; écarté au Coucher                                                                                       |
@@ -79,6 +79,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `dessin.json`                 | Dessine ça                 | `draw`     |
 | `raconte.json`                | Raconte-moi                | `chat`     |
 | `voix.json`                   | Voix rigolotes             | `image`    |
+| `histoire.json`               | Histoire à inventer        | `story`    |
 | `catalogue-animal.json`       | Quel animal ?              | `sound`    |
 | `catalogue-couleur.json`      | Quelle couleur ?           | `image`    |
 | `catalogue-mime.json`         | Mime ça                    | `image`    |
@@ -101,6 +102,12 @@ Les cartes de `catalogue-compte.json` (#65) sont des **objets à compter** : `em
 nom au pluriel avec « Les » (« Les pommes »), dont le singulier s'obtient en retirant le `s` ou le `x`
 final (« 1 pomme »). Le niveau de l'objet règle la difficulté de la manche, générée au hasard (compter
 jusqu'à 5, 10 ou 20, comparer, additionner, soustraire). Règles dans `src/games/compte/compte.ts`.
+
+## Éléments d'histoire
+
+Un pack `story` (Histoire à inventer, #68) range des héros, des lieux et des objets : `answer` est le
+mot avec son article (« un dragon », « au zoo », « une clé »), `emoji` son image (obligatoire), et
+`tags` donne un seul rôle, `heros`, `lieu` ou `objet`. Règle dans `src/games/histoire/parts.ts`.
 
 ## Cartes « vrai ou faux »
 

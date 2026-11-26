@@ -83,6 +83,17 @@ export const GAMES: GameInfo[] = [
     levels: packLevels('voix'),
     skill: 'Fait jouer avec sa voix et tendre l’oreille',
   },
+  {
+    id: 'histoire',
+    name: 'Histoire à inventer',
+    category: 'Inventer',
+    tint: 'sky',
+    mark: '📖',
+    needs: needsOf('story'),
+    activities: ['parler'],
+    levels: packLevels('histoire'),
+    skill: 'Fait inventer une histoire et la raconter',
+  },
 ];
 
 export function findGame(id: string): GameInfo | undefined {

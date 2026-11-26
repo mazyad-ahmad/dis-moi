@@ -17,6 +17,7 @@ const SCREENS = [
   ['Respire comme…', '/respire'],
   ['Raconte-moi', '/jeu/raconte'],
   ['Voix rigolotes', '/jeu/voix'],
+  ['Histoire à inventer', '/jeu/histoire'],
   ['Jacques a dit', '/jeu/jacques'],
 ] as const;
 

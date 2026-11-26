@@ -86,6 +86,18 @@ export interface Praise {
   createdAt: number;
 }
 
+/**
+ * Histoire inventée par l'enfant (#68), enregistrée au micro sur un geste du parent et gardée
+ * dans le « Livre d'histoires ». Les trois images tirées sont recopiées (texte et emoji).
+ */
+export interface Story {
+  id: number;
+  audio: Blob;
+  createdAt: number;
+  /** Héros, lieu et objet de l'histoire, dans cet ordre. */
+  parts: { answer: string; emoji: string }[];
+}
+
 export interface Setting {
   key: string;
   value: unknown;
@@ -103,6 +115,7 @@ export const db = new Dexie('dis-moi', { cache: 'disabled' }) as Dexie & {
   games: EntityTable<GameRecord, 'id'>;
   customGames: EntityTable<CustomGame, 'id'>;
   praises: EntityTable<Praise, 'id'>;
+  stories: EntityTable<Story, 'id'>;
 };
 
 db.version(1).stores({
@@ -139,3 +152,8 @@ db.version(5)
       ),
     );
   });
+
+// Livre d'histoires (#68).
+db.version(6).stores({
+  stories: '++id, createdAt',
+});

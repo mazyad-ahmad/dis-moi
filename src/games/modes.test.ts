@@ -25,6 +25,7 @@ describe('façons de jouer', () => {
     expect(suited('voiture')).toEqual([
       'chanson',
       'raconte',
+      'histoire',
       'animal',
       'devinette',
       'tresor',
@@ -44,6 +45,7 @@ describe('façons de jouer', () => {
       'dessin',
       'raconte',
       'voix',
+      'histoire',
       'animal',
       'couleur',
       'devinette',
@@ -69,7 +71,7 @@ describe('façons de jouer', () => {
     const oral = (Object.keys(KIND_NEEDS) as (keyof typeof KIND_NEEDS)[]).filter((k) =>
       suitsMode(KIND_NEEDS[k], 'voiture'),
     );
-    expect(oral.sort()).toEqual(['chat', 'melody', 'question', 'sound']);
+    expect(oral.sort()).toEqual(['chat', 'melody', 'question', 'sound', 'story']);
   });
 
   it('le défi du jour déclare aussi ses besoins', () => {

@@ -66,6 +66,7 @@ export const KIND_NEEDS: Record<PackKind, PlayNeeds> = {
   sound: ORAL,
   question: ORAL,
   chat: ORAL,
+  story: ORAL,
   glyph: ON_SCREEN,
   image: ON_SCREEN,
   draw: ON_SCREEN,

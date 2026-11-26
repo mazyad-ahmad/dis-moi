@@ -4,6 +4,7 @@ import { parseMelody } from '../games/chanson/melody';
 import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
 import { isLevel, LEVELS, type Level } from '../games/levels';
+import { storyPart, STORY_PARTS } from '../games/histoire/parts';
 import { chatTheme, CHAT_THEMES } from '../games/raconte/themes';
 import type { Tint } from '../games/registry';
 
@@ -15,14 +16,16 @@ import type { Tint } from '../games/registry';
 
 /**
  * Types de pack : ceux des jeux à cartes, plus les airs (Quelle chanson ?), les glyphes et les
- * questions ouvertes, sans bonne réponse (Raconte-moi, #125).
+ * questions ouvertes, sans bonne réponse (Raconte-moi, #125), et les éléments d'histoire
+ * (Histoire à inventer, #68).
  */
-export type PackKind = DeckKind | 'melody' | 'glyph' | 'chat';
+export type PackKind = DeckKind | 'melody' | 'glyph' | 'chat' | 'story';
 export const PACK_KINDS: PackKind[] = [
   ...DECK_KINDS.map((k) => k.value),
   'melody',
   'glyph',
   'chat',
+  'story',
 ];
 
 export interface PackItem extends Omit<DeckItem, 'image' | 'audio' | 'shadow'> {
@@ -130,6 +133,12 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
       return chatTheme(item.tags as string[] | undefined)
         ? undefined
         : `thème (« tags ») manquant : ${CHAT_THEMES.map((t) => t.value).join(', ')}`;
+    case 'story':
+      // Un héros, un lieu ou un objet (dans « answer »), avec son image.
+      if (!item.emoji) return 'image (« emoji ») manquante';
+      return storyPart(item.tags as string[] | undefined)
+        ? undefined
+        : `rôle (« tags ») : un seul parmi ${STORY_PARTS.map((p) => p.value).join(', ')}`;
     case 'glyph':
       if (typeof item.answer !== 'string' || [...item.answer].length !== 1)
         return 'un glyphe est un seul caractère';

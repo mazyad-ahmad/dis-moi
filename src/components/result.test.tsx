@@ -70,6 +70,8 @@ describe('textes et calculs', () => {
     expect(nextGame(GAMES, 'chanson')?.id).toBe('lettres');
     expect(nextGame(GAMES, 'dessin')?.id).toBe('raconte');
     expect(nextGame(GAMES, 'raconte')?.id).toBe('voix');
+    expect(nextGame(GAMES, 'voix')?.id).toBe('histoire');
+    expect(nextGame(GAMES, 'histoire')?.id).toBe('chanson');
     expect(nextGame(GAMES.slice(0, 1), 'chanson')).toBeUndefined();
   });
 });

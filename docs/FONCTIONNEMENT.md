@@ -111,7 +111,7 @@
   jeu qui fait bouger (Mime ça, Jacques a dit) ; la chasse au trésor s'y joue en version « sans courir ». Fin
   en douceur : ni confettis ni vibration de fête, la mascotte dort, « C'est l'heure de dormir.
   Bonne nuit ! », pas de bouton « Un autre jeu ».
-- **Voiture** : seulement des cartes orales (Quelle chanson ?, Raconte-moi, Quel animal ?, Devinettes,
+- **Voiture** : seulement des cartes orales (Quelle chanson ?, Raconte-moi, Histoire à inventer, Quel animal ?, Devinettes,
   Vrai ou faux rigolo, Ça rime avec…, Les contraires, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
   regarder ni à dessiner.
 - L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
@@ -248,6 +248,35 @@
   pas en Voiture. Chacun son tour et en équipes comme les autres jeux. Pas dans le Grand Jeu ni
   le Défi du jour (il faut enregistrer), ni de « Répondre en montrant ».
 - Voix : emoji dessinés par la police du téléphone, aucun fichier, aucun son livré, aucun droit tiers.
+
+## Histoire à inventer (#68)
+
+- Un jeu pour **raconter** : chaque manche tire **un héros, un lieu et un objet** (emoji et mots,
+  « Un dragon · Au zoo · Une clé ») et une phrase de départ que le parent lit (« Il était une fois
+  un dragon, au zoo, avec une clé… », bouton « Lire »). L’enfant invente la suite. Tuile
+  **Histoire à inventer** sur l’accueil (jeu de base, `#/jeu/histoire`), type Parler.
+- **108 images** (`src/content/histoire.json`, pack de type `story`) : 36 héros, 36 lieux et
+  36 objets, 12 de chaque par niveau (Petits : animaux et lieux de tous les jours ; Grands :
+  astronaute, autre planète, boussole…). Tirage au niveau de la partie, ou de l’enfant dont c’est
+  le tour.
+- Dans « Pour le parent », des **relances** (« Et après ? », « Qui arrive ? », « Comment ça se
+  termine ? »…), jamais de correction : pas de bonne réponse.
+- **Merci pour ton histoire** donne l’étoile, gagnée ensemble ; **Passer** tire d’autres images
+  sans rien dire. Une histoire prend du temps : **5 manches au plus** (moins si le réglage ou le
+  mode Express en prévoit moins). Une partie toute passée finit sur « Merci pour ce moment
+  ensemble. On inventera d’autres histoires ! ».
+- **Enregistrement facultatif** : « Enregistrer l’histoire », dans « Pour le parent », allume le
+  micro (jamais tout seul, Android demande l’autorisation) ; « Arrêter l’enregistrement » ou
+  3 minutes au plus. Changer de manche ou quitter le jeu pendant l’enregistrement l’arrête et
+  garde l’histoire. Elle se réécoute aussitôt (« Réécouter l’histoire »). Sans micro, rien n’est
+  proposé.
+- **Livre d’histoires** (espace Parent) : les histoires enregistrées, la plus récente d’abord,
+  avec leurs trois images et leur jour ; chacune se **réécoute** (au niveau commun,
+  `playRecording`) et se **supprime** (après confirmation). 30 histoires au plus : au-delà, le jeu
+  invite à en supprimer une. Elles restent dans le téléphone (IndexedDB, table `stories`), ne vont
+  ni dans la sauvegarde ni dans un jeu partagé, et partent avec « Effacer toutes les données ».
+- Oral (le parent lit les trois mots), il se joue en **Voiture** et au **Coucher**, chacun son
+  tour ou en équipes. Pas dans le Grand Jeu ni le Défi du jour, ni de « Répondre en montrant ».
 
 ## Mascotte (proposition)
 
