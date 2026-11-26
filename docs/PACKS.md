@@ -84,6 +84,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-emotion-mime.json` | Mime l’émotion             | `image`    |
 | `catalogue-tresor.json`       | Chasse au trésor           | `question` |
 | `catalogue-vrai-faux.json`    | Vrai ou faux rigolo        | `question` |
+| `catalogue-jacques.json`      | Jacques a dit              | `question` |
 
 ## Cartes « vrai ou faux »
 
@@ -92,3 +93,11 @@ se joue en vrai ou faux (#56) : pas d'indice « Ça commence par… », qui donn
 « Répondre en montrant », deux choix 👍 Vrai / 👎 Faux au lieu des cartes voisines. La suite de la
 réponse est la courte explication que le parent lit après « Voir la réponse ». Règle dans
 `src/games/vraifaux/verdict.ts` ; elle vaut aussi pour les jeux créés par le parent.
+
+## Cartes « Jacques a dit »
+
+Une carte `question` de thème `jacques-a-dit` ou `piege` (`"tags": ["piege"]`) se joue en Jacques a
+dit (#57) : le texte est la consigne que le parent lit (« Jacques a dit : … » en tête, sauf pour un
+piège), et l'écran dit d'emblée au parent si c'est un piège, sans réponse à dévoiler ni indice ni
+choix à montrer. La réponse, un nom court du geste (« Toucher son nez »), reste unique dans le pack
+mais n'est pas affichée. Règle dans `src/games/jacques/consigne.ts`.

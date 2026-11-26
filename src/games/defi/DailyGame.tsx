@@ -17,6 +17,8 @@ import { SongRound } from '../chanson/SongGame';
 import { DeckAnswer, ImageCard, QuestionCard, SoundCard } from '../deck/DeckGame';
 import { DrawingCanvas, type DrawingCanvasHandle } from '../dessin/DrawingCanvas';
 import { hintLadder, writtenHints } from '../hints';
+import { consigneOf } from '../jacques/consigne';
+import { JacquesCue } from '../jacques/JacquesCue';
 import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureWay } from '../tresor/treasure';
 import {
@@ -83,22 +85,27 @@ function CardBody({ card }: { card: DailyCard }) {
       return <DrawCard word={card.word} />;
     default: {
       const { item } = card;
+      const consigne = card.kind === 'question' ? consigneOf(item) : undefined;
       return (
         <div className="deck-round">
           {card.kind === 'sound' && <SoundCard item={item} />}
           {card.kind === 'image' && <ImageCard item={item} />}
           {card.kind === 'question' && <QuestionCard item={item} />}
-          <ParentBlock
-            hidden={<DeckAnswer item={item} />}
-            hints={hintLadder(item)}
-            openHints={writtenHints(item).length ? 1 : 0}
-          >
-            {card.kind === 'sound' && item.text && (
-              <>
-                À imiter : <strong>{item.text}</strong>
-              </>
-            )}
-          </ParentBlock>
+          {consigne ? (
+            <JacquesCue consigne={consigne} />
+          ) : (
+            <ParentBlock
+              hidden={<DeckAnswer item={item} />}
+              hints={hintLadder(item)}
+              openHints={writtenHints(item).length ? 1 : 0}
+            >
+              {card.kind === 'sound' && item.text && (
+                <>
+                  À imiter : <strong>{item.text}</strong>
+                </>
+              )}
+            </ParentBlock>
+          )}
         </div>
       );
     }

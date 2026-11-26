@@ -22,6 +22,8 @@ import { cardKey } from './cardKey';
 import type { Deck, DeckItem, DeckKind } from './types';
 import { useObjectUrl } from './useObjectUrl';
 import { VERDICT_OPTIONS, verdictOf, verdictOption } from '../vraifaux/verdict';
+import { consigneOf } from '../jacques/consigne';
+import { JacquesCue } from '../jacques/JacquesCue';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
 function RecordedSound({ audio }: { audio: Blob }) {
@@ -133,10 +135,12 @@ export function DeckRound({
   pool?: readonly DeckItem[];
 }) {
   const soundToImitate = kind === 'sound' && !item.audio && item.text;
+  // Jacques a dit (#57) : piège ou pas, dit d'emblée au parent ; rien à montrer à l'enfant.
+  const consigne = kind === 'question' ? consigneOf(item) : undefined;
   // Vrai ou faux (#56) : deux choix, Vrai puis Faux, à la place des cartes voisines.
   const verdict = kind === 'question' ? verdictOf(item.answer) : undefined;
   const drawn = useChoices(
-    pool && (verdict ? verdictOption(verdict) : deckOption(item)),
+    pool && !consigne ? (verdict ? verdictOption(verdict) : deckOption(item)) : undefined,
     verdict ? VERDICT_OPTIONS : pool?.map(deckOption),
   );
   const choices = drawn && verdict ? [...VERDICT_OPTIONS] : drawn;
@@ -148,7 +152,9 @@ export function DeckRound({
       {kind === 'image' && !showMe && <ImageCard item={item} />}
       {kind === 'question' && <QuestionCard item={item} />}
       {choices && <ChoiceBoard options={choices} answer={verdict ?? deckOption(item).key} />}
-      {showMe ? (
+      {consigne ? (
+        <JacquesCue consigne={consigne} />
+      ) : showMe ? (
         <ParentBlock>
           Demande à l’enfant de montrer : <strong>{item.answer}</strong>
           <TalkAbout item={item} />

@@ -108,7 +108,7 @@
   l'autre (réglage `gameMode`, comme le niveau) et s'applique à la partie suivante.
 - **Express** : 3 manches (ou moins si le réglage de l'espace Parent est plus court).
 - **Coucher** : thème nuit imposé, volume doux imposé, pas de minuteur dans les dessins, pas de
-  jeu qui fait bouger (Mime ça) ; la chasse au trésor s'y joue en version « sans courir ». Fin
+  jeu qui fait bouger (Mime ça, Jacques a dit) ; la chasse au trésor s'y joue en version « sans courir ». Fin
   en douceur : ni confettis ni vibration de fête, la mascotte dort, « C'est l'heure de dormir.
   Bonne nuit ! », pas de bouton « Un autre jeu ».
 - **Voiture** : seulement des cartes orales (Quelle chanson ?, Raconte-moi, Quel animal ?, Devinettes,
@@ -283,6 +283,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Mime l’émotion**      | L'écran montre à l'enfant l'émotion à mimer (visage + consigne), le parent devine. Voir « Les émotions ».                                  |
 | **Chasse au trésor**    | « Trouve quelque chose de rouge » : l'enfant cherche dans la maison, le parent valide l'objet. Voir ci-dessous.                            |
 | **Vrai ou faux rigolo** | Le parent lit une phrase, l'enfant crie « vrai » ou « faux ». Voir ci-dessous.                                                             |
+| **Jacques a dit**       | Le parent lit une consigne ; sans « Jacques a dit », c'est un piège et l'enfant ne bouge pas. Voir ci-dessous.                             |
 
 ### Les émotions (#58)
 
@@ -330,6 +331,23 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - En montrant : deux choix, 👍 Vrai et 👎 Faux, quel que soit le niveau. Même règle pour toute
   carte question dont la réponse commence par « Vrai » ou « Faux », jeux créés compris
   (`src/games/vraifaux/verdict.ts`).
+
+### Jacques a dit (#57)
+
+- Jeu de mouvement du catalogue : le parent lit la consigne à voix haute (« Jacques a dit :
+  touche ton nez. »). Avec « Jacques a dit », l'enfant la fait ; sans, c'est un piège, il ne
+  bouge pas. Une étoile quand l'enfant ne se fait pas piéger (Trouvé) ; piégé, on rit et on
+  continue (Pas encore).
+- 50 consignes (`src/content/catalogue-jacques.json`), dont 17 pièges (un tiers), réparties par
+  niveau : gestes simples pour les petits, équilibre et gestes à deux temps pour les moyens,
+  droite et gauche pour les grands. Rien de dangereux ni d'impossible en appartement : sur place,
+  sans courir, sauter ni grimper, sans meuble (vérifié par un test).
+- L'écran dit tout de suite au parent si c'est un piège (✅ Jacques a dit / ⚠️ Piège !) et ce qui
+  rapporte l'étoile : pas de « Voir la réponse » ni d'indice, un seul geste par manche pour
+  enchaîner vite. Pas de « Répondre en montrant » : l'enfant répond avec son corps.
+- Fait bouger : écarté au Coucher et en Voiture. Une carte est un piège ou non d'après son thème
+  (`piege` ou `jacques-a-dit`, `src/games/jacques/consigne.ts`), aussi dans le Grand Jeu et le
+  Défi du jour.
 
 ### Le Grand Jeu (#41)
 
@@ -537,7 +555,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
-   Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo)
+   Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).
