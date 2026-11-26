@@ -82,3 +82,12 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-emotion.json`      | Quelle émotion ?           | `image`    |
 | `catalogue-emotion-mime.json` | Mime l’émotion             | `image`    |
 | `catalogue-tresor.json`       | Chasse au trésor           | `question` |
+| `catalogue-vrai-faux.json`    | Vrai ou faux rigolo        | `question` |
+
+## Cartes « vrai ou faux »
+
+Une carte `question` dont la réponse commence par « Vrai » ou « Faux » (`"Faux ! Ils n’ont pas de pieds."`)
+se joue en vrai ou faux (#56) : pas d'indice « Ça commence par… », qui donnerait la réponse, et, pour
+« Répondre en montrant », deux choix 👍 Vrai / 👎 Faux au lieu des cartes voisines. La suite de la
+réponse est la courte explication que le parent lit après « Voir la réponse ». Règle dans
+`src/games/vraifaux/verdict.ts` ; elle vaut aussi pour les jeux créés par le parent.

@@ -108,11 +108,12 @@
   l'autre (réglage `gameMode`, comme le niveau) et s'applique à la partie suivante.
 - **Express** : 3 manches (ou moins si le réglage de l'espace Parent est plus court).
 - **Coucher** : thème nuit imposé, volume doux imposé, pas de minuteur dans les dessins, pas de
-  jeu qui fait bouger (Mime ça) ; la chasse au trésor s'y joue en version « sans courir ». Fin en douceur : ni confettis
-  ni vibration de fête, la mascotte dort, « C'est l'heure de dormir. Bonne nuit ! », pas de
-  bouton « Un autre jeu ».
-- **Voiture** : seulement des cartes orales (Quelle chanson ?, Quel animal ?, Devinettes, jeux
-  créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à regarder ni à dessiner.
+  jeu qui fait bouger (Mime ça) ; la chasse au trésor s'y joue en version « sans courir ». Fin
+  en douceur : ni confettis ni vibration de fête, la mascotte dort, « C'est l'heure de dormir.
+  Bonne nuit ! », pas de bouton « Un autre jeu ».
+- **Voiture** : seulement des cartes orales (Quelle chanson ?, Quel animal ?, Devinettes, Vrai ou
+  faux rigolo, jeux créés « Son » et « Question », chasse au trésor « sans courir ») ; rien à
+  regarder ni à dessiner.
 - L'accueil, le Grand Jeu, le Défi du jour et « Un autre jeu » ne proposent que les jeux qui
   conviennent au mode ; un jeu qui ne convient pas, ouvert par l'adresse, ne démarre pas.
 - Règle commune (`src/games/modes.ts`, fonction pure `suitsMode`) : chaque jeu déclare ce qu'il
@@ -251,15 +252,16 @@ Le parent les ajoute depuis « Ajouter un jeu » (bouton Ajouter / Ajouté) ; il
 alors sur l'accueil. Ils suivent le même déroulé (manches, étoiles) et un format commun de
 cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou une couleur.
 
-| Jeu                  | Règle proposée                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Quel animal ?**    | Le **parent imite le cri** affiché (« Meuh ! ») et l'enfant devine. Pas d'enregistrement de cris pour la v1 (droits) : à revoir si besoin. |
-| **Quelle couleur ?** | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
-| **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
-| **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
-| **Quelle émotion ?** | Un visage (emoji) en grand, l'enfant nomme l'émotion. Voir « Les émotions ».                                                               |
-| **Mime l’émotion**   | L'écran montre à l'enfant l'émotion à mimer (visage + consigne), le parent devine. Voir « Les émotions ».                                  |
-| **Chasse au trésor** | « Trouve quelque chose de rouge » : l'enfant cherche dans la maison, le parent valide l'objet. Voir ci-dessous.                            |
+| Jeu                     | Règle proposée                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Quel animal ?**       | Le **parent imite le cri** affiché (« Meuh ! ») et l'enfant devine. Pas d'enregistrement de cris pour la v1 (droits) : à revoir si besoin. |
+| **Quelle couleur ?**    | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
+| **Mime ça**             | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
+| **Devinettes**          | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
+| **Quelle émotion ?**    | Un visage (emoji) en grand, l'enfant nomme l'émotion. Voir « Les émotions ».                                                               |
+| **Mime l’émotion**      | L'écran montre à l'enfant l'émotion à mimer (visage + consigne), le parent devine. Voir « Les émotions ».                                  |
+| **Chasse au trésor**    | « Trouve quelque chose de rouge » : l'enfant cherche dans la maison, le parent valide l'objet. Voir ci-dessous.                            |
+| **Vrai ou faux rigolo** | Le parent lit une phrase, l'enfant crie « vrai » ou « faux ». Voir ci-dessous.                                                             |
 
 ### Les émotions (#58)
 
@@ -295,6 +297,18 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Pas de « Répondre en montrant » (l'enfant montre l'objet lui-même). Dans le Grand Jeu et le
   Défi du jour, la carte se joue avec sa consigne, partout (sans courir au Coucher et en
   Voiture) ; sans minuteur dans le Défi du jour.
+
+### Vrai ou faux rigolo (#56)
+
+- Jeu du catalogue, tout à l'oral : le parent lit une phrase, l'enfant crie « vrai » ou « faux ».
+  Idéal pour les petits et pour la voiture (proposé en Voiture et au Coucher).
+- 60 cartes (`src/content/catalogue-vrai-faux.json`), 20 par niveau, moitié vraies (elles
+  apprennent quelque chose), moitié absurdes (« Les poissons portent des chaussettes »).
+- « Voir la réponse » montre au parent Vrai ou Faux et une courte explication à lire. Pas
+  d'indice « Ça commence par… » : il donnerait la réponse.
+- En montrant : deux choix, 👍 Vrai et 👎 Faux, quel que soit le niveau. Même règle pour toute
+  carte question dont la réponse commence par « Vrai » ou « Faux », jeux créés compris
+  (`src/games/vraifaux/verdict.ts`).
 
 ### Le Grand Jeu (#41)
 
@@ -502,7 +516,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
-   Quelle émotion ?, Mime l’émotion, Chasse au trésor)
+   Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

@@ -27,6 +27,7 @@ export const CATALOGUE_PACKS = [
   'emotion',
   'emotion-mime',
   'tresor',
+  'vrai-faux',
 ];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {
