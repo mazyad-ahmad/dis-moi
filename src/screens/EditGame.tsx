@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { href, navigate } from '../app/router';
 import { useRecording } from '../audio/recording';
 import { Button } from '../components/Button';
@@ -30,7 +30,13 @@ import {
 } from '../data/customGames';
 import type { CustomGame } from '../data/db';
 import { shareGame } from '../data/gameFile';
-import { canRecord, MAX_RECORD_SECONDS, shrinkImage, useRecorder } from '../data/media';
+import {
+  canRecord,
+  MAX_RECORD_SECONDS,
+  PhotoError,
+  preparePhoto,
+  useRecorder,
+} from '../data/media';
 import { kindLabel, type DeckItem, type DeckKind } from '../games/deck/types';
 import { useObjectUrl } from '../games/deck/useObjectUrl';
 import { NotFound } from './Placeholder';
@@ -50,6 +56,93 @@ const LABELS: Record<DeckKind, { text?: string; answer: string; placeholder: str
 function Photo({ blob }: { blob: Blob }) {
   const url = useObjectUrl(blob);
   return url ? <img className="item-thumb" src={url} alt="" /> : null;
+}
+
+/**
+ * Choix d'une photo (galerie ou appareil photo, au choix d'Android). Un vrai bouton ouvre le
+ * sélecteur dans le geste même du parent ; le champ fichier est vidé après chaque choix pour
+ * qu'une même photo puisse être reprise. Tout échec est dit, jamais avalé.
+ */
+function PhotoPicker({
+  image,
+  onChange,
+  onBusy,
+}: {
+  image?: Blob;
+  onChange: (image?: Blob) => void;
+  onBusy: (busy: boolean) => void;
+}) {
+  const input = useRef<HTMLInputElement>(null);
+  const errorId = useId();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  function open() {
+    setError('');
+    const el = input.current;
+    if (!el) return;
+    try {
+      el.click(); // appel direct dans le clic : Android n'ouvre le sélecteur que pendant un geste
+    } catch {
+      setError('Impossible d’ouvrir les photos de ce téléphone.');
+    }
+  }
+
+  async function onPick(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.currentTarget.files?.[0];
+    e.currentTarget.value = ''; // la même photo pourra être choisie de nouveau
+    if (!file) return;
+    setError('');
+    setBusy(true);
+    onBusy(true);
+    try {
+      onChange(await preparePhoto(file));
+    } catch (err) {
+      setError(
+        err instanceof PhotoError ? err.message : 'Impossible de préparer cette photo. Réessaie.',
+      );
+    } finally {
+      setBusy(false);
+      onBusy(false);
+    }
+  }
+
+  return (
+    <div className="media-row">
+      {image && <Photo blob={image} />}
+      <Button
+        variant="secondary"
+        icon={<IconCamera size={20} />}
+        onClick={open}
+        disabled={busy}
+        aria-describedby={error ? errorId : undefined}
+      >
+        {image ? 'Changer la photo' : 'Ajouter une photo'}
+      </Button>
+      <input
+        ref={input}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        tabIndex={-1}
+        aria-label="Photo de la carte"
+        onChange={(e) => void onPick(e)}
+      />
+      {image && !busy && (
+        <button type="button" className="link-btn" onClick={() => onChange(undefined)}>
+          Retirer la photo
+        </button>
+      )}
+      <span className="muted" role="status">
+        {busy && 'Préparation de la photo…'}
+      </span>
+      {error && (
+        <p id={errorId} className="error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
 }
 
 function Recorder({ audio, onChange }: { audio?: Blob; onChange: (a?: Blob) => void }) {
@@ -91,6 +184,16 @@ function Recorder({ audio, onChange }: { audio?: Blob; onChange: (a?: Blob) => v
   );
 }
 
+/** Message clair quand une carte ne peut pas être écrite dans la base. */
+function saveErrorMessage(err: unknown): string {
+  if (err instanceof CustomGameError) return err.message;
+  const name = (e: unknown) => (e instanceof Error || e instanceof DOMException ? e.name : '');
+  const inner = (err as { inner?: unknown } | null)?.inner; // erreur d'origine, sous Dexie
+  if ([name(err), name(inner)].includes('QuotaExceededError'))
+    return 'Plus assez de place sur ce téléphone pour enregistrer la carte. Libère de la place ou retire la photo.';
+  return 'Impossible d’enregistrer la carte. Réessaie.';
+}
+
 function ItemForm({
   kind,
   initial,
@@ -105,23 +208,21 @@ function ItemForm({
   const empty: DeckItem = { answer: '' };
   const [item, setItem] = useState<DeckItem>(initial ?? empty);
   const [error, setError] = useState('');
+  const [photoBusy, setPhotoBusy] = useState(false);
   const labels = LABELS[kind];
   const set = (patch: Partial<DeckItem>) => setItem((it) => ({ ...it, ...patch }));
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (photoBusy) return; // la photo choisie n'est pas encore prête
     setError('');
     try {
       cleanItem(kind, item); // message d'erreur clair avant d'écrire
       await onSave(item);
       setItem(empty);
     } catch (err) {
-      setError(err instanceof CustomGameError ? err.message : 'Impossible d’enregistrer la carte.');
+      setError(saveErrorMessage(err));
     }
-  }
-
-  async function onPhoto(file: File | undefined) {
-    if (file) set({ image: await shrinkImage(file) });
   }
 
   return (
@@ -131,24 +232,11 @@ function ItemForm({
       aria-label={initial ? 'Modifier la carte' : 'Nouvelle carte'}
     >
       {kind === 'image' && (
-        <div className="media-row">
-          {item.image && <Photo blob={item.image} />}
-          <label className="btn btn--secondary">
-            <IconCamera size={20} />
-            {item.image ? 'Changer la photo' : 'Ajouter une photo'}
-            <input
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={(e) => void onPhoto(e.target.files?.[0])}
-            />
-          </label>
-          {item.image && (
-            <button type="button" className="link-btn" onClick={() => set({ image: undefined })}>
-              Retirer la photo
-            </button>
-          )}
-        </div>
+        <PhotoPicker
+          image={item.image}
+          onChange={(image) => set({ image })}
+          onBusy={setPhotoBusy}
+        />
       )}
       {kind === 'sound' && <Recorder audio={item.audio} onChange={(audio) => set({ audio })} />}
 
@@ -194,10 +282,12 @@ function ItemForm({
           <Button variant="secondary" onClick={onCancel}>
             Annuler
           </Button>
-          <Button type="submit">Enregistrer</Button>
+          <Button type="submit" disabled={photoBusy}>
+            Enregistrer
+          </Button>
         </div>
       ) : (
-        <Button type="submit" block>
+        <Button type="submit" block disabled={photoBusy}>
           Ajouter la carte
         </Button>
       )}

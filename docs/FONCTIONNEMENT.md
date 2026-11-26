@@ -100,6 +100,11 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - Cartes (50 maximum) : réponse et indice facultatif, plus selon le type :
   - Son : un **enregistrement** au micro (10 s maximum) ou un bruit à imiter par le parent ;
   - Image : une **photo** de l'appareil (réduite à 1280 px) ou un texte à montrer ;
+    « Ajouter une photo » ouvre le choix d'Android (galerie ou appareil photo). La photo est
+    réduite à 1280 px et recopiée en JPEG dans la base (jamais le fichier d'origine, qui peut
+    devenir illisible). Une même photo peut être reprise. Si elle ne peut pas être lue (format
+    inconnu, HEIC…), est trop lourde (plus de 5 Mo sans réduction possible) ou si le téléphone
+    est plein, un message le dit ; « Ajouter la carte » attend la fin de la préparation.
   - Question : le texte de la question ;
   - Mot à dessiner : le mot, joué comme « Dessine ça ».
 - Une partie compte autant de manches que réglé, ou moins si le jeu a moins de cartes.
