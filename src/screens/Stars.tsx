@@ -16,7 +16,13 @@ export function Stars() {
   const custom = useCustomGames();
   const players = usePlayers() ?? [];
 
-  if (records === undefined) return <main className="screen" />;
+  // Lecture en cours (un instant) : le titre est déjà là, jamais une page blanche (#143).
+  if (records === undefined)
+    return (
+      <main className="screen" aria-busy="true">
+        <ScreenHeader title="Étoiles" />
+      </main>
+    );
 
   if (!records.length)
     return (

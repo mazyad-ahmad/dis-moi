@@ -40,7 +40,8 @@
 - L'accueil rappelle la dernière partie ; l'onglet Étoiles montre le total, les 30 dernières
   parties (jeu, jour, joueurs, manches si la partie a été quittée) et des **récompenses** débloquées
   à 1, 10, 25, 50, 100 et 250 étoiles.
-- Remise à zéro des étoiles depuis l'espace Parent (efface l'historique).
+- Remise à zéro des étoiles depuis l'espace Parent (efface l'historique) : l'onglet Étoiles
+  affiche aussitôt « Pas encore d'étoiles », puis les étoiles des parties suivantes, sans recharger.
 - **Animations de récompense** : au « Trouvé », une étoile part du bouton et rejoint le compteur,
   qui rebondit ; chaque nouvelle manche entre en douceur ; des confettis tombent sur l'écran de fin.
   Elles ne retardent jamais la manche suivante (on peut enchaîner vite) et sont toutes coupées
