@@ -29,7 +29,8 @@ test('choisir l’animal d’un enfant, le changer et le retrouver sur l’accue
   // Gardé sur le téléphone : toujours là après un rechargement.
   await page.goto('./#/');
   await page.reload();
-  // Sur l'accueil, l'avatar est dans la pastille « Qui joue ? » (#37), nommée par le prénom.
+  // Sur l'accueil, l'avatar est dans la pastille « Qui joue ? » (#37) du panneau « La partie ».
+  await page.getByRole('button', { name: /La partie/ }).click();
   await expect(
     page
       .getByRole('button', { name: 'Léa', exact: true })

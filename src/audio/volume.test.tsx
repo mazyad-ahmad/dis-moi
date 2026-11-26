@@ -325,7 +325,7 @@ describe('son d’une carte créée sur Android (#141)', () => {
 
 it('espace Parent : volume de l’appli doux par défaut, ou normal', async () => {
   const user = userEvent.setup();
-  window.location.hash = '#/parent';
+  window.location.hash = '#/parent/sons';
   render(<App />);
   expect(screen.getByRole('radio', { name: 'Doux' })).toBeChecked();
   await user.click(screen.getByRole('radio', { name: 'Normal' }));

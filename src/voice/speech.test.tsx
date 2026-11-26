@@ -194,7 +194,7 @@ describe('espace Parent', () => {
   it('propose la vitesse avec une voix locale', async () => {
     const user = userEvent.setup();
     fakeSynth([LOCAL_FR]);
-    open('/parent');
+    open('/parent/sons');
     const group = screen.getByRole('group', { name: 'Lecture à voix haute' });
     expect(group).toBeInTheDocument();
     await user.click(screen.getByLabelText('Lente'));
@@ -203,7 +203,7 @@ describe('espace Parent', () => {
 
   it('explique l’absence de voix française locale', () => {
     fakeSynth([ONLINE_FR]);
-    open('/parent');
+    open('/parent/sons');
     expect(screen.queryByRole('group', { name: 'Lecture à voix haute' })).not.toBeInTheDocument();
     expect(screen.getByText(/Aucune voix française installée/)).toBeInTheDocument();
   });

@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { href } from '../app/router';
+import { href, type ParentSectionId } from '../app/router';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { useConfirm } from '../components/useConfirm';
@@ -240,27 +240,40 @@ function SeanceControls() {
   );
 }
 
-export function Parent() {
-  const settings = useSettings();
-  const [notice, setNotice] = useState('');
-  const [confirmDialog, confirm] = useConfirm();
+/** Sommaire de l'espace Parent : chaque entrée ouvre une page courte de réglages. */
+const SECTIONS: { id: ParentSectionId; title: string; detail: string }[] = [
+  { id: 'partie', title: 'La partie', detail: 'Manches, minuteur, Grand Jeu, défi du jour' },
+  { id: 'sons', title: 'Sons et voix', detail: 'Sons, volume, lecture, félicitations, vibrations' },
+  { id: 'temps', title: 'Temps de jeu', detail: 'Durée d’une séance, verrou parent' },
+  { id: 'apparence', title: 'Apparence', detail: 'Thème jour ou nuit' },
+  { id: 'appli', title: 'Appli et données', detail: 'Installer, sauvegarde, remise à zéro' },
+];
 
+export function Parent() {
   return (
     <main className="screen">
       <ScreenHeader title="Espace parent" />
-
       <Card>
         <LinkRow path="/joueurs" title="Joueurs" detail="Prénoms des enfants" />
         <LinkRow path="/ajouter" title="Jeux" detail="Catalogue et jeux créés" />
+        {SECTIONS.map((s) => (
+          <LinkRow key={s.id} path={`/parent/${s.id}`} title={s.title} detail={s.detail} />
+        ))}
       </Card>
+      {/* Séance en cours ou terminée : prolonger sans chercher dans les sous-pages. */}
+      <SeanceControls />
+      <p className="muted">
+        Toutes les données restent sur ce téléphone : pas de compte, pas de publicité, pas de suivi.{' '}
+        <a href={href('/confidentialite')}>Confidentialité</a>
+      </p>
+    </main>
+  );
+}
 
-      <Choice
-        legend="Thème"
-        name="theme"
-        value={settings.theme}
-        options={THEMES}
-        onChange={(v) => void setSetting('theme', v)}
-      />
+function PartySettings() {
+  const settings = useSettings();
+  return (
+    <>
       <Choice
         legend="Manches par partie"
         name="rounds"
@@ -275,25 +288,7 @@ export function Parent() {
         options={DRAW_SECONDS_CHOICES.map((n) => ({ value: n, label: clock(n) }))}
         onChange={(v) => void setSetting('drawSeconds', v)}
       />
-
       <GrandSection />
-
-      <ReadAloudSetting />
-
-      <VibrationSetting />
-
-      <Choice
-        legend="Sons"
-        name="sounds"
-        value={settings.sounds ? 'on' : 'off'}
-        options={SOUND_CHOICES}
-        onChange={(v) => void setSetting('sounds', v === 'on')}
-        className="segmented--2"
-        hint="Petits sons quand on gagne une étoile, qu’on passe ou que la partie se termine."
-      />
-
-      <PraiseSection />
-
       <Choice
         legend="Défi du jour"
         name="daily-challenge"
@@ -303,7 +298,23 @@ export function Parent() {
         className="segmented--2"
         hint="Une carte surprise par jour sur l’accueil, une étoile bonus si elle est trouvée. Aucune série, aucune notification."
       />
+    </>
+  );
+}
 
+function SoundSettings() {
+  const settings = useSettings();
+  return (
+    <>
+      <Choice
+        legend="Sons"
+        name="sounds"
+        value={settings.sounds ? 'on' : 'off'}
+        options={SOUND_CHOICES}
+        onChange={(v) => void setSetting('sounds', v === 'on')}
+        className="segmented--2"
+        hint="Petits sons quand on gagne une étoile, qu’on passe ou que la partie se termine."
+      />
       <Choice
         legend="Volume de l’appli"
         name="volume"
@@ -313,7 +324,30 @@ export function Parent() {
         className="segmented--2"
         hint="Tous les sons de l’appli restent sous un plafond, même un enregistrement très fort. « Doux » le baisse encore."
       />
+      <ReadAloudSetting />
+      <VibrationSetting />
+      <PraiseSection />
+    </>
+  );
+}
 
+function TimeSettings() {
+  const settings = useSettings();
+  return (
+    <>
+      <Choice
+        legend="Durée d’une séance"
+        name="session-minutes"
+        value={settings.sessionMinutes}
+        options={SESSION_CHOICES.map((n) => ({ value: n, label: n ? String(n) : 'Non' }))}
+        onChange={(v) => {
+          resetSeance();
+          void setSetting('sessionMinutes', v);
+        }}
+        className="segmented--5"
+        hint="En minutes, à partir du premier jeu. La partie en cours va jusqu’au bout, puis on range."
+      />
+      <SeanceControls />
       <Choice
         legend="Verrou parent"
         name="parent-lock"
@@ -328,25 +362,30 @@ export function Parent() {
         className="segmented--2"
         hint="Une petite opération avant l’espace Parent, les joueurs et les jeux."
       />
+    </>
+  );
+}
 
-      <Choice
-        legend="Durée d’une séance"
-        name="session-minutes"
-        value={settings.sessionMinutes}
-        options={SESSION_CHOICES.map((n) => ({ value: n, label: n ? String(n) : 'Non' }))}
-        onChange={(v) => {
-          resetSeance();
-          void setSetting('sessionMinutes', v);
-        }}
-        className="segmented--5"
-        hint="En minutes, à partir du premier jeu. La partie en cours va jusqu’au bout, puis on range."
-      />
-      <SeanceControls />
+function LookSettings() {
+  const settings = useSettings();
+  return (
+    <Choice
+      legend="Thème"
+      name="theme"
+      value={settings.theme}
+      options={THEMES}
+      onChange={(v) => void setSetting('theme', v)}
+    />
+  );
+}
 
+function AppSettings() {
+  const [notice, setNotice] = useState('');
+  const [confirmDialog, confirm] = useConfirm();
+  return (
+    <>
       <Install />
-
       <BackupSection />
-
       <section className="setting" aria-labelledby="reset-title">
         <h2 id="reset-title" className="eyebrow">
           Remise à zéro
@@ -390,12 +429,29 @@ export function Parent() {
           {notice}
         </p>
       </section>
-
       <p className="muted">
-        Toutes les données restent sur ce téléphone : pas de compte, pas de publicité, pas de suivi.{' '}
         <a href={href('/confidentialite')}>Confidentialité</a>
       </p>
       {confirmDialog}
+    </>
+  );
+}
+
+const SECTION_SCREENS: Record<ParentSectionId, () => ReactNode> = {
+  partie: PartySettings,
+  sons: SoundSettings,
+  temps: TimeSettings,
+  apparence: LookSettings,
+  appli: AppSettings,
+};
+
+/** Une sous-page de l'espace Parent : quelques réglages qui vont ensemble. */
+export function ParentSection({ id }: { id: ParentSectionId }) {
+  const Settings = SECTION_SCREENS[id];
+  return (
+    <main className="screen">
+      <ScreenHeader title={SECTIONS.find((s) => s.id === id)!.title} back="/parent" />
+      <Settings />
     </main>
   );
 }

@@ -218,7 +218,7 @@ describe('félicitations du parent', () => {
 
 describe('espace Parent', () => {
   it('ne propose rien sans voix française locale ni enregistrement', async () => {
-    open('/parent');
+    open('/parent/sons');
     expect(await screen.findByText(/félicitations parlées ne sont pas proposées/)).toBeVisible();
     expect(screen.queryByRole('radio', { name: 'Activées' })).not.toBeInTheDocument();
   });
@@ -230,7 +230,7 @@ describe('espace Parent', () => {
       configurable: true,
     });
     try {
-      open('/parent');
+      open('/parent/sons');
       expect(
         await screen.findByRole('button', { name: 'Enregistrer une félicitation' }),
       ).toBeVisible();
@@ -243,7 +243,7 @@ describe('espace Parent', () => {
   it('se règle avec une voix locale, indépendamment des sons', async () => {
     const user = userEvent.setup();
     fakeSynth();
-    open('/parent');
+    open('/parent/sons');
     const group = await screen.findByRole('group', { name: 'Félicitations parlées' });
     await user.click(within(group).getByLabelText('Désactivées'));
     expect(await db.settings.get('praise')).toEqual({ key: 'praise', value: false });
@@ -253,13 +253,15 @@ describe('espace Parent', () => {
   it('liste les félicitations enregistrées, et « Tout effacer » les supprime', async () => {
     const user = userEvent.setup();
     await addPraise(new Blob(['bravo']));
-    open('/parent');
+    open('/parent/sons');
     const group = await screen.findByRole('group', { name: 'Félicitations parlées' });
     expect(within(group).getByLabelText('Activées')).toBeChecked();
     await user.click(within(group).getByRole('button', { name: 'Écouter Félicitation 1' }));
     expect(playRecording).toHaveBeenCalledTimes(1);
 
-    await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
+    // « Tout effacer » est rangé dans « Appli et données ».
+    window.location.hash = '#/parent/appli';
+    await user.click(await screen.findByRole('button', { name: 'Effacer toutes les données' }));
     const dialog = await screen.findByRole('alertdialog');
     await user.click(within(dialog).getByRole('button', { name: 'Tout effacer' }));
     expect(await screen.findByText('Toutes les données ont été effacées.')).toBeInTheDocument();

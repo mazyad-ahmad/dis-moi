@@ -11,6 +11,7 @@ test('qui joue aujourd’hui : seuls les joueurs actifs sont dans la partie', as
   }
   await page.getByRole('link', { name: 'Retour' }).click();
 
+  await page.getByRole('button', { name: /La partie/ }).click();
   const group = page.getByRole('group', { name: 'Qui joue ?' });
   const sami = group.getByRole('button', { name: 'Sami' });
   await expect(sami).toHaveAttribute('aria-pressed', 'true');
@@ -29,11 +30,13 @@ test('qui joue aujourd’hui : seuls les joueurs actifs sont dans la partie', as
 
   // Le choix est gardé après un rechargement.
   await page.reload();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await expect(group.getByRole('button', { name: 'Sami' })).toHaveAttribute(
     'aria-pressed',
     'false',
   );
   await expect(group.getByRole('button', { name: 'Léa' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Fermer' }).click();
 
   await page.getByRole('link', { name: /Quelle lettre/ }).click();
   await page.getByRole('button', { name: 'Trouvé' }).click();

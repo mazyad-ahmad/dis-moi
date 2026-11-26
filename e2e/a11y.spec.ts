@@ -6,6 +6,11 @@ const SCREENS = [
   ['accueil', '/'],
   ['étoiles', '/etoiles'],
   ['espace Parent', '/parent'],
+  ['Parent, la partie', '/parent/partie'],
+  ['Parent, sons et voix', '/parent/sons'],
+  ['Parent, temps de jeu', '/parent/temps'],
+  ['Parent, apparence', '/parent/apparence'],
+  ['Parent, appli et données', '/parent/appli'],
   ['joueurs', '/joueurs'],
   ['ajouter un jeu', '/ajouter'],
   ['confidentialité', '/confidentialite'],
@@ -39,7 +44,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 
     test('dialogue de confirmation', async ({ page }) => {
       await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
-      await page.goto('./#/parent');
+      await page.goto('./#/parent/appli');
       const opener = page.getByRole('button', { name: 'Effacer toutes les données' });
       await opener.click();
       const dialog = page.getByRole('alertdialog', { name: 'Tout effacer ?' });
@@ -71,7 +76,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     page,
   }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
-    await page.goto('./#/parent');
+    await page.goto('./#/parent/temps');
     await page.getByText('Activé', { exact: true }).click();
     // Nouvel onglet : pas encore déverrouillé.
     const gate = await page.context().newPage();

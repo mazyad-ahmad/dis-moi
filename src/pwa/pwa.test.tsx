@@ -38,7 +38,7 @@ describe('installation', () => {
       prompt,
       userChoice: Promise.resolve({ outcome: 'accepted' }),
     } as unknown as NonNullable<Parameters<typeof resetPwa>[0]>['install'];
-    window.location.hash = '#/parent';
+    window.location.hash = '#/parent/appli';
     render(<App />);
     expect(screen.getByText(/Ajouter à l’écran d’accueil/)).toBeInTheDocument();
 
@@ -56,7 +56,7 @@ describe('installation', () => {
 describe('page Confidentialité', () => {
   it('est accessible depuis l’espace Parent', async () => {
     const user = userEvent.setup();
-    window.location.hash = '#/parent';
+    window.location.hash = '#/parent/appli';
     render(<App />);
     await user.click(screen.getByRole('link', { name: 'Confidentialité' }));
     expect(screen.getByRole('heading', { name: 'Confidentialité' })).toBeInTheDocument();

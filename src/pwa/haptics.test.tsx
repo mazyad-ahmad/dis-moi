@@ -109,7 +109,7 @@ it('Dessine ça : rien pendant le dessin, double vibration à la fin du minuteur
 
 it('espace Parent : le réglage « Vibrations » est enregistré', async () => {
   const user = userEvent.setup();
-  open('/parent');
+  open('/parent/sons');
   const group = screen.getByRole('group', { name: 'Vibrations' });
   expect(group).toBeInTheDocument();
   expect(screen.getByRole('radio', { name: 'Avec' })).toBeChecked();
@@ -127,7 +127,7 @@ it('impulsions assez longues pour être senties', () => {
 
 it('espace Parent : « Essayer » fait vibrer au toucher, même au premier appui', async () => {
   const user = userEvent.setup();
-  open('/parent');
+  open('/parent/sons');
   await user.click(screen.getByRole('button', { name: 'Essayer' }));
   expect(vibrateSpy).toHaveBeenCalledWith(HAPTICS.found);
   expect(screen.getByText(/Rien senti \?/)).toBeInTheDocument();
@@ -139,7 +139,7 @@ it('espace Parent : « Essayer » fait vibrer au toucher, même au premier appui
 it('espace Parent : dit quand le navigateur refuse de vibrer', async () => {
   vibrateSpy.mockImplementationOnce(() => false);
   const user = userEvent.setup();
-  open('/parent');
+  open('/parent/sons');
   await user.click(screen.getByRole('button', { name: 'Essayer' }));
   expect(screen.getByText(/a refusé de faire vibrer/)).toBeInTheDocument();
 });
@@ -147,7 +147,7 @@ it('espace Parent : dit quand le navigateur refuse de vibrer', async () => {
 it('espace Parent : sans vibreur, le dit au lieu de proposer le réglage', () => {
   delete (navigator as { vibrate?: unknown }).vibrate;
   expect(canVibrate()).toBe(false);
-  open('/parent');
+  open('/parent/sons');
   expect(screen.queryByRole('group', { name: 'Vibrations' })).not.toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Vibrations' })).toBeInTheDocument();
   expect(screen.getByText(/ne sait pas faire vibrer/)).toBeInTheDocument();

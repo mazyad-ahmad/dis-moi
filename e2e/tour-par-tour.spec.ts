@@ -11,9 +11,11 @@ test('chacun son tour : le prénom de l’enfant change à chaque manche', async
   await page.getByRole('link', { name: 'Retour' }).click();
 
   // En équipe par défaut ; « Chacun son tour » se choisit sur l'accueil.
+  await page.getByRole('button', { name: /La partie/ }).click();
   await expect(page.getByRole('radio', { name: 'En équipe' })).toBeChecked();
   await page.getByText('Chacun son tour').click();
   await expect(page.getByRole('radio', { name: 'Chacun son tour' })).toBeChecked();
+  await page.getByRole('button', { name: 'Fermer' }).click();
 
   await page.getByRole('link', { name: /Quelle lettre/ }).click();
   const names: string[] = [];
@@ -29,10 +31,13 @@ test('chacun son tour : le prénom de l’enfant change à chaque manche', async
 
   // Le choix est gardé ; avec un seul joueur actif, on joue en équipe.
   await page.getByRole('link', { name: 'Quitter la partie' }).click();
+  await page.getByRole('button', { name: /La partie/ }).click();
   const group = page.getByRole('group', { name: 'Qui joue ?' });
   await group.getByRole('button', { name: 'Sami' }).click();
   await group.getByRole('button', { name: 'Noé' }).click();
+  await expect(page.getByRole('radio', { name: 'Normal' })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Chacun son tour' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Quelle lettre/ }).click();
   await expect(page.getByText('Manche 1 sur 10')).toBeVisible();
   await expect(page.getByText(/^À toi,/)).toHaveCount(0);

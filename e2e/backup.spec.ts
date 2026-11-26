@@ -18,14 +18,14 @@ test('sauvegarder tout, puis restaurer sur un téléphone vierge', async ({ page
   await page.getByRole('button', { name: 'Ajouter la carte' }).click();
   await expect(page.getByText('1 carte')).toBeVisible();
 
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/partie');
   await page.getByText('5', { exact: true }).click();
   await page.goto('./#/jeu/lettres');
   for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Trouvé' }).click();
   await expect(page.getByRole('heading', { name: '5 étoiles gagnées ensemble !' })).toBeVisible();
 
   // Jeu créé et jamais sauvegardé : rappel discret dans l'espace Parent.
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/appli');
   const reminder = page.getByText('Pense à les sauvegarder');
   await expect(reminder).toBeVisible();
   await expect(page.getByText('Aucune sauvegarde pour l’instant.', { exact: false })).toBeVisible();
@@ -44,7 +44,7 @@ test('sauvegarder tout, puis restaurer sur un téléphone vierge', async ({ page
   // Autre téléphone, vierge.
   const other = await browser.newContext({ ...test.info().project.use });
   const phone = await other.newPage();
-  await phone.goto('./#/parent');
+  await phone.goto('./#/parent/appli');
 
   // Fichier invalide : message clair, rien ne change.
   await phone.getByLabel('Restaurer une sauvegarde').setInputFiles({
@@ -59,6 +59,7 @@ test('sauvegarder tout, puis restaurer sur un téléphone vierge', async ({ page
   await expect(choice).toContainText('1 joueur, 1 partie (5 étoiles), 1 jeu créé.');
   await choice.getByRole('button', { name: 'Tout remplacer' }).click();
   await expect(phone.getByRole('status').filter({ hasText: 'Sauvegarde restaurée' })).toBeVisible();
+  await phone.goto('./#/parent/partie');
   await expect(phone.getByLabel('5', { exact: true })).toBeChecked();
 
   await phone.goto('./#/');

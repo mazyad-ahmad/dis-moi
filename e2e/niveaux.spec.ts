@@ -7,6 +7,7 @@ test('niveau Petits choisi sur l’accueil : les lettres des petits d’abord, g
   page,
 }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   const tous = page.getByLabel('Tous', { exact: true });
   await expect(tous).toBeChecked();
   await page.getByText('Petits', { exact: true }).click();
@@ -15,8 +16,10 @@ test('niveau Petits choisi sur l’accueil : les lettres des petits d’abord, g
   await expect.poll(() => storedSetting(page, 'gameLevel')).toBe(1);
 
   await page.reload();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await expect(page.getByLabel('Petits', { exact: true })).toBeChecked();
 
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Quelle lettre/ }).click();
   for (let i = 0; i < 5; i++) {
     await expect(page.getByTestId('glyph')).toHaveText(/^[AEIOU]$/);

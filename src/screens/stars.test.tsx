@@ -33,13 +33,15 @@ describe('Étoiles après la remise à zéro (#143)', () => {
     );
     expect(await screen.findByText('4 étoiles')).toBeInTheDocument();
     await user.click(screen.getByRole('link', { name: 'Parent' }));
+    await user.click(await screen.findByRole('link', { name: /Appli et données/ }));
 
     await user.click(screen.getByRole('button', { name: 'Remettre les étoiles à zéro' }));
     const dialog = await screen.findByRole('alertdialog');
     await user.click(within(dialog).getByRole('button', { name: 'Remettre à zéro' }));
     expect(await screen.findByText('Les étoiles sont remises à zéro.')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('link', { name: 'Étoiles' }));
+    await user.click(screen.getByRole('link', { name: 'Retour' }));
+    await user.click(await screen.findByRole('link', { name: 'Étoiles' }));
     expect(await screen.findByText("Pas encore d'étoiles")).toBeInTheDocument();
 
     await user.click(screen.getByRole('link', { name: 'Jeux' }));

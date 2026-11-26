@@ -5,6 +5,7 @@ import { storedSetting } from './storage';
 
 test('Voiture : seulement des jeux oraux, gardé au rechargement', async ({ page }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   const modes = page.getByRole('group', { name: 'Façon de jouer' });
   await expect(modes.getByLabel('Normal', { exact: true })).toBeChecked();
   await modes.getByText('Voiture', { exact: true }).click();
@@ -16,6 +17,7 @@ test('Voiture : seulement des jeux oraux, gardé au rechargement', async ({ page
   await expect.poll(() => storedSetting(page, 'gameMode')).toBe('voiture');
 
   await page.reload();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await expect(
     page.getByRole('group', { name: 'Façon de jouer' }).getByLabel('Voiture', { exact: true }),
   ).toBeChecked();
@@ -23,10 +25,12 @@ test('Voiture : seulement des jeux oraux, gardé au rechargement', async ({ page
 
 test('Express : 3 manches, notées dans l’historique', async ({ page }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Express', { exact: true })
     .click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Quelle lettre/ }).click();
   for (let i = 1; i <= 3; i++) {
     await expect(page.getByText(`Manche ${i} sur 3`)).toBeVisible();
@@ -42,11 +46,13 @@ test('Express : 3 manches, notées dans l’historique', async ({ page }) => {
 
 test('Coucher : thème nuit, dessin sans minuteur', async ({ page }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Coucher', { exact: true })
     .click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'night');
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Dessine ça/ }).click();
   await expect(page.getByText(/^Manche 1 sur/)).toBeVisible();
   await expect(page.getByRole('timer')).toHaveCount(0);

@@ -105,6 +105,7 @@ describe('Répondre en montrant, en jeu', () => {
   it('se choisit sur l’accueil, à voix haute par défaut', async () => {
     const user = userEvent.setup();
     open('/');
+    await user.click(await screen.findByRole('button', { name: /La partie/ }));
     const voice = await screen.findByRole('radio', { name: 'À voix haute' });
     expect(voice).toBeChecked();
     await user.click(screen.getByText('En montrant'));

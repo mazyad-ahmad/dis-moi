@@ -16,6 +16,7 @@ test('remise à zéro, nouvelle partie, puis onglet Étoiles', async ({ page }) 
 
   // Remise à zéro depuis l'espace Parent.
   await nav.getByRole('link', { name: 'Parent' }).click();
+  await page.getByRole('link', { name: /Appli et données/ }).click();
   await page.getByRole('button', { name: 'Remettre les étoiles à zéro' }).click();
   await page
     .getByRole('alertdialog', { name: 'Remettre les étoiles à zéro ?' })

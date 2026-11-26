@@ -6,7 +6,7 @@ import { isProtected, useUnlocked } from '../data/parentLock';
 import { isSeanceOver } from '../data/seance';
 import { SeanceOver } from '../screens/SeanceOver';
 import { Home } from '../screens/Home';
-import { Parent } from '../screens/Parent';
+import { Parent, ParentSection } from '../screens/Parent';
 import { ParentGate } from '../screens/ParentGate';
 import { SongGame } from '../games/chanson/SongGame';
 import { DrawingGame } from '../games/dessin/DrawingGame';
@@ -119,6 +119,8 @@ function screenFor(route: Route) {
       return <Stars />;
     case 'parent':
       return <Parent />;
+    case 'parent-section':
+      return <ParentSection id={route.id} />;
     case 'players':
       return <Players />;
     case 'teams':
@@ -148,6 +150,8 @@ const TAB_OF: Partial<Record<Route['name'], Tab>> = {
   home: 'home',
   stars: 'stars',
   parent: 'parent',
+  // Les sous-pages de l'espace Parent gardent la barre, onglet Parent actif.
+  'parent-section': 'parent',
 };
 
 export function App() {

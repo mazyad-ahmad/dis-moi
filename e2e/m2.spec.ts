@@ -56,7 +56,7 @@ test('créer un jeu avec une photo et un son, puis y jouer', async ({ page }) =>
 });
 
 test('étoiles et réglages', async ({ page }) => {
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/partie');
   await page.getByText('5', { exact: true }).click();
   await page.goto('./#/jeu/lettres');
   for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Trouvé' }).click();

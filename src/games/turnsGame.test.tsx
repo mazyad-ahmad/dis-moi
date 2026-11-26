@@ -39,6 +39,7 @@ it('accueil : le choix « Chacun son tour » apparaît dès deux joueurs actifs'
   const user = userEvent.setup();
   const [lea] = await addKids(2);
   open('/');
+  await user.click(await screen.findByRole('button', { name: /La partie/ }, slow));
   const team = await screen.findByRole('radio', { name: 'En équipe' }, slow);
   expect(team).toBeChecked();
 
@@ -47,9 +48,10 @@ it('accueil : le choix « Chacun son tour » apparaît dès deux joueurs actifs'
     expect(await db.settings.get('turnMode')).toMatchObject({ value: 'turns' }),
   );
 
-  // Un seul joueur actif : on joue en équipe, le choix disparaît.
+  // Un seul joueur actif : on joue en équipe, le choix disparaît (les autres réglages restent).
   await setSetting('absentPlayers', [lea + 1]);
   await waitFor(() => expect(screen.queryByRole('radio', { name: 'En équipe' })).toBeNull());
+  expect(screen.getByRole('radio', { name: 'Normal' })).toBeChecked();
 }, 30_000);
 
 it('3 joueurs, 10 manches : chacun son tour, 4-3-3, étoiles communes et aucun classement', async () => {

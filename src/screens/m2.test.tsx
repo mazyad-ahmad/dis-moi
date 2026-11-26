@@ -223,7 +223,7 @@ describe('Étoiles et historique', () => {
 describe('Espace parent', () => {
   it('règle le nombre de manches et le minuteur', async () => {
     const user = userEvent.setup();
-    const view = open('/parent');
+    const view = open('/parent/partie');
     await user.click(screen.getByLabelText('5'));
     await user.click(screen.getByLabelText('1:30'));
     expect(getSettings()).toMatchObject({ rounds: 5, drawSeconds: 90 });
@@ -250,7 +250,7 @@ describe('Espace parent', () => {
       stars: 1,
       playerIds: [],
     } as never);
-    open('/parent');
+    open('/parent/appli');
 
     await user.click(screen.getByRole('button', { name: 'Remettre les étoiles à zéro' }));
     await answer(user, 'Remettre à zéro');
@@ -264,15 +264,12 @@ describe('Espace parent', () => {
     expect(await db.players.count()).toBe(0);
     expect(await db.customGames.count()).toBe(0);
     expect(getSettings().rounds).toBe(10);
-    expect(
-      within(screen.getByRole('group', { name: 'Manches par partie' })).getByLabelText('10'),
-    ).toBeChecked();
   });
 
   it('ne fait rien si le parent annule', async () => {
     const user = userEvent.setup();
     await addPlayer('Léa');
-    open('/parent');
+    open('/parent/appli');
     await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
     await answer(user, 'Annuler');
     expect(await db.players.count()).toBe(1);

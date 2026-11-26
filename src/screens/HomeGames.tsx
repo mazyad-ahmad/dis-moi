@@ -5,6 +5,7 @@ import { useSettings } from '../data/settings';
 import { homeSections, playLevels } from '../games/activities';
 import { GrandTile } from '../games/grand/GrandTile';
 import type { GameInfo } from '../games/registry';
+import { DailyTile } from './DailyTile';
 
 const ICON_COLOR = { music: 'var(--forest)', letters: 'var(--river)', pencil: 'var(--sun)' };
 
@@ -62,6 +63,7 @@ export function HomeGames({ games }: { games: GameInfo[] }) {
     <div className="home-games">
       <div className="game-grid">
         <GrandTile />
+        <DailyTile />
         {simple && first?.games.map((g) => <GameTile key={g.id} game={g} />)}
         {simple && !titled.length && <AddTile />}
       </div>

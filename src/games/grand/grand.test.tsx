@@ -95,7 +95,7 @@ describe('manches de dessin', () => {
 
 it('l’espace Parent mémorise les jeux inclus, deux au moins', async () => {
   const user = userEvent.setup();
-  open('/parent');
+  open('/parent/partie');
   const song = await screen.findByRole('button', {
     name: 'Inclus : Quelle chanson ? dans Le Grand Jeu',
   });
