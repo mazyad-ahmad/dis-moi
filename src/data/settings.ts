@@ -15,6 +15,8 @@ export interface Settings {
   parentLock: boolean;
   /** Durée d'une séance en minutes, 0 : pas de limite (#120). */
   sessionMinutes: number;
+  /** Vibrations légères sur « Trouvé », à la fin du minuteur et de la partie (#31). */
+  vibrations: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -25,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lastBackupAt: null,
   parentLock: false,
   sessionMinutes: 0,
+  vibrations: true,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

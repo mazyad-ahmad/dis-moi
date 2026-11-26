@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { IconRefresh, IconTimer, IconTrash } from '../../components/icons';
+import { vibrate } from '../../pwa/haptics';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
@@ -63,6 +64,11 @@ function DrawingSession({
   // Durée réglée dans l'espace Parent, figée pour la partie.
   const [seconds] = useState(() => getSettings().drawSeconds);
   const left = useCountdown(seconds, index);
+  const timeUp = left <= 0;
+  // Double vibration quand le temps est écoulé : le dessin est figé, l'enfant a fini.
+  useEffect(() => {
+    if (timeUp && !finished) vibrate('timeUp');
+  }, [timeUp, finished]);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
@@ -75,7 +81,6 @@ function DrawingSession({
     nextWord();
     answer(found);
   };
-  const timeUp = left <= 0;
 
   return (
     <main className="screen screen--tight">

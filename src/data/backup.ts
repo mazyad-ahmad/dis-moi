@@ -171,6 +171,7 @@ function readSettings(raw: unknown): Partial<Settings> {
   if (Array.isArray(raw.catalogue) && raw.catalogue.every((c) => typeof c === 'string'))
     out.catalogue = raw.catalogue;
   if (isNumber(raw.lastBackupAt)) out.lastBackupAt = raw.lastBackupAt;
+  if (typeof raw.vibrations === 'boolean') out.vibrations = raw.vibrations;
   return out;
 }
 

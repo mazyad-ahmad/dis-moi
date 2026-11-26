@@ -31,6 +31,11 @@ const LOCK_CHOICES = [
   { value: 'on', label: 'Activé' },
 ] as const;
 
+const VIBRATION_CHOICES = [
+  { value: 'off', label: 'Sans' },
+  { value: 'on', label: 'Avec' },
+] as const;
+
 /** Groupe de boutons radio en pilule (réglage à 3 choix). */
 function Choice<T extends string | number>({
   legend,
@@ -180,6 +185,16 @@ export function Parent() {
         value={settings.drawSeconds}
         options={DRAW_SECONDS_CHOICES.map((n) => ({ value: n, label: clock(n) }))}
         onChange={(v) => void setSetting('drawSeconds', v)}
+      />
+
+      <Choice
+        legend="Vibrations"
+        name="vibrations"
+        value={settings.vibrations ? 'on' : 'off'}
+        options={VIBRATION_CHOICES}
+        onChange={(v) => void setSetting('vibrations', v === 'on')}
+        className="segmented--2"
+        hint="Une petite vibration sur « Trouvé », à la fin du minuteur et de la partie, sur les téléphones qui le permettent. Jamais pendant le dessin."
       />
 
       <Choice

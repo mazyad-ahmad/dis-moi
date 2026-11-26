@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { startRecord, updateRecord } from '../data/history';
 import { beginGame, endGame, touch } from '../data/seance';
 import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
+import { vibrate } from '../pwa/haptics';
 import { useWakeLock } from '../pwa/useWakeLock';
 import { clearSaved, readSaved, useClearSavedOnLeave, useSaved, writeSaved } from './session';
 
@@ -73,7 +74,11 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
       if (data.played >= rounds) {
         clearSaved(gameId);
         endGame();
-      } else touch();
+        vibrate('party');
+      } else {
+        touch();
+        if (found) vibrate('found');
+      }
       if (!record.current) {
         record.current = startRecord({ gameId, rounds, ...data });
         void record.current.then((id) => writeSaved(gameId, 'record', id, true));

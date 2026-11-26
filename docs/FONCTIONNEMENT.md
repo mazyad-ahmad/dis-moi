@@ -124,9 +124,13 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
+- **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :
+  une impulsion courte sur « Trouvé », deux à la fin du minuteur de Dessine ça (le dessin est
+  alors figé), un petit motif de fête en fin de partie. Jamais pendant que l'enfant dessine.
+  Sans vibreur (iPhone, ordinateur), rien ne se passe.
 - **Verrou parent** (désactivé par défaut) : quand il est activé, une petite addition
   (« 7 + 5 = ? », résultat entre 10 et 18) est demandée avant l'espace Parent, les joueurs,
   l'ajout et l'édition des jeux, y compris en tapant l'adresse. Les jeux restent libres.
