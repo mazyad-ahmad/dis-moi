@@ -1147,3 +1147,19 @@ a.pill {
   font: var(--text-small);
   margin-bottom: var(--space-1);
 }
+
+/* ---------- Verrou parent ---------- */
+.parent-gate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.parent-gate__question {
+  font: var(--text-h1);
+  text-align: center;
+}
+.parent-gate__answer {
+  flex: none;
+  font: var(--text-h2);
+  text-align: center;
+}

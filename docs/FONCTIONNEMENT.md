@@ -127,8 +127,13 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
-- Pas de verrou dans la v1 : l'appli est déjà tenue par le parent. Un verrou simple
-  (ex. « 7 + 5 = ? ») pourra être ajouté si besoin.
+- **Verrou parent** (désactivé par défaut) : quand il est activé, une petite addition
+  (« 7 + 5 = ? », résultat entre 10 et 18) est demandée avant l'espace Parent, les joueurs,
+  l'ajout et l'édition des jeux, y compris en tapant l'adresse. Les jeux restent libres.
+  Une mauvaise réponse affiche une autre opération. Le déverrouillage vaut **5 minutes**,
+  prolongées à chaque écran parent ouvert ; l'échéance n'est vérifiée qu'en changeant
+  d'écran (jamais au milieu d'une modification). Un rafraîchissement le garde, fermer
+  l'onglet ou l'appli reverrouille.
 
 ## Écrans
 

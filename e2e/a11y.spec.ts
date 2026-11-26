@@ -64,3 +64,27 @@ for (const colorScheme of ['light', 'dark'] as const) {
     });
   });
 }
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`accessibilité du verrou parent, thème ${colorScheme === 'light' ? 'jour' : 'nuit'}`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+    await page.goto('./#/parent');
+    await page.getByText('Activé', { exact: true }).click();
+    // Nouvel onglet : pas encore déverrouillé.
+    const gate = await page.context().newPage();
+    await gate.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+    await gate.goto('./#/parent');
+    const input = gate.getByRole('textbox', { name: /^Combien font \d+ plus \d+ \?$/ });
+    await expect(input).toBeVisible();
+    await input.fill('1');
+    await gate.getByRole('button', { name: 'Entrer' }).click();
+    await expect(gate.getByRole('alert')).toBeVisible();
+
+    const results = await new AxeBuilder({ page: gate })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(results.violations.map((v) => v.id)).toEqual([]);
+  });
+}

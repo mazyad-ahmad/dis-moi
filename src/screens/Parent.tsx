@@ -8,6 +8,7 @@ import { BackupSection } from './BackupSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
+import { lock, unlock } from '../data/parentLock';
 import {
   DRAW_SECONDS_CHOICES,
   loadSettings,
@@ -24,6 +25,11 @@ const THEMES: { value: Theme; label: string }[] = [
   { value: 'night', label: 'Nuit' },
 ];
 
+const LOCK_CHOICES = [
+  { value: 'off', label: 'Désactivé' },
+  { value: 'on', label: 'Activé' },
+] as const;
+
 /** Groupe de boutons radio en pilule (réglage à 3 choix). */
 function Choice<T extends string | number>({
   legend,
@@ -31,17 +37,21 @@ function Choice<T extends string | number>({
   value,
   options,
   onChange,
+  className,
+  hint,
 }: {
   legend: string;
   name: string;
   value: T;
   options: readonly { value: T; label: string }[];
   onChange: (v: T) => void;
+  className?: string;
+  hint?: string;
 }) {
   return (
     <fieldset className="setting">
       <legend className="eyebrow">{legend}</legend>
-      <div className="segmented">
+      <div className={['segmented', className].filter(Boolean).join(' ')}>
         {options.map((o) => (
           <label key={o.value}>
             <input
@@ -55,6 +65,7 @@ function Choice<T extends string | number>({
           </label>
         ))}
       </div>
+      {hint && <p className="muted">{hint}</p>}
     </fieldset>
   );
 }
@@ -141,6 +152,21 @@ export function Parent() {
         value={settings.drawSeconds}
         options={DRAW_SECONDS_CHOICES.map((n) => ({ value: n, label: clock(n) }))}
         onChange={(v) => void setSetting('drawSeconds', v)}
+      />
+
+      <Choice
+        legend="Verrou parent"
+        name="parent-lock"
+        value={settings.parentLock ? 'on' : 'off'}
+        options={LOCK_CHOICES}
+        onChange={(v) => {
+          // Activer depuis l'espace Parent ne met pas le parent dehors ; désactiver oublie le déverrouillage.
+          if (v === 'on') unlock();
+          else lock();
+          void setSetting('parentLock', v === 'on');
+        }}
+        className="segmented--2"
+        hint="Une petite opération avant l’espace Parent, les joueurs et les jeux."
       />
 
       <Install />
