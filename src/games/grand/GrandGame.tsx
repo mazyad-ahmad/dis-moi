@@ -10,7 +10,7 @@ import { SONGS } from '../chanson/songs';
 import { deckChoicePool } from '../choices/choices';
 import { DeckRound } from '../deck/DeckGame';
 import { DrawingBoard } from '../dessin/DrawingGame';
-import { glyphPool } from '../lettres/bank';
+import { glyphPool, glyphTitle } from '../lettres/bank';
 import { GlyphRound } from '../lettres/LettersGame';
 import { modeDrawSeconds } from '../modes';
 import { Replayable } from '../Replayable';
@@ -37,7 +37,9 @@ type Heading = Omit<ComponentProps<typeof GameHeader>, 'aside'>;
 
 /** Titre de la manche : « Quel chiffre ? » pour un chiffre tiré dans « Quelle lettre ? ». */
 function titleOf({ game, card }: GrandRound): string {
-  return card.type === 'glyph' && /^\d$/.test(card.glyph.glyph) ? 'Quel chiffre ?' : game.name;
+  return card.type === 'glyph' && card.glyph.set !== 'upper'
+    ? glyphTitle(card.glyph.set)
+    : game.name;
 }
 
 /** Cartes du jeu de la manche où tirer les choix de « Répondre en montrant » (#123). */

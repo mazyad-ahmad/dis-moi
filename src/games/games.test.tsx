@@ -4,7 +4,7 @@ import { App } from '../app/App';
 import { db } from '../data/db';
 import { addPlayer } from '../data/players';
 import { loadSettings } from '../data/settings';
-import { DIGITS, LETTERS } from './lettres/bank';
+import { ALL_GLYPHS, DIGITS, LETTERS } from './lettres/bank';
 
 beforeEach(async () => {
   await Promise.all([db.players.clear(), db.settings.clear(), db.games.clear()]);
@@ -65,6 +65,46 @@ it('Quelle lettre : bascule vers les chiffres', async () => {
   const glyph = screen.getByTestId('glyph').textContent!;
   expect(glyph).toMatch(/^\d$/);
   expect(screen.getByText(DIGITS[Number(glyph)].hint)).toBeInTheDocument();
+});
+
+it('Quelle lettre : minuscules, attaché, nombres, dés et doigts, mélange (#48)', async () => {
+  const user = userEvent.setup();
+  open('/jeu/lettres');
+  const glyph = () => screen.getByTestId('glyph');
+  const hintOf = (set: string) =>
+    ALL_GLYPHS.find((c) => c.set === set && c.glyph === glyph().dataset.glyph)!.hint;
+
+  await user.click(screen.getByLabelText('Minuscules'));
+  expect(glyph().textContent).toMatch(/^[a-z]$/);
+  expect(screen.getByText(hintOf('lower'))).toBeInTheDocument();
+
+  await user.click(screen.getByLabelText('Attaché'));
+  expect(glyph()).toHaveClass('glyph-card__glyph--cursive');
+  expect(screen.getByText(hintOf('cursive'))).toBeInTheDocument();
+
+  await user.click(screen.getByLabelText('Nombres'));
+  expect(screen.getByRole('heading', { name: 'Quel nombre ?' })).toBeInTheDocument();
+  expect(Number(glyph().textContent)).toBeGreaterThanOrEqual(10);
+  expect(screen.getByText(hintOf('number'))).toBeInTheDocument();
+
+  await user.click(screen.getByLabelText('Dés, doigts'));
+  expect(screen.getByRole('heading', { name: 'Combien ?' })).toBeInTheDocument();
+  // Un dessin, annoncé « 3 points » ou « 3 doigts » ; la consigne reste pour le parent.
+  expect(glyph()).toHaveAccessibleName(/^\d+ (points?|doigts?)$/);
+  expect(glyph().querySelector('svg')).toBeInTheDocument();
+  const set = /point/.test(glyph().getAttribute('aria-label')!) ? 'dice' : 'fingers';
+  expect(screen.getByText(hintOf(set))).toBeInTheDocument();
+
+  // Mélange : toutes les familles, chacune avec sa consigne.
+  await user.click(screen.getByLabelText('Mélange'));
+  for (let i = 0; i < 5; i++) {
+    const card = ALL_GLYPHS.find(
+      (c) =>
+        c.glyph === glyph().dataset.glyph && screen.queryByText(c.hint, { exact: true }) !== null,
+    );
+    expect(card).toBeDefined();
+    await user.click(screen.getByRole('button', { name: 'Trouvé' }));
+  }
 });
 
 it('garde les étoiles quand on quitte en cours de partie', async () => {

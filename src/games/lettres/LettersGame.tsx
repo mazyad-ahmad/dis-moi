@@ -13,13 +13,36 @@ import { orderByLevel } from '../levels';
 import { drawForTurns } from '../turns';
 import { useRoundSetting, useRounds } from '../useRounds';
 import { TurnPlayer, useTurns, type Turns } from '../useTurns';
-import { DIGITS, LETTERS, type GlyphCard } from './bank';
+import {
+  ALL_GLYPHS,
+  CONSTELLATIONS,
+  CURSIVE,
+  DIGITS,
+  glyphLabel,
+  glyphName,
+  glyphPool,
+  glyphTitle,
+  LETTERS,
+  LOWERCASE,
+  NUMBERS,
+  type GlyphCard,
+} from './bank';
+import { GlyphView } from './Glyph';
 
-type Mode = 'letters' | 'digits';
+type Mode = 'letters' | 'lower' | 'cursive' | 'digits' | 'numbers' | 'constellations' | 'mix';
 
+/**
+ * Sélecteur (#48) : trois écritures, trois sortes de nombres, puis le mélange de tout, sur
+ * toute la largeur. Trois colonnes de grands boutons : à portée du pouce sur un petit écran.
+ */
 const MODES: { value: Mode; label: string }[] = [
-  { value: 'letters', label: 'Lettres' },
+  { value: 'letters', label: 'Majuscules' },
+  { value: 'lower', label: 'Minuscules' },
+  { value: 'cursive', label: 'Attaché' },
   { value: 'digits', label: 'Chiffres' },
+  { value: 'numbers', label: 'Nombres' },
+  { value: 'constellations', label: 'Dés, doigts' },
+  { value: 'mix', label: 'Mélange' },
 ];
 
 const GAME = 'lettres';
@@ -30,9 +53,10 @@ interface Place {
   pos: Record<Mode, number>;
 }
 
-const START: Place = { mode: 'letters', pos: { letters: 0, digits: 0 } };
+const NO_POS = Object.fromEntries(MODES.map((m) => [m.value, 0])) as Record<Mode, number>;
+const START: Place = { mode: 'letters', pos: NO_POS };
 
-const glyphOf = (card: GlyphCard) => card.glyph;
+const idOf = (card: GlyphCard) => card.id;
 
 /**
  * Paquet mélangé, les glyphes du niveau de la partie d'abord (#40). Chacun son tour (#38) :
@@ -43,12 +67,19 @@ const byLevel = (cards: GlyphCard[], turns: Turns | null, rounds: number) =>
     ? drawForTurns(cards, turns.levels(rounds), (c) => c.level)
     : orderByLevel(cards, getSettings().gameLevel, (c) => c.level);
 
+/** Partie retrouvée ; un paquet sans position (partie d'avant le #48) repart du début. */
 function restorePlace(saved: unknown): Place | undefined {
   const p = saved as Partial<Place> | null;
-  const n = (v: unknown) => Number.isInteger(v) && (v as number) >= 0;
-  return p && MODES.some((m) => m.value === p.mode) && n(p.pos?.letters) && n(p.pos?.digits)
-    ? (p as Place)
-    : undefined;
+  if (!p || !MODES.some((m) => m.value === p.mode) || typeof p.pos !== 'object' || !p.pos)
+    return undefined;
+  const pos = { ...NO_POS };
+  for (const m of MODES) {
+    const v: unknown = p.pos[m.value];
+    if (v === undefined) continue;
+    if (!(Number.isInteger(v) && (v as number) >= 0)) return undefined;
+    pos[m.value] = v as number;
+  }
+  return { mode: p.mode!, pos };
 }
 
 /**
@@ -64,9 +95,12 @@ export function GlyphRound({ card, pool }: { card: GlyphCard; pool?: readonly Gl
         <ChoiceBoard options={choices} answer={card.glyph} />
       ) : (
         <figure className="glyph-card round-in">
-          <span className="glyph-card__glyph" data-testid="glyph">
-            {card.glyph}
-          </span>
+          <GlyphView
+            glyph={card.glyph}
+            set={card.set}
+            className="glyph-card__glyph"
+            label={glyphLabel(card)}
+          />
           <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
         </figure>
       )}
@@ -74,10 +108,7 @@ export function GlyphRound({ card, pool }: { card: GlyphCard; pool?: readonly Gl
       <ParentBlock>
         {choices && (
           <p>
-            Demande à l’enfant de montrer :{' '}
-            <strong>
-              {/^\d$/.test(card.glyph) ? 'le chiffre' : 'la lettre'} {card.glyph}
-            </strong>
+            Demande à l’enfant de montrer : <strong>{glyphName(card)}</strong>
           </p>
         )}
         {card.hint}
@@ -92,15 +123,21 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
   // Tirage, mode et position sont retrouvés après un rafraîchissement.
   const turns = useTurns(GAME);
   const setting = useRoundSetting();
-  const decks = {
-    letters: useSavedDraw(
+  const draw = (cards: GlyphCard[]) => () => byLevel(cards, turns, setting);
+  const decks: Record<Mode, GlyphCard[]> = {
+    letters: useSavedDraw(GAME, 'letters', LETTERS, draw(LETTERS), idOf),
+    lower: useSavedDraw(GAME, 'lower', LOWERCASE, draw(LOWERCASE), idOf),
+    cursive: useSavedDraw(GAME, 'cursive', CURSIVE, draw(CURSIVE), idOf),
+    digits: useSavedDraw(GAME, 'digits', DIGITS, draw(DIGITS), idOf),
+    numbers: useSavedDraw(GAME, 'numbers', NUMBERS, draw(NUMBERS), idOf),
+    constellations: useSavedDraw(
       GAME,
-      'letters',
-      LETTERS,
-      () => byLevel(LETTERS, turns, setting),
-      glyphOf,
+      'constellations',
+      CONSTELLATIONS,
+      draw(CONSTELLATIONS),
+      idOf,
     ),
-    digits: useSavedDraw(GAME, 'digits', DIGITS, () => byLevel(DIGITS, turns, setting), glyphOf),
+    mix: useSavedDraw(GAME, 'mix', ALL_GLYPHS, draw(ALL_GLYPHS), idOf),
   };
   const [{ mode, pos }, setPlace] = useSaved<Place>(GAME, 'place', () => START, restorePlace);
   const { round, rounds, stars, finished, answer, team, teams } = useRounds(
@@ -128,14 +165,14 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
         rounds={rounds}
         stars={stars}
         category="Lettres et chiffres"
-        title={mode === 'letters' ? 'Quelle lettre ?' : 'Quel chiffre ?'}
+        title={glyphTitle(card.set)}
         player={turns?.playerAt(round)}
         team={team}
       />
 
-      <div className="segmented segmented--2" role="radiogroup" aria-label="Type d'image">
+      <div className="segmented segmented--glyphs" role="radiogroup" aria-label="Que montrer ?">
         {MODES.map((m) => (
-          <label key={m.value}>
+          <label key={m.value} className={m.value === 'cursive' ? 'is-cursive' : undefined}>
             <input
               type="radio"
               name="mode"
@@ -150,7 +187,7 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
 
       {/* key : chaque manche (ou changement de paquet) entre en douceur, choix retirés. */}
       <TurnPlayer.Provider value={turns?.playerAt(round)}>
-        <GlyphRound key={`${round}:${mode}`} card={card} pool={deck} />
+        <GlyphRound key={`${round}:${mode}`} card={card} pool={glyphPool(card)} />
       </TurnPlayer.Provider>
 
       <div className="spacer" />

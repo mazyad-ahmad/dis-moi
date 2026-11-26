@@ -112,8 +112,9 @@ function kindRule(kind: PackKind, item: Record<string, unknown>): string | undef
     case 'draw':
       return undefined;
     case 'glyph':
-      if (typeof item.answer !== 'string' || [...item.answer].length !== 1)
-        return 'un glyphe est un seul caractère';
+      // Une lettre, un chiffre ou un nombre jusqu'à 100 (#48).
+      if (typeof item.answer !== 'string' || [...item.answer].length > 3)
+        return 'un glyphe fait 1 à 3 caractères';
       return isText(item.hint) ? undefined : 'consigne (« hint ») manquante';
     case 'melody': {
       if (!isText(item.hint)) return 'indice (« hint ») manquant';

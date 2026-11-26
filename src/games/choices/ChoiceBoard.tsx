@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useObjectUrl } from '../deck/useObjectUrl';
+import { GlyphView } from '../lettres/Glyph';
 import type { ChoiceOption } from './choices';
 import './choices.css';
 
@@ -9,7 +10,10 @@ function Photo({ image }: { image: Blob }) {
 }
 
 function Visual({ option }: { option: ChoiceOption }) {
-  if (option.glyph) return <span className="choice__glyph">{option.glyph}</span>;
+  if (option.glyph)
+    return (
+      <GlyphView glyph={option.glyph} set={option.glyphSet ?? 'upper'} className="choice__glyph" />
+    );
   if (option.image) return <Photo image={option.image} />;
   if (option.color) return <span className="choice__swatch" style={{ background: option.color }} />;
   if (option.emoji)

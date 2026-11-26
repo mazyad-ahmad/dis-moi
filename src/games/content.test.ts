@@ -5,7 +5,19 @@ import { DRAW_WORDS } from './dessin/words';
 import { cleanItem } from '../data/customGames';
 import { CATALOGUE, findCatalogueGame } from './catalogue/catalogue';
 import { clock, dayLabel, starsLabel } from './format';
-import { DIGITS, LETTERS } from './lettres/bank';
+import {
+  ALL_GLYPHS,
+  CURSIVE,
+  DICE,
+  DIGITS,
+  FINGERS,
+  glyphLabel,
+  glyphName,
+  glyphPool,
+  LETTERS,
+  LOWERCASE,
+  NUMBERS,
+} from './lettres/bank';
 import { draw, shuffle } from './shuffle';
 import { DEFAULT_ROUNDS } from './useRounds';
 
@@ -28,6 +40,22 @@ describe('banques de questions', () => {
     expect(LETTERS.map((c) => c.glyph).join('')).toBe('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
     expect(DIGITS.map((c) => c.glyph).join('')).toBe('0123456789');
     for (const c of [...LETTERS, ...DIGITS]) expect(c.hint.length).toBeGreaterThan(10);
+  });
+  it('minuscules, attaché, nombres et constellations : chaque glyphe a sa consigne (#48)', () => {
+    expect(LOWERCASE.map((c) => c.glyph).join('')).toBe('abcdefghijklmnopqrstuvwxyz');
+    expect(CURSIVE.map((c) => c.glyph).join('')).toBe('abcdefghijklmnopqrstuvwxyz');
+    expect(NUMBERS.map((c) => Number(c.glyph))).toEqual([
+      10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+    ]);
+    expect(DICE.map((c) => c.glyph).join(' ')).toBe('1 2 3 4 5 6');
+    expect(FINGERS.map((c) => c.glyph).join(' ')).toBe('1 2 3 4 5 6 7 8 9 10');
+    expect(new Set(ALL_GLYPHS.map((c) => c.id)).size).toBe(ALL_GLYPHS.length);
+    for (const c of ALL_GLYPHS) expect(c.hint.length).toBeGreaterThan(10);
+    // Le choix montré est tiré de la même famille.
+    for (const c of ALL_GLYPHS) expect(glyphPool(c).every((o) => o.set === c.set)).toBe(true);
+    expect(glyphName(LOWERCASE[0])).toBe('la lettre a (minuscule)');
+    expect(glyphLabel(DICE[0])).toBe('1 point');
+    expect(glyphLabel(FINGERS[2])).toBe('3 doigts');
   });
   it('a assez de mots et de chansons pour une partie', () => {
     expect(new Set(DRAW_WORDS).size).toBe(DRAW_WORDS.length);

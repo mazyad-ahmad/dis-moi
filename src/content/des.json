@@ -1,0 +1,17 @@
+{
+  "format": "dis-moi/jeu",
+  "version": 1,
+  "id": "des",
+  "revision": 1,
+  "kind": "glyph",
+  "name": "Les points du dé",
+  "lang": "fr",
+  "items": [
+    {"id": "1", "level": 1, "answer": "1", "hint": "Demande combien de points, sans les compter un par un"},
+    {"id": "2", "level": 1, "answer": "2", "hint": "Demande combien de points d’un coup d’œil, puis touchez-les ensemble"},
+    {"id": "3", "level": 1, "answer": "3", "hint": "Demande combien de points : ils font une ligne en biais"},
+    {"id": "4", "level": 1, "answer": "4", "hint": "Demande combien de points : un dans chaque coin"},
+    {"id": "5", "level": 2, "answer": "5", "hint": "Demande combien de points : un dans chaque coin et un au milieu"},
+    {"id": "6", "level": 2, "answer": "6", "hint": "Demande combien de points : deux colonnes de trois"}
+  ]
+}

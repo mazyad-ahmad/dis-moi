@@ -203,11 +203,31 @@
 
 ## Jeux
 
-| Jeu                               | Règle proposée                                                                                                                    |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Quelle chanson ?**              | Extrait de 10 s, réécoutable. Indice visible, titre caché derrière « Voir la réponse ». Voir « Contenu des chansons ».            |
-| **Quelle lettre, quel chiffre ?** | Lettres majuscules A-Z ou chiffres 0-9, tirés au hasard sans répétition dans la partie. Consigne parent associée à chaque glyphe. |
-| **Dessine ça**                    | Minuteur de **60 s** ; à zéro, le dessin reste visible et le parent valide. Pas de note du dessin : « C'est fini » = +1 étoile.   |
+| Jeu                               | Règle proposée                                                                                                                                            |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Quelle chanson ?**              | Extrait de 10 s, réécoutable. Indice visible, titre caché derrière « Voir la réponse ». Voir « Contenu des chansons ».                                    |
+| **Quelle lettre, quel chiffre ?** | Lettres, chiffres, nombres ou constellations (voir ci-dessous), tirés au hasard sans répétition dans la partie. Consigne parent associée à chaque glyphe. |
+| **Dessine ça**                    | Minuteur de **60 s** ; à zéro, le dessin reste visible et le parent valide. Pas de note du dessin : « C'est fini » = +1 étoile.                           |
+
+### Lettres et chiffres (#48)
+
+- Sélecteur en trois colonnes de grands boutons, à portée du pouce : **Majuscules**,
+  **Minuscules**, **Attaché** ; **Chiffres** (0-9), **Nombres** (10 à 20, puis les dizaines
+  jusqu'à 100), **Dés, doigts** ; puis **Mélange** sur toute la largeur (toutes les familles).
+- Constellations, à dénombrer d'un coup d'œil : points du dé (1 à 6) et doigts levés (1 à 10,
+  deux mains au-delà de 5, comptés à la française : le pouce d'abord). Dessinés par l'appli
+  (SVG), aucun fichier image.
+- Chaque glyphe garde une consigne pour le parent : celles des minuscules et de l'attaché
+  reprennent le mot de la majuscule (« C'est le « a » des petites lettres. … ») ; nombres, dés et
+  doigts ont la leur (`nombres.json`, `des.json`, `doigts.json`). Minuscules et attaché sont un
+  niveau au-dessus de leur majuscule.
+- « Répondre en montrant » tire les choix dans la même famille (un dé parmi des dés).
+- Écriture attachée : police **Playwrite FR Moderne** (TypeTogether, modèle de cursive des
+  écoles françaises), licence **SIL Open Font License 1.1** (Google Fonts,
+  `ofl/playwritefrmoderne`), installée comme les autres polices par le paquet
+  `@fontsource/playwrite-fr-moderne` (graisse 400). Embarquée dans le build et mise en cache par
+  le service worker : elle marche hors ligne, aucune requête vers Google.
+- Le Défi du jour et le Grand Jeu gardent les majuscules et les chiffres.
 
 ### Outils de dessin (#51)
 
@@ -456,7 +476,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    défilement s'arrête à la fin du contenu, sur toutes les pages (#145).
 2. **Quelle chanson ?** — manche _n_ sur 10, compteur d'étoiles, lecteur d'extrait (10 s),
    bloc parent avec titre caché + indice, bouton « Voir la réponse ».
-3. **Quelle lettre, quel chiffre ?** — bascule Lettres / Chiffres, glyphe en grand
+3. **Quelle lettre, quel chiffre ?** — sélecteur Majuscules / Minuscules / Attaché / Chiffres /
+   Nombres / Dés, doigts / Mélange, glyphe en grand
    (« Montre l'écran à l'enfant »), consigne parent, boutons Passer / Trouvé.
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt et ses outils,
    boutons Passer / C'est fini.

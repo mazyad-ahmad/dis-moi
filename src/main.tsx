@@ -5,6 +5,8 @@ import '@fontsource/fraunces/600.css';
 import '@fontsource/figtree/400.css';
 import '@fontsource/figtree/600.css';
 import '@fontsource/figtree/700.css';
+// Écriture attachée de « Quelle lettre ? » (#48), licence SIL OFL 1.1 : voir docs/FONCTIONNEMENT.md.
+import '@fontsource/playwrite-fr-moderne/400.css';
 import './styles/global.css';
 import './components/ui.css';
 import './components/reward.css';

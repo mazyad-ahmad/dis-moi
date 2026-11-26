@@ -1,6 +1,6 @@
 import type { Song } from '../chanson/songs';
 import type { DeckItem, DeckKind } from '../deck/types';
-import type { GlyphCard } from '../lettres/bank';
+import { glyphLabel, type GlyphCard, type GlyphSet } from '../lettres/bank';
 import { orderByLevel, type Level } from '../levels';
 
 /**
@@ -17,6 +17,8 @@ export interface ChoiceOption {
   level?: Level;
   /** Visuel, par ordre de préférence ; sans visuel, le texte de la réponse. */
   glyph?: string;
+  /** Famille du glyphe (#48) : écriture attachée, dé, main… (majuscule par défaut). */
+  glyphSet?: GlyphSet;
   color?: string;
   image?: Blob;
   emoji?: string;
@@ -92,14 +94,14 @@ export function deckOption(item: DeckItem): ChoiceOption {
   };
 }
 
-/** Choix d'une lettre ou d'un chiffre, annoncé « Lettre A » ou « Chiffre 3 ». */
+/** Choix d'un glyphe, annoncé « Lettre A », « Chiffre 3 », « 3 points »… */
 export function glyphOption(card: GlyphCard): ChoiceOption {
-  const digit = /^\d$/.test(card.glyph);
   return {
     key: card.glyph,
-    label: `${digit ? 'Chiffre' : 'Lettre'} ${card.glyph}`,
+    label: glyphLabel(card),
     level: card.level,
     glyph: card.glyph,
+    glyphSet: card.set,
   };
 }
 

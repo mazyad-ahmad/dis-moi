@@ -1,0 +1,30 @@
+{
+  "format": "dis-moi/jeu",
+  "version": 1,
+  "id": "nombres",
+  "revision": 1,
+  "kind": "glyph",
+  "name": "Quel nombre ?",
+  "lang": "fr",
+  "items": [
+    {"id": "10", "level": 2, "answer": "10", "hint": "Demande de montrer 10 doigts : les deux mains entières"},
+    {"id": "11", "level": 2, "answer": "11", "hint": "Demande quel nombre vient juste après 10"},
+    {"id": "12", "level": 3, "answer": "12", "hint": "Demande combien il y a de mois dans une année"},
+    {"id": "13", "level": 2, "answer": "13", "hint": "Demande de compter jusqu’à 13 en tapant dans les mains"},
+    {"id": "14", "level": 3, "answer": "14", "hint": "Demande combien font les deux mains et encore 4 doigts"},
+    {"id": "15", "level": 2, "answer": "15", "hint": "Demande de sauter 15 fois sur place en comptant ensemble"},
+    {"id": "16", "level": 3, "answer": "16", "hint": "Demande quel nombre vient juste avant 17"},
+    {"id": "17", "level": 3, "answer": "17", "hint": "Demande de compter de 10 jusqu’à 17 sur les doigts"},
+    {"id": "18", "level": 3, "answer": "18", "hint": "Demande de compter jusqu’à 18 en chuchotant"},
+    {"id": "19", "level": 3, "answer": "19", "hint": "Demande quel nombre vient juste avant 20"},
+    {"id": "20", "level": 2, "answer": "20", "hint": "Demande combien on a de doigts aux mains et aux pieds"},
+    {"id": "30", "level": 3, "answer": "30", "hint": "Explique que 30, c’est 3 dizaines : trois fois les deux mains"},
+    {"id": "40", "level": 3, "answer": "40", "hint": "Demande de compter de 10 en 10 jusqu’à 40"},
+    {"id": "50", "level": 3, "answer": "50", "hint": "Demande de compter de 10 en 10 jusqu’à 50"},
+    {"id": "60", "level": 3, "answer": "60", "hint": "Demande combien il y a de minutes dans une heure"},
+    {"id": "70", "level": 3, "answer": "70", "hint": "Demande quel nombre vient après 60 quand on compte de 10 en 10"},
+    {"id": "80", "level": 3, "answer": "80", "hint": "Demande de compter de 10 en 10, de 50 jusqu’à 80"},
+    {"id": "90", "level": 3, "answer": "90", "hint": "Demande quel nombre vient juste avant 100 quand on compte de 10 en 10"},
+    {"id": "100", "level": 3, "answer": "100", "hint": "Demande combien de dizaines il faut pour faire 100"}
+  ]
+}

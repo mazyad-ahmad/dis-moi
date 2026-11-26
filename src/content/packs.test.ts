@@ -95,6 +95,11 @@ describe('un pack invalide nomme la carte fautive', () => {
       withItem(getPack('couleur'), 0, { color: 'red' }),
       'carte 1 (« Rouge ») : couleur invalide',
     ],
+    [
+      'glyphe trop long',
+      withItem(getPack('nombres'), 0, { answer: '1000' }),
+      'carte 1 (« 1000 ») : un glyphe fait 1 à 3 caractères',
+    ],
     ['type inconnu', { ...animals, kind: 'video' }, 'type (« kind ») inconnu'],
     ['type de jeu inconnu', { ...animals, activities: ['nager'] }, '« activities »'],
     ['type de jeu en double', { ...animals, activities: ['parler', 'parler'] }, '« activities »'],

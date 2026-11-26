@@ -638,6 +638,65 @@
 .glyph-card figcaption {
   font-size: 14px;
 }
+/* Écriture attachée, nombres longs, constellations (#48). La police cursive a de grandes
+   boucles : plus petite, avec de la place au-dessus et au-dessous. */
+.glyph-card__glyph--cursive {
+  font-family: var(--font-cursive);
+  font-size: 128px;
+  line-height: 230px;
+  font-weight: 400;
+}
+.glyph-card__glyph--len2 {
+  font-size: 150px;
+}
+.glyph-card__glyph--len3 {
+  font-size: 110px;
+}
+.glyph-card__glyph--shape {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+.constellation {
+  display: block;
+  height: 200px;
+  width: auto;
+  max-width: 100%;
+}
+.constellation__face {
+  fill: var(--paper);
+  stroke: currentColor;
+  stroke-width: 4;
+}
+.constellation__dot {
+  fill: currentColor;
+}
+.hand {
+  fill: color-mix(in srgb, currentColor 14%, var(--paper));
+  stroke: currentColor;
+  stroke-width: 3;
+}
+
+/* Sélecteur de Quelle lettre ? : 3 colonnes, « Mélange » sur toute la largeur. */
+.segmented--glyphs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-radius: 24px;
+}
+.segmented--glyphs label {
+  border-radius: 20px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+.segmented--glyphs label:last-child {
+  grid-column: 1 / -1;
+}
+.segmented--glyphs .is-cursive {
+  font-family: var(--font-cursive);
+  font-weight: 400;
+  font-size: 13px;
+}
 
 /* ---------- Dessine ça ---------- */
 .timer {

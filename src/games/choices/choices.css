@@ -52,6 +52,25 @@
   font-weight: 600;
   color: var(--river);
 }
+.choice__glyph--cursive {
+  font-family: var(--font-cursive);
+  font-size: 48px;
+  line-height: 96px;
+  font-weight: 400;
+}
+.choice__glyph--len2 {
+  font-size: 56px;
+}
+.choice__glyph--len3 {
+  font-size: 44px;
+}
+.choice__glyph--shape {
+  display: flex;
+  justify-content: center;
+}
+.choice__glyph--shape .constellation {
+  height: 80px;
+}
 .choice__swatch {
   width: 72px;
   height: 72px;
