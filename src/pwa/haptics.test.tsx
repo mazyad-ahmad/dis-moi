@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../data/db';
 import { getSettings, loadSettings, setSetting } from '../data/settings';
-import { HAPTICS, vibrate } from './haptics';
+import { canVibrate, HAPTICS, vibrate } from './haptics';
 
 const vibrateSpy = vi.fn<(pattern: VibratePattern) => boolean>(() => true);
 
@@ -116,4 +116,39 @@ it('espace Parent : le réglage « Vibrations » est enregistré', async () => {
   await user.click(screen.getByRole('radio', { name: 'Sans' }));
   expect(getSettings().vibrations).toBe(false);
   expect(await db.settings.get('vibrations')).toEqual({ key: 'vibrations', value: false });
+});
+
+it('impulsions assez longues pour être senties', () => {
+  const pulses = Object.values(HAPTICS).flatMap((p) =>
+    typeof p === 'number' ? [p] : p.filter((_, i) => i % 2 === 0),
+  );
+  for (const ms of pulses) expect(ms).toBeGreaterThanOrEqual(80);
+});
+
+it('espace Parent : « Essayer » fait vibrer au toucher, même au premier appui', async () => {
+  const user = userEvent.setup();
+  open('/parent');
+  await user.click(screen.getByRole('button', { name: 'Essayer' }));
+  expect(vibrateSpy).toHaveBeenCalledWith(HAPTICS.found);
+  expect(screen.getByText(/Rien senti \?/)).toBeInTheDocument();
+  // Réglage coupé : plus de bouton d'essai.
+  await user.click(screen.getByRole('radio', { name: 'Sans' }));
+  expect(screen.queryByRole('button', { name: 'Essayer' })).not.toBeInTheDocument();
+});
+
+it('espace Parent : dit quand le navigateur refuse de vibrer', async () => {
+  vibrateSpy.mockImplementationOnce(() => false);
+  const user = userEvent.setup();
+  open('/parent');
+  await user.click(screen.getByRole('button', { name: 'Essayer' }));
+  expect(screen.getByText(/a refusé de faire vibrer/)).toBeInTheDocument();
+});
+
+it('espace Parent : sans vibreur, le dit au lieu de proposer le réglage', () => {
+  delete (navigator as { vibrate?: unknown }).vibrate;
+  expect(canVibrate()).toBe(false);
+  open('/parent');
+  expect(screen.queryByRole('group', { name: 'Vibrations' })).not.toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Vibrations' })).toBeInTheDocument();
+  expect(screen.getByText(/ne sait pas faire vibrer/)).toBeInTheDocument();
 });

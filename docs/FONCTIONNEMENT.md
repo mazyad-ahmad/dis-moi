@@ -206,7 +206,12 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :
   une impulsion courte sur « Trouvé », deux à la fin du minuteur de Dessine ça (le dessin est
   alors figé), un petit motif de fête en fin de partie. Jamais pendant que l'enfant dessine.
-  Sans vibreur (iPhone, ordinateur), rien ne se passe.
+  Chaque impulsion dure au moins 80 ms : plus courte, beaucoup de téléphones ne la font pas
+  sentir. Sans API de vibration (iPhone, Firefox), le réglage n'est pas proposé et l'espace
+  Parent l'explique. Sinon, un bouton **« Essayer »** fait vibrer tout de suite, pour vérifier
+  les réglages du téléphone : Chrome ne vibre pas en mode silencieux ni quand les vibrations
+  sont coupées dans le téléphone, et n'accepte de vibrer qu'après un premier toucher sur la
+  page (c'est toujours le cas en jeu). Un ordinateur sans vibreur ne vibre simplement pas.
 - **Verrou parent** (désactivé par défaut) : quand il est activé, une petite addition
   (« 7 + 5 = ? », résultat entre 10 et 18) est demandée avant l'espace Parent, les joueurs,
   l'ajout et l'édition des jeux, y compris en tapant l'adresse. Les jeux restent libres.
