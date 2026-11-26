@@ -23,6 +23,8 @@ import { DeckGame } from '../games/deck/DeckGame';
 import { DailyGame } from '../games/defi/DailyGame';
 import { TreasureGame } from '../games/tresor/TreasureGame';
 import { TREASURE_ID } from '../games/tresor/treasure';
+import { DisparuGame } from '../games/disparu/DisparuGame';
+import { DISPARU_ID } from '../games/disparu/disparu';
 import { IntrusGame } from '../games/intrus/IntrusGame';
 import { INTRUS_ID } from '../games/intrus/intrus';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
@@ -99,6 +101,8 @@ function GameScreen({ id }: { id: string }) {
           <TreasureGame game={catalogue} />
         ) : catalogue.id === INTRUS_ID ? (
           <IntrusGame game={catalogue} />
+        ) : catalogue.id === DISPARU_ID ? (
+          <DisparuGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}

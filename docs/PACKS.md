@@ -91,6 +91,7 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-contraire.json`    | Les contraires             | `question` |
 | `catalogue-ombre.json`        | Ombres                     | `image`    |
 | `catalogue-intrus.json`       | L’intrus                   | `image`    |
+| `catalogue-disparu.json`      | Qu’est-ce qui a disparu ?  | `image`    |
 
 ## Cartes « vrai ou faux »
 

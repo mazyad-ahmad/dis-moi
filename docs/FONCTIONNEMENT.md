@@ -297,21 +297,22 @@ Le parent les ajoute depuis « Ajouter un jeu » (bouton Ajouter / Ajouté) ; il
 alors sur l'accueil. Ils suivent le même déroulé (manches, étoiles) et un format commun de
 cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou une couleur.
 
-| Jeu                     | Règle proposée                                                                                                                             |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Quel animal ?**       | Le **parent imite le cri** affiché (« Meuh ! ») et l'enfant devine. Pas d'enregistrement de cris pour la v1 (droits) : à revoir si besoin. |
-| **Quelle couleur ?**    | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
-| **Mime ça**             | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
-| **Devinettes**          | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
-| **Quelle émotion ?**    | Un visage (emoji) en grand, l'enfant nomme l'émotion. Voir « Les émotions ».                                                               |
-| **Mime l’émotion**      | L'écran montre à l'enfant l'émotion à mimer (visage + consigne), le parent devine. Voir « Les émotions ».                                  |
-| **Chasse au trésor**    | « Trouve quelque chose de rouge » : l'enfant cherche dans la maison, le parent valide l'objet. Voir ci-dessous.                            |
-| **Vrai ou faux rigolo** | Le parent lit une phrase, l'enfant crie « vrai » ou « faux ». Voir ci-dessous.                                                             |
-| **Jacques a dit**       | Le parent lit une consigne ; sans « Jacques a dit », c'est un piège et l'enfant ne bouge pas. Voir ci-dessous.                             |
-| **Ça rime avec…**       | « Trouve un mot qui rime avec _chat_ » : l'enfant cherche, le parent a des exemples. Voir ci-dessous.                                      |
-| **Les contraires**      | « Le contraire de _grand_ ? » : l'enfant répond, le parent a les réponses acceptées. Voir ci-dessous.                                      |
-| **Ombres**              | Une silhouette noire, l'enfant devine ; « Voir la réponse » la montre en couleur. Voir ci-dessous.                                         |
-| **L’intrus**            | Quatre images, une ne va pas avec les autres : l'enfant la montre du doigt, le parent valide. Voir ci-dessous.                             |
+| Jeu                           | Règle proposée                                                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Quel animal ?**             | Le **parent imite le cri** affiché (« Meuh ! ») et l'enfant devine. Pas d'enregistrement de cris pour la v1 (droits) : à revoir si besoin. |
+| **Quelle couleur ?**          | Une pastille de couleur en grand, l'enfant la nomme.                                                                                       |
+| **Mime ça**                   | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
+| **Devinettes**                | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
+| **Quelle émotion ?**          | Un visage (emoji) en grand, l'enfant nomme l'émotion. Voir « Les émotions ».                                                               |
+| **Mime l’émotion**            | L'écran montre à l'enfant l'émotion à mimer (visage + consigne), le parent devine. Voir « Les émotions ».                                  |
+| **Chasse au trésor**          | « Trouve quelque chose de rouge » : l'enfant cherche dans la maison, le parent valide l'objet. Voir ci-dessous.                            |
+| **Vrai ou faux rigolo**       | Le parent lit une phrase, l'enfant crie « vrai » ou « faux ». Voir ci-dessous.                                                             |
+| **Jacques a dit**             | Le parent lit une consigne ; sans « Jacques a dit », c'est un piège et l'enfant ne bouge pas. Voir ci-dessous.                             |
+| **Ça rime avec…**             | « Trouve un mot qui rime avec _chat_ » : l'enfant cherche, le parent a des exemples. Voir ci-dessous.                                      |
+| **Les contraires**            | « Le contraire de _grand_ ? » : l'enfant répond, le parent a les réponses acceptées. Voir ci-dessous.                                      |
+| **Ombres**                    | Une silhouette noire, l'enfant devine ; « Voir la réponse » la montre en couleur. Voir ci-dessous.                                         |
+| **L’intrus**                  | Quatre images, une ne va pas avec les autres : l'enfant la montre du doigt, le parent valide. Voir ci-dessous.                             |
+| **Qu’est-ce qui a disparu ?** | Des objets à regarder, le parent les cache, en retire un (ou en ajoute un), les remontre : l'enfant dit ce qui a changé. Voir ci-dessous.  |
 
 ### Les émotions (#58)
 
@@ -425,6 +426,34 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   l'enfant compte aussi. « Un indice » donne un coup de pouce sans la règle.
 - Se regarde : proposé au Coucher, pas en Voiture. La grille est toujours là, avec ou sans
   « Répondre en montrant ». Se joue aussi dans le Grand Jeu et le Défi du jour.
+- Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
+
+### Qu’est-ce qui a disparu ? (#64)
+
+- Jeu du catalogue de mémoire visuelle, rangé dans « Lire et compter ». Trois étapes, chacune
+  lancée par le parent, **sans aucun minuteur** : l'enfant regarde les objets aussi longtemps
+  qu'il veut (« Regarde bien tous les objets ! »), le parent touche **Cacher les objets**
+  (cartes retournées, « Ferme les yeux ! »), puis **Remontrer les objets** : « Qu'est-ce qui a
+  disparu ? ». **Trouvé** / **Pas encore** à tout moment, comme ailleurs.
+- **Variante « Qu'est-ce qui est arrivé ? »** : en haut de la partie, « Un objet disparaît »
+  (par défaut) ou « Un objet arrive », gardé pour la partie. Changer de variante recommence
+  l'observation de la manche. Le Grand Jeu et le Défi du jour jouent « Un objet disparaît ».
+- **Selon le niveau de la carte** : Petits, 3 objets qui **restent à leur place** (deux sur deux,
+  la case de l'objet parti reste vide, pointillée) ; Moyens, 5 objets, toujours à leur place
+  (trois sur deux) ; Grands, 6 objets qui **changent de place** en revenant, sans case vide.
+  L'écran le dit pendant l'observation. Pour l'objet qui arrive : il prend la case libre
+  (petits, moyens) ou se glisse parmi les objets mélangés (grands).
+- 36 objets (`src/content/catalogue-disparu.json`), 12 par niveau, des plus familiers (chat,
+  pomme, ballon) aux moins courants (boussole, ancre, sablier). Une carte est l'objet qui
+  disparaît (ou arrive) ; les autres objets de la scène sont tirés parmi les autres cartes, du
+  même niveau d'abord, sans doublon. Aucun nouveau champ de pack.
+- **Bloc parent** : ce qu'il faut faire à chaque étape et, derrière « Voir la réponse »,
+  l'objet et sa place (« en haut à gauche »), plus « Les autres objets ont bougé » chez les
+  grands. « Un indice » décrit l'objet (« Il fait miaou »).
+- En montrant : quand un objet a disparu, l'enfant le retrouve parmi les objets restés là
+  (2, 3 ou 4 choix selon le niveau) ; quand un objet arrive, il le montre sur la scène.
+- Se regarde : proposé au Coucher, pas en Voiture. Pas d'Image cachée. Les objets apparaissent
+  en douceur, sans animation avec « réduire les animations ».
 - Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
 ### Le Grand Jeu (#41)
@@ -636,7 +665,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
-   Ça rime avec…, Les contraires, Ombres, L’intrus)
+   Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

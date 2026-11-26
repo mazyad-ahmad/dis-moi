@@ -53,6 +53,7 @@ describe('façons de jouer', () => {
       'contraire',
       'ombre',
       'intrus',
+      'disparu',
     ]);
   });
 

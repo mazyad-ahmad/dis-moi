@@ -23,6 +23,8 @@ import { TreasureRound } from '../tresor/TreasureGame';
 import { TREASURE_ID, treasureWay } from '../tresor/treasure';
 import { IntrusRound } from '../intrus/IntrusGame';
 import { INTRUS_ID } from '../intrus/intrus';
+import { DisparuRound } from '../disparu/DisparuGame';
+import { DISPARU_ID } from '../disparu/disparu';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -167,6 +169,8 @@ function DailyRound({ day }: { day: string }) {
         />
       ) : source.game === INTRUS_ID && card.kind === 'image' ? (
         <IntrusRound item={card.item} />
+      ) : source.game === DISPARU_ID && card.kind === 'image' ? (
+        <DisparuRound item={card.item} />
       ) : (
         <CardBody card={card} />
       )}
