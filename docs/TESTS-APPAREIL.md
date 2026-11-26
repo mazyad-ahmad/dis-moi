@@ -21,6 +21,7 @@ L'objectif est d'avoir au moins deux appareils, un récent et un modeste.
 | 9   | Dessin au doigt    | « Dessine ça »                                                                            | Le trait suit le doigt sans retard, la page ne défile pas                           |
 | 10  | Écran allumé       | Laisser une manche ouverte plus longtemps que la mise en veille du téléphone              | L'écran reste allumé pendant la partie et s'éteint normalement en dehors            |
 | 11  | Remise à zéro      | Espace Parent → « Remettre les étoiles à zéro », ouvrir Étoiles, rejouer, rouvrir Étoiles | « Pas encore d'étoiles », puis les nouvelles étoiles s'affichent                    |
+| 12  | Pages longues      | Faire défiler l'Espace Parent (et les autres pages longues) jusqu'en bas                  | Le défilement s'arrête à la fin du contenu, la barre du bas reste fixée en bas      |
 
 ## Résultats
 
@@ -41,3 +42,4 @@ Appareil : Android (modèle et version à compléter), Chrome, appli installée.
 | 9   | Dessin au doigt    | —        |                                                                                      |
 | 10  | Écran allumé       | ?        | À préciser                                                                           |
 | 11  | Remise à zéro      | ❌       | Page Étoiles vide après la remise à zéro, même après de nouvelles parties : #143     |
+| 12  | Pages longues      | ❌       | Espace Parent : on défile au-delà du contenu, la barre du bas remonte : #145         |
