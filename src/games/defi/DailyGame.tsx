@@ -25,6 +25,8 @@ import { IntrusRound } from '../intrus/IntrusGame';
 import { INTRUS_ID } from '../intrus/intrus';
 import { DisparuRound } from '../disparu/DisparuGame';
 import { DISPARU_ID } from '../disparu/disparu';
+import { CompteRound } from '../compte/CompteGame';
+import { COMPTE_ID, seeded } from '../compte/compte';
 import {
   DAILY_ID,
   DAILY_NAME,
@@ -171,6 +173,8 @@ function DailyRound({ day }: { day: string }) {
         <IntrusRound item={card.item} />
       ) : source.game === DISPARU_ID && card.kind === 'image' ? (
         <DisparuRound item={card.item} />
+      ) : source.game === COMPTE_ID && card.kind === 'image' ? (
+        <CompteRound item={card.item} random={seeded(day)} choices={false} />
       ) : (
         <CardBody card={card} />
       )}

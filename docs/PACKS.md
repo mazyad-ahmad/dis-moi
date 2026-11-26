@@ -92,6 +92,14 @@ Textes : 140 caractères au plus, sans espace au début ni à la fin. Un champ i
 | `catalogue-ombre.json`        | Ombres                     | `image`    |
 | `catalogue-intrus.json`       | L’intrus                   | `image`    |
 | `catalogue-disparu.json`      | Qu’est-ce qui a disparu ?  | `image`    |
+| `catalogue-compte.json`       | Compte avec moi            | `image`    |
+
+## Cartes « Compte avec moi »
+
+Les cartes de `catalogue-compte.json` (#65) sont des **objets à compter** : `emoji` et `answer`, le
+nom au pluriel avec « Les » (« Les pommes »), dont le singulier s'obtient en retirant le `s` ou le `x`
+final (« 1 pomme »). Le niveau de l'objet règle la difficulté de la manche, générée au hasard (compter
+jusqu'à 5, 10 ou 20, comparer, additionner, soustraire). Règles dans `src/games/compte/compte.ts`.
 
 ## Cartes « vrai ou faux »
 

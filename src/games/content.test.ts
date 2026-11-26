@@ -95,6 +95,7 @@ describe('catalogue', () => {
       'ombre',
       'intrus',
       'disparu',
+      'compte',
     ]);
     for (const g of CATALOGUE) {
       expect(g.items.length).toBeGreaterThanOrEqual(DEFAULT_ROUNDS);

@@ -34,6 +34,7 @@ export const CATALOGUE_PACKS = [
   'ombre',
   'intrus',
   'disparu',
+  'compte',
 ];
 
 export const CATALOGUE: CatalogueGame[] = CATALOGUE_PACKS.map((id) => {

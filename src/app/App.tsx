@@ -27,6 +27,8 @@ import { DisparuGame } from '../games/disparu/DisparuGame';
 import { DISPARU_ID } from '../games/disparu/disparu';
 import { IntrusGame } from '../games/intrus/IntrusGame';
 import { INTRUS_ID } from '../games/intrus/intrus';
+import { CompteGame } from '../games/compte/CompteGame';
+import { COMPTE_ID } from '../games/compte/compte';
 import { DAILY_ID, DAILY_NAME, dailyPick, dayKey } from '../games/defi/daily';
 import { modeInfo, needsOf, suitsMode, type PlayNeeds } from '../games/modes';
 import { findGame } from '../games/registry';
@@ -103,6 +105,8 @@ function GameScreen({ id }: { id: string }) {
           <IntrusGame game={catalogue} />
         ) : catalogue.id === DISPARU_ID ? (
           <DisparuGame game={catalogue} />
+        ) : catalogue.id === COMPTE_ID ? (
+          <CompteGame game={catalogue} />
         ) : (
           <DeckGame deck={catalogue} />
         )}

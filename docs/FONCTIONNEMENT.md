@@ -313,6 +313,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Ombres**                    | Une silhouette noire, l'enfant devine ; « Voir la réponse » la montre en couleur. Voir ci-dessous.                                         |
 | **L’intrus**                  | Quatre images, une ne va pas avec les autres : l'enfant la montre du doigt, le parent valide. Voir ci-dessous.                             |
 | **Qu’est-ce qui a disparu ?** | Des objets à regarder, le parent les cache, en retire un (ou en ajoute un), les remontre : l'enfant dit ce qui a changé. Voir ci-dessous.  |
+| **Compte avec moi**           | Des objets à compter, deux groupes à comparer, de petites additions et soustractions en images. Voir ci-dessous.                           |
 
 ### Les émotions (#58)
 
@@ -454,6 +455,35 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   (2, 3 ou 4 choix selon le niveau) ; quand un objet arrive, il le montre sur la scène.
 - Se regarde : proposé au Coucher, pas en Voiture. Pas d'Image cachée. Les objets apparaissent
   en douceur, sans animation avec « réduire les animations ».
+
+### Compte avec moi (#65)
+
+- Jeu du catalogue, rangé dans « Lire et compter » : les chiffres ne sont plus seulement des
+  symboles, l'enfant **dénombre**. Le parent lit la question, l'enfant compte du doigt et
+  répond ; le parent valide avec **Trouvé** / **Pas encore**.
+- **Cartes générées** : le pack (`src/content/catalogue-compte.json`) ne contient que des
+  objets (emoji et nom au pluriel, « Les pommes »), 13 par niveau. Chaque manche tire au hasard
+  le type de question, les nombres et la place des objets : jamais deux parties identiques
+  (`src/games/compte/compte.ts`, fonctions pures).
+- Selon le niveau de l'objet tiré (donc celui de la partie, ou de l'enfant en « Chacun son
+  tour ») : **Petits** compter jusqu'à 5 et comparer deux groupes de 5 au plus (deux d'écart au
+  moins) ; **Moyens** compter jusqu'à 10, comparer jusqu'à 10 ; **Grands** compter jusqu'à 20,
+  additions « 3 pommes et 2 pommes, ça fait combien ? » (deux groupes, 20 au plus), soustractions
+  (« Il y a 8 pommes, on en enlève 3 » : les objets enlevés restent visibles, pâlis et barrés) et
+  comparaisons. Comparer : « Où y en a-t-il le plus ? », deux objets différents, l'un sous l'autre.
+- **Disposition** : jusqu'à 6 objets, une fois sur deux en constellation (faces d'un dé), sinon
+  au hasard dans une grille invisible (4 × 3, 5 × 3 ou 6 × 5 cases), un objet par case, un peu
+  décalé. L'emoji est plus petit que sa case et le décalage borné : deux objets ne se
+  chevauchent jamais (vérifié par les tests). Le champ prend la largeur de l'écran en gardant
+  ses proportions : au plus 6 cases de large, l'emoji fait près de 30 px sur un écran de 320 px.
+- « Pour le parent » : la réponse en clair (« 3 + 2 = 5 pommes. ») derrière « Voir la
+  réponse », et un indice (« Touchez chaque pomme du doigt en comptant à voix haute. »).
+- **En montrant** : des nombres proches de la réponse, rangés dans l'ordre (2, 3 ou 4 choix
+  selon le niveau) ; pour comparer, les deux groupes (emoji et nom). Un mauvais choix ne fait rien.
+- Se regarde : proposé au Coucher, pas en Voiture. Se joue aussi dans le Grand Jeu et le Défi du
+  jour (sans choix ; la même manche toute la journée, tirée d'après la date). Pas d'Image cachée.
+- Après un rafraîchissement, les objets tirés sont gardés, mais la manche en cours est
+  regénérée (autres nombres), comme la grille de L'intrus.
 - Images : emoji dessinés par la police du téléphone, aucun fichier, aucun droit tiers.
 
 ### Le Grand Jeu (#41)
@@ -665,7 +695,8 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes,
    Quelle émotion ?, Mime l’émotion, Chasse au trésor, Vrai ou faux rigolo, Jacques a dit,
-   Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?)
+   Ça rime avec…, Les contraires, Ombres, L’intrus, Qu’est-ce qui a disparu ?,
+   Compte avec moi)
    groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
    « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
    l'enfant, âge facultatif, puis ajout des questions).

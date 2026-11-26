@@ -4,6 +4,7 @@ import { customRouteId } from '../../data/customGames';
 import { getSettings, setSetting } from '../../data/settings';
 import type { DeckItem } from '../deck/types';
 import { DISPARU_ID } from '../disparu/disparu';
+import { COMPTE_ID } from '../compte/compte';
 
 /**
  * Image cachée (#62) : l'image d'une carte se dévoile par paliers, le parent avance d'un
@@ -47,13 +48,14 @@ export function canReveal(item: DeckItem): boolean {
 /**
  * Jeux du catalogue où l'option a un sens : type Image, sans mime (l'enfant doit voir ce
  * qu'il mime), avec des cartes à dévoiler (pas les pastilles de couleur) et hors Ombres (#61),
- * qui cache déjà l'image à sa façon, et hors L'intrus (#63) et Qu'est-ce qui a disparu ? (#64),
- * qui ont leur propre écran.
+ * qui cache déjà l'image à sa façon, et hors L'intrus (#63), Qu'est-ce qui a disparu ? (#64) et
+ * Compte avec moi (#65), qui ont leur propre écran.
  */
 export function revealsInCatalogue(game: CatalogueGame): boolean {
   return (
     game.kind === 'image' &&
     !game.needs.moves &&
+    game.id !== COMPTE_ID &&
     !game.items.some((item) => item.shadow || item.others) &&
     game.id !== DISPARU_ID &&
     game.items.some(canReveal)
