@@ -2,6 +2,7 @@ import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { ParentBlock } from '../../components/ParentBlock';
+import { ReadAloud } from '../../components/ReadAloud';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
 import { shuffle } from '../shuffle';
@@ -80,14 +81,18 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
         ))}
       </div>
 
-      <figure className="glyph-card">
+      {/* key : chaque manche entre en douceur. */}
+      <figure key={round} className="glyph-card round-in">
         <span className="glyph-card__glyph" data-testid="glyph">
           {card.glyph}
         </span>
         <figcaption className="muted">Montre l'écran à l'enfant</figcaption>
       </figure>
 
-      <ParentBlock>{card.hint}</ParentBlock>
+      <ParentBlock>
+        {card.hint}
+        <ReadAloud text={card.hint} />
+      </ParentBlock>
 
       <div className="spacer" />
       <AnswerBar onSkip={() => next(false)} onFound={() => next(true)} />

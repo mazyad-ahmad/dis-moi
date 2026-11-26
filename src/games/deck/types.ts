@@ -35,6 +35,8 @@ export interface DeckItem {
   text?: string;
   /** Indice pour le parent. */
   hint?: string;
+  /** Indices suivants, donnés un à un si l'enfant sèche (#34). */
+  hints?: string[];
   /** Visuels intégrés (catalogue) : emoji ou couleur montrés en grand. */
   emoji?: string;
   color?: string;

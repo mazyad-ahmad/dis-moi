@@ -1,8 +1,23 @@
-import { href } from '../app/router';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { href, useRoute } from '../app/router';
+import { playSound } from '../audio/sounds';
+import { useRecords } from '../data/history';
 import { useSeance } from '../data/seance';
 import { starsLabel } from '../games/format';
+import { useHomeGames } from '../games/useGames';
 import { Button } from './Button';
+import { Confetti } from './Confetti';
 import { IconStar } from './icons';
+import { Mascot } from './Mascot';
+import { prefersReducedMotion } from './motion';
+import {
+  COUNT_START_MS,
+  COUNT_STEP_MS,
+  nextGame,
+  resultMessage,
+  resultRewards,
+  resultTitle,
+} from './result';
 
 interface Props {
   stars: number;
@@ -33,25 +48,80 @@ function SeanceEnd({ stars }: { stars: number }) {
   );
 }
 
-/** Écran de fin de partie : étoiles gagnées ensemble, Rejouer ou Accueil. */
+/**
+ * Les étoiles gagnées apparaissent une à une, chacune avec son petit son (#33).
+ * Le son de fin de partie (ou de récompense) a déjà été joué à la dernière réponse
+ * (`useRounds`) : on ne le rejoue pas ici.
+ */
+function useStarCount(stars: number) {
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const timers = Array.from({ length: stars }, (_, i) =>
+      setTimeout(() => void playSound('star'), COUNT_START_MS + i * COUNT_STEP_MS),
+    );
+    // Fin du compte (COUNT_START_MS + stars * COUNT_STEP_MS) : la phrase de fête parlée
+    // (« Vous avez gagné 7 étoiles ensemble ! ») pourra se brancher ici.
+    return () => timers.forEach(clearTimeout);
+  }, [stars]);
+}
+
+/** Écran de fin de partie : étoiles gagnées ensemble, récompenses, Rejouer ou un autre jeu. */
 export function GameResult({ stars, rounds, onReplay }: Props) {
   const seance = useSeance();
+  const route = useRoute();
+  const records = useRecords();
+  const other = nextGame(useHomeGames(), route.name === 'game' ? route.id : undefined);
+  const [message] = useState(() => resultMessage(stars, rounds));
+  useStarCount(seance.over ? 0 : stars);
   if (seance.over) return <SeanceEnd stars={stars} />;
+  const rewards = records?.length ? resultRewards(records, stars) : undefined;
   return (
     <main className="screen result">
+      <Confetti />
       <div className="result__stars" aria-hidden="true">
         <IconStar size={96} />
       </div>
-      <h1 className="h1">
-        {stars > 0 ? `${starsLabel(stars)} gagnées ensemble !` : 'Bravo d’avoir joué !'}
-      </h1>
+      <Mascot mood="bravo" />
+      <h1 className="h1">{resultTitle(stars)}</h1>
+      {stars > 0 && (
+        <div className="result__count" aria-hidden="true" data-testid="result-count">
+          {Array.from({ length: stars }, (_, i) => (
+            <span
+              key={i}
+              className="result__count-star"
+              style={{ '--delay': `${COUNT_START_MS + i * COUNT_STEP_MS}ms` } as CSSProperties}
+            >
+              <IconStar size={28} />
+            </span>
+          ))}
+        </div>
+      )}
       <p className="lead">
-        {stars > 0
-          ? `Sur ${rounds} manches. On rejoue ?`
-          : 'Pas d’étoile cette fois-ci, ce sera pour la prochaine partie.'}
+        {message}
+        {stars > 0 && ` Sur ${rounds} manches.`}
       </p>
+      {rewards?.unlocked.map((r) => (
+        <p key={r.stars} className="result__reward">
+          <span className="result__reward-emoji" aria-hidden="true">
+            {r.emoji}
+          </span>
+          <span>
+            Nouvelle récompense : <strong>{r.label}</strong> !
+          </span>
+        </p>
+      ))}
+      {rewards?.next && (
+        <p className="muted">
+          {`Encore ${starsLabel(rewards.next.missing)} pour la récompense « ${rewards.next.reward.label} ».`}
+        </p>
+      )}
       {seance.nextIsLast && <p className="seance-notice">Encore une partie, et après on range.</p>}
       <div className="spacer" />
+      {other && (
+        <a className="btn btn--secondary btn--block" href={href(`/jeu/${other.id}`)}>
+          Un autre jeu : {other.name}
+        </a>
+      )}
       <div className="answer-bar">
         <a className="btn btn--secondary" href={href('/')}>
           Accueil

@@ -1,4 +1,4 @@
-import { MAX_GAME_NAME, MAX_TEXT } from '../data/customGames';
+import { MAX_GAME_NAME, MAX_HINTS, MAX_TEXT } from '../data/customGames';
 import { GAME_FILE_FORMAT, GAME_FILE_VERSION } from '../data/gameFile';
 import { parseMelody } from '../games/chanson/melody';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
@@ -65,6 +65,7 @@ const ITEM_FIELDS = new Set([
   'answer',
   'text',
   'hint',
+  'hints',
   'emoji',
   'color',
   'level',
@@ -124,6 +125,16 @@ function itemProblem(kind: PackKind, item: Record<string, unknown>): string | un
   for (const field of ['text', 'hint'] as const)
     if (item[field] !== undefined && !isText(item[field]))
       return `« ${field} » vide, trop long (${MAX_TEXT} max) ou mal espacé`;
+  if (
+    item.hints !== undefined &&
+    !(
+      Array.isArray(item.hints) &&
+      item.hints.length > 0 &&
+      item.hints.length <= MAX_HINTS &&
+      item.hints.every((h) => isText(h))
+    )
+  )
+    return `indices (« hints ») : liste de 1 à ${MAX_HINTS} textes attendue`;
   if (item.emoji !== undefined && !isText(item.emoji, 16)) return 'emoji invalide';
   const level = item.level as number;
   if (

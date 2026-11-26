@@ -7,6 +7,7 @@ import '@fontsource/figtree/600.css';
 import '@fontsource/figtree/700.css';
 import './styles/global.css';
 import './components/ui.css';
+import './components/reward.css';
 import { App } from './app/App';
 import { loadSettings } from './data/settings';
 import { listenForInstall, registerServiceWorker } from './pwa/pwa';

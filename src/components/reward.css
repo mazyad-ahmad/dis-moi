@@ -1,0 +1,243 @@
+/* ---------- Récompenses (#32) ----------
+   Uniquement transform et opacity : animé par le compositeur, fluide même sur un petit Android.
+   Avec « réduire les animations », global.css coupe les animations ; ce qui ne doit pas rester
+   figé à l'écran est en plus masqué ci-dessous. */
+
+/* Étoile qui part du bouton « Trouvé » vers le compteur. Trajet en arc :
+   l'horizontale ralentit, la verticale accélère. */
+.star-flight {
+  position: fixed;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  will-change: transform;
+  animation: star-flight-x 600ms cubic-bezier(0.2, 0.7, 0.4, 1) both;
+}
+.star-flight__lift {
+  display: block;
+  color: var(--sun);
+  will-change: transform, opacity;
+  animation: star-flight-y 600ms cubic-bezier(0.6, 0, 0.9, 0.5) both;
+}
+.star-flight svg {
+  display: block;
+  fill: currentColor;
+}
+@keyframes star-flight-x {
+  to {
+    transform: translateX(var(--star-dx));
+  }
+}
+@keyframes star-flight-y {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(0) scale(1.2);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--star-dy)) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Le compteur rebondit quand l'étoile arrive. */
+.game-header__stars.is-bumped {
+  animation: star-bump 400ms 480ms ease-out;
+}
+@keyframes star-bump {
+  40% {
+    transform: scale(1.4);
+  }
+  70% {
+    transform: scale(0.92);
+  }
+}
+
+/* Nouvelle manche : la carte entre en douceur, sans retarder les boutons. */
+.round-in {
+  animation: round-in 240ms ease-out;
+}
+@keyframes round-in {
+  from {
+    opacity: 0.2;
+    transform: translateX(24px);
+  }
+}
+
+/* Confettis de fin de partie. */
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+}
+.confetti__piece {
+  position: absolute;
+  top: -16px;
+  left: var(--x);
+  width: 10px;
+  height: 14px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: confetti-fall var(--fall) var(--delay) cubic-bezier(0.3, 0.4, 0.6, 1) both;
+}
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift), 105vh) rotate(var(--turn));
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-flight,
+  .confetti {
+    display: none;
+  }
+}
+
+/* ---------- Mascotte (#36) ----------
+   Petits mouvements en transform et opacity ; global.css les coupe avec « réduire les
+   animations » et la mascotte reste alors immobile, entièrement dessinée. */
+.mascot {
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+.mascot__body,
+.mascot__eyes,
+.mascot__wave,
+.mascot__dots circle,
+.mascot__sparkles path,
+.mascot__z path {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* Un clignement de temps en temps. */
+.mascot__eyes {
+  animation: mascot-blink 5s 1s infinite;
+}
+@keyframes mascot-blink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  97% {
+    transform: scaleY(0.1);
+  }
+}
+/* Bonjour : quelques signes de la main, puis plus rien. */
+.mascot__wave {
+  transform-origin: 0% 100%;
+  animation: mascot-wave 900ms 300ms ease-in-out 3;
+}
+@keyframes mascot-wave {
+  50% {
+    transform: rotate(-14deg);
+  }
+}
+/* Réfléchit : les petites bulles s'allument l'une après l'autre. */
+.mascot__dots circle {
+  animation: mascot-dot 1.8s ease-in-out infinite;
+}
+.mascot__dots circle:nth-child(2) {
+  animation-delay: 300ms;
+}
+.mascot__dots circle:nth-child(3) {
+  animation-delay: 600ms;
+}
+@keyframes mascot-dot {
+  50% {
+    opacity: 0.3;
+  }
+}
+/* Bravo : trois petits sauts, les étincelles scintillent. */
+.mascot--bravo .mascot__body {
+  animation: mascot-hop 600ms 200ms ease-out 3;
+}
+@keyframes mascot-hop {
+  40% {
+    transform: translateY(-8%);
+  }
+}
+.mascot__sparkles path {
+  animation: mascot-twinkle 1.2s ease-in-out 3;
+}
+@keyframes mascot-twinkle {
+  50% {
+    transform: scale(0.5);
+    opacity: 0.4;
+  }
+}
+/* Dort : respire lentement, les « z » montent. */
+.mascot--sleep .mascot__body {
+  animation: mascot-breathe 4s ease-in-out infinite;
+}
+@keyframes mascot-breathe {
+  50% {
+    transform: scale(1.03);
+  }
+}
+.mascot__z path {
+  animation: mascot-z 4s ease-in-out infinite;
+}
+.mascot__z path:nth-child(2) {
+  animation-delay: 2s;
+}
+@keyframes mascot-z {
+  0% {
+    transform: translate(0, 4px);
+    opacity: 0;
+  }
+  30%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(4px, -6px);
+    opacity: 0;
+  }
+}
+/* Écran de résultat (#33) : les étoiles gagnées apparaissent une à une, la récompense pop.
+   Sans animation, elles sont simplement toutes là. */
+.result__count {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 260px;
+  color: var(--sun);
+}
+.result__count-star {
+  display: block;
+  will-change: transform, opacity;
+  animation: result-star 360ms var(--delay) cubic-bezier(0.3, 1.6, 0.6, 1) backwards;
+}
+.result__count-star svg {
+  display: block;
+  fill: currentColor;
+}
+@keyframes result-star {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+.result__reward {
+  animation: result-star 480ms 300ms cubic-bezier(0.3, 1.6, 0.6, 1) backwards;
+}

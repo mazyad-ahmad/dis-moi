@@ -6,8 +6,10 @@ import {
   DEFAULT_SETTINGS,
   DRAW_SECONDS_CHOICES,
   loadSettings,
+  READ_ALOUD_CHOICES,
   ROUND_CHOICES,
   setSetting,
+  VOLUME_CHOICES,
   type Settings,
 } from './settings';
 import { requestPersistentStorage } from './storage';
@@ -171,6 +173,13 @@ function readSettings(raw: unknown): Partial<Settings> {
   if (Array.isArray(raw.catalogue) && raw.catalogue.every((c) => typeof c === 'string'))
     out.catalogue = raw.catalogue;
   if (isNumber(raw.lastBackupAt)) out.lastBackupAt = raw.lastBackupAt;
+  if (typeof raw.vibrations === 'boolean') out.vibrations = raw.vibrations;
+  if ((READ_ALOUD_CHOICES as readonly unknown[]).includes(raw.readAloud))
+    out.readAloud = raw.readAloud as Settings['readAloud'];
+  if (typeof raw.sounds === 'boolean') out.sounds = raw.sounds;
+  if (typeof raw.praise === 'boolean') out.praise = raw.praise;
+  if ((VOLUME_CHOICES as readonly unknown[]).includes(raw.volume))
+    out.volume = raw.volume as Settings['volume'];
   return out;
 }
 

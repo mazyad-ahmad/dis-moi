@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRecording } from '../../audio/recording';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
+import { Mascot } from '../../components/Mascot';
 import { IconEar, IconPause, IconPlay } from '../../components/icons';
 import { ParentBlock } from '../../components/ParentBlock';
+import { ReadAloud } from '../../components/ReadAloud';
 import { DrawingGame } from '../dessin/DrawingGame';
+import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
 import { shuffle } from '../shuffle';
@@ -12,32 +15,11 @@ import { useRoundSetting, useRounds } from '../useRounds';
 import type { Deck, DeckItem } from './types';
 import { useObjectUrl } from './useObjectUrl';
 
-/** Lecture d'un son enregistré par le parent. */
+/** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
 function RecordedSound({ audio }: { audio: Blob }) {
-  const url = useObjectUrl(audio);
-  const el = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState(false);
-  useEffect(() => () => el.current?.pause(), []);
-
-  const toggle = () => {
-    const a = el.current;
-    if (!a) return;
-    if (playing) a.pause();
-    else {
-      a.currentTime = 0;
-      void a.play().catch(() => setPlaying(false));
-    }
-  };
-
+  const { playing, toggle } = useRecording(audio);
   return (
     <>
-      <audio
-        ref={el}
-        src={url}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => setPlaying(false)}
-      />
       <button
         type="button"
         className="song-player__play"
@@ -97,6 +79,7 @@ function QuestionCard({ item }: { item: DeckItem }) {
     <section className="deck-card deck-card--question" aria-label="Question">
       <span className="word-card__label">Le parent lit à voix haute</span>
       <p className="deck-card__question">{item.text}</p>
+      {item.text && <ReadAloud text={item.text} />}
     </section>
   );
 }
@@ -139,18 +122,21 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
         title={deck.name}
       />
       {/* key : nouvelle manche = carte et réponse remises à zéro. */}
-      <div key={round} className="deck-round">
+      <div key={round} className="deck-round round-in">
         {deck.kind === 'sound' && <SoundCard item={item} />}
         {deck.kind === 'image' && <ImageCard item={item} />}
         {deck.kind === 'question' && <QuestionCard item={item} />}
-        <ParentBlock hidden={answerOf(item)}>
+        {/* Premier indice écrit visible d'emblée, les suivants à la demande. */}
+        <ParentBlock
+          hidden={answerOf(item)}
+          hints={hintLadder(item)}
+          openHints={writtenHints(item).length ? 1 : 0}
+        >
           {soundToImitate && (
             <>
               À imiter : <strong>{item.text}</strong>
-              <br />
             </>
           )}
-          {item.hint && <>Indice : {item.hint}</>}
         </ParentBlock>
       </div>
       <div className="spacer" />
@@ -168,6 +154,7 @@ function EmptyDeck({ deck }: { deck: Deck }) {
     <main className="screen">
       <GameHeader category={deck.category} title={deck.name} />
       <div className="empty">
+        <Mascot mood="think" />
         <strong>Ce jeu n’a pas encore de carte</strong>
         <span className="muted">Ajoute des questions depuis « Ajouter un jeu ».</span>
       </div>

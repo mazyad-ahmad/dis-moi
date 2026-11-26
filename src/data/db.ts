@@ -37,6 +37,13 @@ export interface CustomGame {
   updatedAt: number;
 }
 
+/** Félicitation enregistrée au micro par le parent (#116), jouée au « Trouvé ». */
+export interface Praise {
+  id: number;
+  audio: Blob;
+  createdAt: number;
+}
+
 export interface Setting {
   key: string;
   value: unknown;
@@ -48,6 +55,7 @@ export const db = new Dexie('dis-moi') as Dexie & {
   settings: EntityTable<Setting, 'key'>;
   games: EntityTable<GameRecord, 'id'>;
   customGames: EntityTable<CustomGame, 'id'>;
+  praises: EntityTable<Praise, 'id'>;
 };
 
 db.version(1).stores({
@@ -61,4 +69,8 @@ db.version(2).stores({
 
 db.version(3).stores({
   customGames: '++id, createdAt',
+});
+
+db.version(4).stores({
+  praises: '++id, createdAt',
 });

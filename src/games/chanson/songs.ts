@@ -10,17 +10,22 @@ export interface Song {
   title: string;
   /** Indice que le parent peut donner à l'enfant. */
   hint: string;
+  /** Indices suivants, donnés un à un si l'enfant sèche (#34). */
+  hints?: string[];
   bpm: number;
   melody: string;
 }
 
 export const EXTRACT_SECONDS = 10;
+/** Indice « réécouter plus lentement » : tempo multiplié par ce facteur, mêmes notes. */
+export const SLOW_TEMPO = 0.7;
 
 /** Airs du pack `src/content/chansons.json`. */
 export const SONGS: Song[] = getPack('chansons').items.map((item) => ({
   id: item.id,
   title: item.answer,
   hint: item.hint!,
+  ...(item.hints && { hints: item.hints }),
   bpm: item.bpm!,
   melody: item.melody!,
 }));

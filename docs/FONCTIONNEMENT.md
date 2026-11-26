@@ -9,14 +9,25 @@
 - Le parent valide : **Trouvé** (gagne une étoile) ou **Pas encore / Passer**.
 - Les zones « **Pour le parent** » (réponse, indice, consigne) sont fermées par défaut :
   la réponse ne s'affiche qu'après « Voir la réponse ».
+- **Indices en escalier** : quand l'enfant sèche, « Encore un indice » en montre un de plus à
+  chaque appui, jamais la réponse : d'abord les indices écrits de la carte (`hint`, puis la liste
+  facultative `hints`), puis « Ça commence par « V » » (première lettre du mot à deviner, articles
+  sautés), généré pour toute carte. Dans « Quelle chanson ? », un indice fait aussi passer
+  l'extrait au ralenti (mêmes notes, tempo × 0,7). Le bouton disparaît une fois la réponse vue.
+  Pas de pénalité : **Trouvé** rapporte une étoile, quel que soit le nombre d'indices.
 
 ## Déroulé d'une partie (proposition)
 
 1. Depuis l'accueil, le parent choisit un jeu.
 2. Une partie = **10 manches**.
 3. À chaque manche : **Trouvé** → +1 étoile ; **Pas encore / Passer** → 0 étoile, manche suivante.
-4. Après la 10ᵉ manche : écran de résultat (« 7 étoiles gagnées ensemble ! »),
-   boutons **Rejouer** et **Accueil**.
+4. Après la 10ᵉ manche : écran de résultat (« 7 étoiles gagnées ensemble ! »). Les étoiles
+   gagnées y apparaissent une à une, chacune avec le petit son de l'étoile, puis un message
+   varié selon le score, toujours positif (sans étoile : « ce sera pour la prochaine partie »).
+   Une récompense franchie pendant la partie y est fêtée, une seule fois (son son a déjà été
+   joué en jeu, il n'est pas rejoué), et la suivante est rappelée (« Encore 3 étoiles pour la
+   récompense « 25 étoiles » »). Boutons **Un autre jeu** (le jeu suivant de l'accueil),
+   **Accueil** et **Rejouer**.
 5. Le bouton ✕ en haut quitte la partie à tout moment ; les étoiles déjà gagnées sont gardées.
    Un rafraîchissement de la page (ou le rechargement après une mise à jour) reprend la partie
    là où elle en était : même carte, même manche, mêmes étoiles.
@@ -30,6 +41,21 @@
   parties (jeu, jour, joueurs, manches si la partie a été quittée) et des **récompenses** débloquées
   à 1, 10, 25, 50, 100 et 250 étoiles.
 - Remise à zéro des étoiles depuis l'espace Parent (efface l'historique).
+- **Animations de récompense** : au « Trouvé », une étoile part du bouton et rejoint le compteur,
+  qui rebondit ; chaque nouvelle manche entre en douceur ; des confettis tombent sur l'écran de fin.
+  Elles ne retardent jamais la manche suivante (on peut enchaîner vite) et sont toutes coupées
+  quand le téléphone demande de « réduire les animations ».
+
+## Mascotte (proposition)
+
+- Une petite bulle qui parle, dessinée pour l'appli en SVG dans le code (pas d'image à charger,
+  pas de droits tiers), aux couleurs du thème jour / nuit. Son nom reste à choisir : il n'est
+  affiché nulle part.
+- Discrète, jamais pendant une manche : elle **dit bonjour** sur l'accueil (elle **dort** en thème
+  nuit et après la fin de séance), **réfléchit** sur les écrans vides (pas encore d'étoiles, jeu
+  sans carte) et dit **bravo** sur l'écran de fin.
+- Décorative (cachée aux lecteurs d'écran) ; ses petits mouvements (clignement, signe de la main,
+  sauts, « z ») s'arrêtent avec « réduire les animations ».
 
 ## Plusieurs enfants (proposition)
 
@@ -116,6 +142,56 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   Dans « Dessine ça », le mot est gardé ; le minuteur et le dessin repartent à zéro.
 - Données gardées : jeu, date, manches jouées, étoiles, joueurs présents (sur l'appareil uniquement).
 
+## Sons d'interface
+
+- Petits sons **synthétisés** dans l'appli (Web Audio), comme les mélodies : aucun fichier audio,
+  donc aucun droit à gérer, et ils marchent hors ligne.
+- **Trouvé** : un petit arpège montant ; **Passer / Pas encore** : une seule note douce, jamais un
+  son d'échec ; **fin du minuteur** de Dessine ça : deux tintements ; **fin de partie** : un arpège
+  complet ; **récompense débloquée** (1, 10, 25… étoiles) : un arpège plus long.
+- Un seul contexte audio pour toute l'appli (`src/audio/context.ts`), relancé au réveil du
+  téléphone. Un son d'interface ne couvre jamais une mélodie, un son enregistré ou une lecture à
+  voix haute en cours : il n'est alors pas joué.
+- Réglage **Sons** (activés par défaut) dans l'espace Parent ; coupés, aucun son d'interface.
+
+## Félicitations parlées
+
+- Au **Trouvé**, une félicitation dite à voix haute, tirée au hasard sans redire la précédente
+  (« Bravo ! », « Super ! », « Bien joué ! », « Génial ! », « Trop fort ! ») ; en **fin de
+  partie**, une phrase de fête : « Vous avez gagné 7 étoiles ensemble ! » (« Bravo d’avoir joué
+  ensemble ! » sans étoile). Jamais rien sur **Pas encore / Passer**.
+- Dites par la même voix française **installée sur le téléphone** que la lecture à voix haute
+  (module `src/voice/praise.ts`), sans réseau.
+- Le parent peut **enregistrer ses propres félicitations** au micro dans l’espace Parent
+  (5 maximum, 10 s chacune) : elles remplacent alors la voix du téléphone. Elles sont jouées comme
+  tout enregistrement du parent, au niveau commun (`playRecording`, voir « Volume »), restent dans
+  le téléphone (IndexedDB, table `praises`), ne vont ni dans la sauvegarde ni dans un jeu
+  partagé, et partent avec « Effacer toutes les données ».
+- Sans voix française locale ni enregistrement, la fonction n’est pas proposée : l’espace Parent
+  propose seulement d’enregistrer (si le micro existe).
+- La félicitation ne retarde rien : elle part après le son d’interface, la manche suivante déjà
+  affichée. Elle n’est pas dite si une mélodie, un son de carte ou une lecture est en cours, et
+  s’arrête si l’un d’eux démarre. Quitter ou rejouer la partie la coupe.
+- Réglage **Félicitations parlées** (activées par défaut) dans l’espace Parent, indépendant du
+  réglage **Sons**. Ton unique pour l’instant (l’adaptation à l’âge viendra avec les niveaux).
+
+## Volume (#121)
+
+- Tout le son de l'appli (mélodies, sons d'interface, enregistrements du parent, futurs fichiers
+  audio) passe par une **sortie unique** : un **plafond** que rien ne dépasse (−6 dBFS, crêtes
+  arrondies en douceur), puis le **volume de l'appli**.
+- Réglage **Volume de l'appli** dans l'espace Parent : **Doux** (par défaut, moitié du niveau) ou
+  **Normal**. Le volume du téléphone reste celui choisi par la famille.
+- Chaque son démarre par une **montée douce** (20 ms au moins) : jamais d'attaque brutale.
+- Les **enregistrements du parent** (sons des jeux créés, félicitations) sont mesurés puis ramenés
+  au même niveau à la lecture : un enregistrement crié est baissé, un murmure légèrement remonté
+  (×4 au plus). Fonction commune : `playRecording(blob)` de `src/audio/recording.ts`.
+- **Fichiers audio** livrés avec l'appli (`src/`, `public/`) : en WAV, normalisés au moment de
+  l'ajout à −22 dBFS efficaces (± 3 dB, silences ignorés), crête sous −1 dBFS. Le test de contenu
+  `src/content/audio.test.ts` le vérifie pour chaque fichier et indique le gain à appliquer.
+- La **lecture à voix haute** (synthèse vocale du téléphone) ne passe pas par cette sortie : elle
+  suit seulement le volume de l'appli (moitié en « Doux »), que certains téléphones ignorent.
+
 ## Public visé (proposition)
 
 - **3 à 7 ans**. Niveaux de difficulté reportés après la v1.
@@ -124,9 +200,13 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **volume de l'appli** (doux / normal), **félicitations parlées**, **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
+- **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :
+  une impulsion courte sur « Trouvé », deux à la fin du minuteur de Dessine ça (le dessin est
+  alors figé), un petit motif de fête en fin de partie. Jamais pendant que l'enfant dessine.
+  Sans vibreur (iPhone, ordinateur), rien ne se passe.
 - **Verrou parent** (désactivé par défaut) : quand il est activé, une petite addition
   (« 7 + 5 = ? », résultat entre 10 et 18) est demandée avant l'espace Parent, les joueurs,
   l'ajout et l'édition des jeux, y compris en tapant l'adresse. Les jeux restent libres.
@@ -145,6 +225,20 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   depuis son espace (derrière le verrou parent s'il est activé). Aucun compte à rebours à
   l'écran. Le temps est gardé sur le téléphone : ni un rafraîchissement ni la fermeture de
   l'appli ne le remettent à zéro.
+
+## Lecture à voix haute
+
+- Bouton **« Lire »** sous la question (jeux à questions, Devinettes), le mot (Dessine ça, mots à
+  dessiner) et la consigne (Quelle lettre, quel chiffre ?), lu par la synthèse vocale du téléphone
+  (`speechSynthesis`, module `src/voice/speech.ts`). Un second appui arrête la lecture.
+- Seule une voix française **installée sur le téléphone** est utilisée (`localService`) : une voix
+  en ligne enverrait le texte à un serveur. Sans voix française locale, le bouton n'apparaît pas et
+  l'espace Parent l'explique.
+- La lecture s'arrête au changement de manche, avec « Autre mot » et en quittant la partie.
+- Réglage dans l'espace Parent : vitesse **Normale** (par défaut) ou **Lente**, ou **Non** pour
+  masquer le bouton.
+- Pas de bouton sur ce que l'enfant doit deviner ou montrer (images, mime, bruits à imiter,
+  indices et réponses du parent).
 
 ## Écrans
 

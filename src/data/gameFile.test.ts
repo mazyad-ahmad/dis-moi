@@ -24,7 +24,7 @@ it('exporte puis relit un jeu avec ses photos', async () => {
   const photo = new Blob([new Uint8Array([0, 1, 2, 250, 255])], { type: 'image/png' });
   const file = await gameToFile(
     game('image', [
-      { answer: 'La cuisine', image: photo, hint: 'On y mange' },
+      { answer: 'La cuisine', image: photo, hint: 'On y mange', hints: ['Il y a un frigo'] },
       { answer: 'Pomme', text: '🍎' },
     ]),
   );
@@ -32,7 +32,11 @@ it('exporte puis relit un jeu avec ses photos', async () => {
 
   const copy = parseGameFile(await file.text());
   expect(copy).toMatchObject({ name: 'Ma maison', kind: 'image' });
-  expect(copy.items[0]).toMatchObject({ answer: 'La cuisine', hint: 'On y mange' });
+  expect(copy.items[0]).toMatchObject({
+    answer: 'La cuisine',
+    hint: 'On y mange',
+    hints: ['Il y a un frigo'],
+  });
   expect(copy.items[0].image!.type).toBe('image/png');
   expect([...new Uint8Array(await copy.items[0].image!.arrayBuffer())]).toEqual([
     0, 1, 2, 250, 255,
@@ -110,6 +114,18 @@ describe('parseGameFile refuse les fichiers invalides', () => {
       JSON.stringify({ ...base, kind: 'draw', items: [{ answer: ' chat ', hint: 'x', image: 1 }] }),
     );
     expect(game).toEqual({ name: 'Jeu', kind: 'draw', items: [{ answer: 'chat' }] });
+  });
+
+  it('indices suivants : liste de textes, nettoyée et limitée', () => {
+    check({ ...base, items: [{ answer: 'x', text: 'y', hints: 'z' }] }, 'pas un jeu');
+    check({ ...base, items: [{ answer: 'x', text: 'y', hints: [1] }] }, 'pas un jeu');
+    const game = parseGameFile(
+      JSON.stringify({
+        ...base,
+        items: [{ answer: 'x', text: 'y', hints: [' a ', '', 'b', 'c', 'd'] }],
+      }),
+    );
+    expect(game.items[0].hints).toEqual(['a', 'b', 'c']);
   });
 });
 

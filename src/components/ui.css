@@ -163,6 +163,18 @@
 .parent-block__body {
   color: var(--ink);
 }
+.parent-block__hints {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--ink);
+}
+.parent-block__hints:empty {
+  display: none;
+}
+.parent-block__hints p {
+  margin: 0;
+}
 
 /* ---------- En-têtes ---------- */
 .game-header {
@@ -237,6 +249,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.home__hello {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
 }
 .players-card {
   display: flex;
@@ -492,6 +509,20 @@
 }
 .result__stars svg {
   fill: currentColor;
+}
+.result__reward {
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: var(--dawn);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.result__reward-emoji {
+  font-size: 28px;
+  line-height: 32px;
 }
 
 /* ---------- Quelle chanson ? ---------- */
@@ -1190,10 +1221,6 @@ a.pill {
 .seance-over p {
   margin: 0;
 }
-.seance-over__moon {
-  font-size: 56px;
-  line-height: 1;
-}
 .seance-over__title {
   margin: 0;
   font: var(--text-h2);
@@ -1229,4 +1256,25 @@ a.pill {
 }
 .segmented--5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+/* ---------- Lecture à voix haute (#35) ---------- */
+.read-aloud {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  padding: 0 16px;
+  margin-top: 8px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.word-card .read-aloud {
+  margin-top: 6px;
 }

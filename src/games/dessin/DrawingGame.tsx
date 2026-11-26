@@ -1,9 +1,12 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { playSound } from '../../audio/sounds';
 import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
+import { ReadAloud } from '../../components/ReadAloud';
 import { IconRefresh, IconTimer, IconTrash } from '../../components/icons';
+import { vibrate } from '../../pwa/haptics';
 import { clock } from '../format';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
@@ -63,6 +66,15 @@ function DrawingSession({
   // Durée réglée dans l'espace Parent, figée pour la partie.
   const [seconds] = useState(() => getSettings().drawSeconds);
   const left = useCountdown(seconds, index);
+  const timeUp = left <= 0;
+  // Double vibration quand le temps est écoulé : le dessin est figé, l'enfant a fini.
+  useEffect(() => {
+    if (timeUp && !finished) vibrate('timeUp');
+  }, [timeUp, finished]);
+  // Fin du minuteur : une clochette douce, le parent valide le dessin.
+  useEffect(() => {
+    if (timeUp) void playSound('timer');
+  }, [timeUp]);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 
@@ -75,7 +87,6 @@ function DrawingSession({
     nextWord();
     answer(found);
   };
-  const timeUp = left <= 0;
 
   return (
     <main className="screen screen--tight">
@@ -98,9 +109,11 @@ function DrawingSession({
       />
 
       <section className="word-card" aria-label="Mot à dessiner">
-        <div>
+        {/* key : chaque nouveau mot entre en douceur. */}
+        <div key={index} className="round-in">
           <span className="word-card__label">Le parent lit à voix haute</span>
           <strong className="word-card__word">{word}</strong>
+          <ReadAloud text={word} />
         </div>
         <button
           type="button"

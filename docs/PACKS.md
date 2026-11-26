@@ -53,6 +53,7 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 | `answer`          | réponse (unique dans le pack) ; pour `glyph`, le caractère ; pour `melody`, le titre |
 | `text`            | question (`question`), bruit à imiter (`sound`), texte montré (`image`)              |
 | `hint`            | indice ou consigne pour le parent (obligatoire pour `glyph` et `melody`)             |
+| `hints`           | facultatif : indices suivants (1 à 3), donnés un à un par « Encore un indice »       |
 | `emoji`, `color`  | visuel montré en grand (`image`) ; couleur `#rrggbb` en minuscules                   |
 | `melody`, `bpm`   | air noté et tempo (`melody` seulement), voir `src/games/chanson/melody.ts`           |
 | `level`           | facultatif : âge à partir duquel la carte convient (2 à 10)                          |

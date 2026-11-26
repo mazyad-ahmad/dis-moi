@@ -5,6 +5,7 @@ import { Card } from '../components/Card';
 import { useConfirm } from '../components/useConfirm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { BackupSection } from './BackupSection';
+import { PraiseSection } from './PraiseSection';
 import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
@@ -13,12 +14,15 @@ import { extend, resetSeance, SESSION_CHOICES, useSeance } from '../data/seance'
 import {
   DRAW_SECONDS_CHOICES,
   loadSettings,
+  READ_ALOUD_CHOICES,
   ROUND_CHOICES,
   setSetting,
   useSettings,
+  VOLUME_CHOICES,
 } from '../data/settings';
 import { clock } from '../games/format';
 import { promptInstall, usePwa } from '../pwa/pwa';
+import { useFrenchVoice } from '../voice/speech';
 
 const THEMES: { value: Theme; label: string }[] = [
   { value: 'auto', label: 'Auto' },
@@ -26,9 +30,49 @@ const THEMES: { value: Theme; label: string }[] = [
   { value: 'night', label: 'Nuit' },
 ];
 
+const VOLUME_LABELS = { soft: 'Doux', normal: 'Normal' } as const;
+
+const READ_ALOUD_LABELS = { normal: 'Normale', slow: 'Lente', off: 'Non' } as const;
+
+/** Lecture à voix haute (#35) : proposée seulement avec une voix française locale. */
+function ReadAloudSetting() {
+  const { readAloud } = useSettings();
+  const voice = useFrenchVoice();
+  if (!voice)
+    return (
+      <section className="setting" aria-labelledby="read-aloud-title">
+        <h2 id="read-aloud-title" className="eyebrow">
+          Lecture à voix haute
+        </h2>
+        <p className="muted">
+          Aucune voix française installée sur ce téléphone : le bouton « Lire » n’apparaît pas.
+        </p>
+      </section>
+    );
+  return (
+    <Choice
+      legend="Lecture à voix haute"
+      name="read-aloud"
+      value={readAloud}
+      options={READ_ALOUD_CHOICES.map((v) => ({ value: v, label: READ_ALOUD_LABELS[v] }))}
+      onChange={(v) => void setSetting('readAloud', v)}
+      hint="Bouton « Lire » sur les questions, les mots et les consignes, avec la voix du téléphone, sans réseau."
+    />
+  );
+}
+const SOUND_CHOICES = [
+  { value: 'on', label: 'Activés' },
+  { value: 'off', label: 'Désactivés' },
+] as const;
+
 const LOCK_CHOICES = [
   { value: 'off', label: 'Désactivé' },
   { value: 'on', label: 'Activé' },
+] as const;
+
+const VIBRATION_CHOICES = [
+  { value: 'off', label: 'Sans' },
+  { value: 'on', label: 'Avec' },
 ] as const;
 
 /** Groupe de boutons radio en pilule (réglage à 3 choix). */
@@ -85,13 +129,9 @@ function LinkRow({ path, title, detail }: { path: string; title: string; detail:
 }
 
 async function eraseEverything() {
-  await db.transaction('rw', [db.players, db.games, db.customGames, db.settings], async () => {
-    await Promise.all([
-      db.players.clear(),
-      db.games.clear(),
-      db.customGames.clear(),
-      db.settings.clear(),
-    ]);
+  const tables = [db.players, db.games, db.customGames, db.settings, db.praises];
+  await db.transaction('rw', tables, async () => {
+    await Promise.all(tables.map((t) => t.clear()));
   });
   resetSeance();
   await loadSettings();
@@ -182,6 +222,40 @@ export function Parent() {
         onChange={(v) => void setSetting('drawSeconds', v)}
       />
 
+      <ReadAloudSetting />
+
+      <Choice
+        legend="Vibrations"
+        name="vibrations"
+        value={settings.vibrations ? 'on' : 'off'}
+        options={VIBRATION_CHOICES}
+        onChange={(v) => void setSetting('vibrations', v === 'on')}
+        className="segmented--2"
+        hint="Une petite vibration sur « Trouvé », à la fin du minuteur et de la partie, sur les téléphones qui le permettent. Jamais pendant le dessin."
+      />
+
+      <Choice
+        legend="Sons"
+        name="sounds"
+        value={settings.sounds ? 'on' : 'off'}
+        options={SOUND_CHOICES}
+        onChange={(v) => void setSetting('sounds', v === 'on')}
+        className="segmented--2"
+        hint="Petits sons quand on gagne une étoile, qu’on passe ou que la partie se termine."
+      />
+
+      <PraiseSection />
+
+      <Choice
+        legend="Volume de l’appli"
+        name="volume"
+        value={settings.volume}
+        options={VOLUME_CHOICES.map((v) => ({ value: v, label: VOLUME_LABELS[v] }))}
+        onChange={(v) => void setSetting('volume', v)}
+        className="segmented--2"
+        hint="Tous les sons de l’appli restent sous un plafond, même un enregistrement très fort. « Doux » le baisse encore."
+      />
+
       <Choice
         legend="Verrou parent"
         name="parent-lock"
@@ -242,7 +316,8 @@ export function Parent() {
           onClick={async () => {
             const ok = await confirm({
               title: 'Tout effacer ?',
-              message: 'Joueurs, étoiles, jeux créés et réglages seront supprimés de ce téléphone.',
+              message:
+                'Joueurs, étoiles, jeux créés, félicitations enregistrées et réglages seront supprimés de ce téléphone.',
               confirmLabel: 'Tout effacer',
               danger: true,
             });

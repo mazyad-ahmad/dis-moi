@@ -1,16 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { extractLength, parseMelody, schedule } from './melody';
 import { audioAvailable, MelodyPlayer } from './player';
-import { EXTRACT_SECONDS, type Song } from './songs';
+import { EXTRACT_SECONDS, SLOW_TEMPO, type Song } from './songs';
 
 export type PlayState = 'idle' | 'playing' | 'paused' | 'ended' | 'unavailable';
 
-/** Lecture de l'extrait d'une chanson : état, progression, lecture / pause. */
-export function useMelody(song: Song) {
+/**
+ * Lecture de l'extrait d'une chanson : état, progression, lecture / pause.
+ * Ralenti (indice) : les mêmes notes, jouées plus lentement.
+ */
+export function useMelody(song: Song, slow = false) {
   const player = useMemo(() => {
-    const events = schedule(parseMelody(song.melody), song.bpm, EXTRACT_SECONDS);
+    const factor = slow ? SLOW_TEMPO : 1;
+    const events = schedule(parseMelody(song.melody), song.bpm * factor, EXTRACT_SECONDS / factor);
     return new MelodyPlayer(events, extractLength(events));
-  }, [song]);
+  }, [song, slow]);
   const [state, setState] = useState<PlayState>('idle');
   const [elapsed, setElapsed] = useState(0);
 

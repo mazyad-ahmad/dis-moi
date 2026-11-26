@@ -64,6 +64,11 @@ describe('un pack invalide nomme la carte fautive', () => {
       'carte 2 (« Le chat ») : identifiant « vache » en double',
     ],
     ['réponse vide', withItem(animals, 0, { answer: '' }), 'carte 1 : réponse'],
+    [
+      'indices pas en liste',
+      withItem(animals, 0, { hints: 'Elle est noire et blanche' }),
+      'carte 1 (« La vache ») : indices (« hints »)',
+    ],
     ['âge hors limites', withItem(animals, 0, { level: 12 }), 'carte 1 (« La vache ») : âge'],
     [
       'couleur invalide',

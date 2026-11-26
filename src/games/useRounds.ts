@@ -1,8 +1,11 @@
-import { useCallback, useRef, useState } from 'react';
-import { startRecord, updateRecord } from '../data/history';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { answerSound, playSound, soundLength } from '../audio/sounds';
+import { listRecords, REWARDS, startRecord, totalStars, updateRecord } from '../data/history';
 import { beginGame, endGame, touch } from '../data/seance';
 import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
+import { vibrate } from '../pwa/haptics';
 import { useWakeLock } from '../pwa/useWakeLock';
+import { cancelPraise, praise } from '../voice/praise';
 import { clearSaved, readSaved, useClearSavedOnLeave, useSaved, writeSaved } from './session';
 
 /** Nombre de manches par défaut (docs/FONCTIONNEMENT.md), réglable dans l'espace Parent. */
@@ -65,15 +68,44 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
   const record = useRef<Promise<number> | null>(resumed);
   useClearSavedOnLeave(gameId);
 
+  // Étoiles des autres parties, pour reconnaître une récompense débloquée (son « récompense »).
+  const others = useRef<number | null>(null);
+  const [starsAtStart] = useState(stars);
+  useEffect(() => {
+    let live = true;
+    void listRecords()
+      .then((r) => {
+        if (live) others.current = totalStars(r) - starsAtStart;
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [starsAtStart]);
+
   const answer = useCallback(
     (found: boolean) => {
       if (played >= rounds) return;
       const data = { played: played + 1, stars: stars + (found ? 1 : 0) };
       setProgress(data);
-      if (data.played >= rounds) {
+      const total = others.current === null ? null : others.current + data.stars;
+      const finished = data.played >= rounds;
+      const sound = answerSound(found, finished, total, REWARDS);
+      void playSound(sound);
+      // Félicitation parlée (#116), après le son : jamais sur « Passer », toujours en fin de partie.
+      if (found || finished)
+        praise({
+          stars: finished ? data.stars : undefined,
+          afterMs: getSettings().sounds ? soundLength(sound) * 1000 + 150 : 0,
+        });
+      if (finished) {
         clearSaved(gameId);
         endGame();
-      } else touch();
+        vibrate('party');
+      } else {
+        touch();
+        if (found) vibrate('found');
+      }
       if (!record.current) {
         record.current = startRecord({ gameId, rounds, ...data });
         void record.current.then((id) => writeSaved(gameId, 'record', id, true));
@@ -81,6 +113,9 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
     },
     [gameId, played, rounds, setProgress, stars],
   );
+
+  // Quitter ou rejouer la partie coupe la félicitation en cours.
+  useEffect(() => cancelPraise, []);
 
   // L'enfant réfléchit, le parent attend : l'écran ne doit pas s'éteindre en pleine partie.
   useWakeLock(played < rounds);

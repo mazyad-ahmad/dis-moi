@@ -1,4 +1,5 @@
 import { href } from '../app/router';
+import { Mascot } from '../components/Mascot';
 
 /**
  * Après la fin de séance (#120) : plus de jeux à lancer, seulement « Revenir plus tard ».
@@ -7,9 +8,7 @@ import { href } from '../app/router';
 export function SeanceOverCard() {
   return (
     <section className="seance-over" aria-labelledby="seance-over-title">
-      <span className="seance-over__moon" aria-hidden="true">
-        🌙
-      </span>
+      <Mascot mood="sleep" size={88} />
       <h2 id="seance-over-title" className="seance-over__title">
         Revenir plus tard
       </h2>

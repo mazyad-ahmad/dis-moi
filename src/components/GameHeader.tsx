@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { href } from '../app/router';
 import { useSeance } from '../data/seance';
 import { starsLabel } from '../games/format';
@@ -17,6 +17,8 @@ interface Props {
 /** En-tête commun des jeux : quitter, manche, étoiles, catégorie et titre. */
 export function GameHeader({ round, rounds, stars, category, title, aside }: Props) {
   const { lastGame } = useSeance();
+  // Étoiles au lancement (ou à la reprise) : le compteur ne rebondit que pour une étoile gagnée.
+  const [startStars] = useState(stars);
   return (
     <header className="game-header">
       <div className="game-header__bar">
@@ -29,7 +31,11 @@ export function GameHeader({ round, rounds, stars, category, title, aside }: Pro
           </span>
         )}
         {stars !== undefined && (
-          <span className="game-header__stars" aria-label={starsLabel(stars)}>
+          <span
+            key={stars}
+            className={`game-header__stars${stars > (startStars ?? 0) ? ' is-bumped' : ''}`}
+            aria-label={starsLabel(stars)}
+          >
             <IconStar size={20} /> {stars}
           </span>
         )}
