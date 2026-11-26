@@ -10,10 +10,12 @@ for (const { name, question } of [
     await page.goto('./#/ajouter');
     await page.getByRole('button', { name: `Ajouter ${name}` }).click();
     await page.getByRole('link', { name: 'Retour' }).click();
+    await page.getByRole('button', { name: /La partie/ }).click();
     await page
       .getByRole('group', { name: 'Façon de jouer' })
       .getByText('Voiture', { exact: true })
       .click();
+    await page.getByRole('button', { name: 'Fermer' }).click();
     await page.getByRole('link', { name: new RegExp(name) }).click();
 
     const card = page.getByRole('region', { name: 'Question' });

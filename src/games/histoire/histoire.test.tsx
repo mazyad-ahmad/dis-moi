@@ -177,7 +177,7 @@ describe('Livre d’histoires', () => {
     expect(JSON.stringify(await db.games.toArray())).not.toContain(stories[0].parts[0].answer);
     unmount();
 
-    open('/parent');
+    open('/parent/sons');
     const book = await screen.findByRole('list', { name: 'Histoires enregistrées' });
     const title = storyTitle(stories[0].parts);
     expect(within(book).getByText(title)).toBeInTheDocument();
@@ -217,9 +217,8 @@ describe('Livre d’histoires', () => {
   it('« Effacer toutes les données » supprime les histoires', async () => {
     const user = userEvent.setup();
     await addStory(new Blob(['x']), [{ answer: 'un chat', emoji: '🐱' }]);
-    open('/parent');
-    expect(await screen.findByRole('list', { name: 'Histoires enregistrées' })).toBeVisible();
-    await user.click(screen.getByRole('button', { name: 'Effacer toutes les données' }));
+    open('/parent/appli');
+    await user.click(await screen.findByRole('button', { name: 'Effacer toutes les données' }));
     await user.click(await screen.findByRole('button', { name: 'Tout effacer' }));
     await waitFor(async () => expect(await db.stories.count()).toBe(0));
   });

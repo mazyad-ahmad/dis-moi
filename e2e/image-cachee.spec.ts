@@ -43,7 +43,7 @@ test('image cachée : proposée à la création, la photo se dévoile palier par
 test('image cachée : activée pour un jeu du catalogue depuis l’espace Parent', async ({ page }) => {
   await page.goto('./#/ajouter');
   await page.getByRole('button', { name: 'Ajouter Quelle émotion ?' }).click();
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/partie');
   const toggle = page.getByRole('button', { name: 'Image cachée : Quelle émotion ?' });
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');

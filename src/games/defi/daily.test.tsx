@@ -84,7 +84,7 @@ describe('défi du jour sur l’accueil', () => {
     const user = userEvent.setup();
     render(<App />);
     // Premier rendu de l'accueil : peut dépasser une seconde sur une machine chargée.
-    await user.click(await screen.findByRole('link', { name: 'Jouer' }, { timeout: 5000 }));
+    await user.click(await screen.findByRole('link', { name: /Défi du jour/ }, { timeout: 5000 }));
 
     const { source, card } = dailyPick(dayKey());
     expect(await screen.findByRole('heading', { name: source.name })).toBeInTheDocument();
@@ -103,10 +103,8 @@ describe('défi du jour sur l’accueil', () => {
 
     // Une seule étoile par jour : l'accueil dit à demain.
     await user.click(screen.getByRole('link', { name: 'Accueil' }));
-    expect(
-      await screen.findByText('Réussi ! À demain pour une nouvelle surprise.'),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Jouer' })).not.toBeInTheDocument();
+    expect(await screen.findByText('Réussi ! À demain.')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Défi du jour/ })).not.toBeInTheDocument();
   });
 
   it('« Pas encore » revient à l’accueil sans rien enregistrer', async () => {
@@ -114,7 +112,7 @@ describe('défi du jour sur l’accueil', () => {
     window.location.hash = `#/jeu/${DAILY_ID}`;
     render(<App />);
     await user.click(await screen.findByRole('button', { name: 'Pas encore' }));
-    expect(await screen.findByRole('link', { name: 'Jouer' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /Défi du jour/ })).toBeInTheDocument();
     expect(await db.games.count()).toBe(0);
   });
 
@@ -122,18 +120,18 @@ describe('défi du jour sur l’accueil', () => {
     const lastWeek = Date.now() - 7 * 24 * 3600 * 1000;
     await db.games.add(record(lastWeek));
     render(<App />);
-    expect(await screen.findByText('Une carte surprise, une étoile bonus.')).toBeInTheDocument();
+    expect(await screen.findByText('Une étoile bonus')).toBeInTheDocument();
     expect(screen.queryByText(/manqué|raté|série|dommage/i)).not.toBeInTheDocument();
   });
 
   it('se masque depuis l’espace Parent', async () => {
     const user = userEvent.setup();
-    window.location.hash = '#/parent';
+    window.location.hash = '#/parent/partie';
     render(<App />);
     const group = screen.getByRole('group', { name: 'Défi du jour' });
     expect(group).toBeInTheDocument();
     await user.click(screen.getByLabelText('Masqué'));
-    await user.click(screen.getByRole('link', { name: 'Jeux' }));
+    window.location.hash = '#/';
     expect(await screen.findByRole('heading', { name: 'On joue à quoi ?' })).toBeInTheDocument();
     expect(screen.queryByText('Défi du jour')).not.toBeInTheDocument();
 

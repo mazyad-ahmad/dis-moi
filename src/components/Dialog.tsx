@@ -15,6 +15,8 @@ interface DialogProps {
   role?: 'dialog' | 'alertdialog';
   /** Élément qui reçoit le focus à l'ouverture (sinon le premier élément focusable). */
   initialFocus?: RefObject<HTMLElement | null>;
+  /** Variante de présentation, par exemple « dialog--sheet » (panneau du bas). */
+  className?: string;
   children: ReactNode;
 }
 
@@ -48,6 +50,7 @@ export function Dialog({
   describedBy,
   role = 'dialog',
   initialFocus,
+  className,
   children,
 }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -82,7 +85,7 @@ export function Dialog({
   return (
     <dialog
       ref={ref}
-      className="dialog"
+      className={className ? `dialog ${className}` : 'dialog'}
       role={role}
       aria-modal="true"
       aria-labelledby={labelledBy}

@@ -122,7 +122,8 @@ it('accueil : « Arrêter » revient au jeu tous ensemble', async () => {
     { name: 'Les Dauphins', color: 'sky', members: [{ name: 'Zoé' }] },
   ]);
   open('/');
-  await user.click(await screen.findByRole('button', { name: 'Arrêter' }, slow));
+  await user.click(await screen.findByRole('button', { name: /La partie/ }, slow));
+  await user.click(await screen.findByRole('button', { name: 'Arrêter' }));
   expect(await screen.findByRole('link', { name: 'Jouer en équipes' })).toBeInTheDocument();
   expect((await db.settings.get('teams'))?.value).toBeNull();
 }, 30_000);

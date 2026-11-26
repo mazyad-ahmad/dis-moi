@@ -11,7 +11,7 @@ async function solve(page: import('@playwright/test').Page) {
 }
 
 test('verrou actif : opération avant l’espace Parent, même par l’adresse', async ({ page }) => {
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/temps');
   await page.getByText('Activé', { exact: true }).click();
 
   // Fermer l'onglet oublie le déverrouillage.

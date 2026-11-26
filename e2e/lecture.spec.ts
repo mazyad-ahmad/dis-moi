@@ -88,7 +88,7 @@ test('le bouton « Lire » lit la consigne sans réseau et s’arrête à la man
 
 test('vitesse lente réglée dans l’espace Parent', async ({ page }) => {
   await phoneVoices(page, true);
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   await page.getByRole('group', { name: 'Lecture à voix haute' }).getByText('Lente').click();
   await page.goto('./#/jeu/dessin');
   await page.getByRole('button', { name: 'Lire' }).click();
@@ -102,6 +102,6 @@ test('sans voix française locale, pas de bouton « Lire »', async ({ page }) =
   await page.goto('./#/jeu/lettres');
   await expect(page.getByRole('heading', { name: 'Quelle lettre ?' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Lire' })).toHaveCount(0);
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   await expect(page.getByText(/Aucune voix française installée/)).toBeVisible();
 });

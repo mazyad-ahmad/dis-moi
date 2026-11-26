@@ -63,7 +63,7 @@ test('« Bravo ! » au Trouvé, rien sur Passer, une phrase de fête en fin de p
     if (!['data:', 'blob:'].includes(url.protocol) && url.origin !== 'http://localhost:4173')
       requests.push(r.url());
   });
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/partie');
   await page
     .getByRole('group', { name: 'Manches par partie' })
     .getByText('5', { exact: true })
@@ -91,7 +91,7 @@ test('« Bravo ! » au Trouvé, rien sur Passer, une phrase de fête en fin de p
 
 test('réglage coupé : aucune voix', async ({ page }) => {
   await phone(page, true);
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   await page
     .getByRole('group', { name: 'Félicitations parlées' })
     .getByRole('radio', { name: 'Désactivées', exact: true })
@@ -106,7 +106,7 @@ test('sans voix, les félicitations du parent sont enregistrées, jouées puis e
   page,
 }) => {
   await phone(page, false);
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   const group = page.getByRole('group', { name: 'Félicitations parlées' });
   await expect(group.getByText(/Pas de voix française sur ce téléphone/)).toBeVisible();
   await expect(group.getByRole('radio')).toHaveCount(0);
@@ -122,17 +122,19 @@ test('sans voix, les félicitations du parent sont enregistrées, jouées puis e
   await expect.poll(() => page.evaluate(() => window.clips)).toBeGreaterThan(0);
   expect(await said(page)).toEqual([]);
 
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/appli');
   await page.getByRole('button', { name: 'Effacer toutes les données' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Tout effacer' }).click();
   await expect(page.getByText('Toutes les données ont été effacées.')).toBeVisible();
+  await page.goto('./#/parent/sons');
+  await expect(page.getByRole('group', { name: 'Félicitations parlées' })).toBeVisible();
   await expect(page.getByText('Félicitation 1')).toHaveCount(0);
 });
 
 // #147 : sur le téléphone, le parent supprime une félicitation (au doigt), après confirmation.
 test('le parent supprime une félicitation, qui n’est plus jouée', async ({ page }) => {
   await phone(page, false);
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   const group = page.getByRole('group', { name: 'Félicitations parlées' });
   await group.getByRole('button', { name: 'Enregistrer une félicitation' }).tap();
   await page.waitForTimeout(800);

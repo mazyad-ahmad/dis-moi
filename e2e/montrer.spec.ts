@@ -7,6 +7,7 @@ import { storedSetting } from './storage';
 
 test('répondre en montrant : choix en grand, rien sur un mauvais choix', async ({ page }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   await expect(page.getByLabel('À voix haute')).toBeChecked();
   await page.getByText('En montrant', { exact: true }).click();
   await page.getByText('Petits', { exact: true }).click();
@@ -17,9 +18,11 @@ test('répondre en montrant : choix en grand, rien sur un mauvais choix', async 
 
   // Gardé au rechargement, comme le niveau.
   await page.reload();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await expect(page.getByLabel('En montrant')).toBeChecked();
   await expect(page.getByText(/parmi 2 choix/)).toBeVisible();
 
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Quelle lettre/ }).click();
   const board = page.getByRole('region', { name: 'Choix de l’enfant' });
   const choices = board.getByRole('button');
@@ -56,7 +59,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
     await page.goto('./');
+    await page.getByRole('button', { name: /La partie/ }).click();
     await page.getByText('En montrant', { exact: true }).click();
+    await page.getByRole('button', { name: 'Fermer' }).click();
     await page.getByRole('link', { name: /Quelle chanson/ }).click();
     await expect(page.getByRole('region', { name: 'Choix de l’enfant' })).toBeVisible();
     const results = await new AxeBuilder({ page })

@@ -25,6 +25,7 @@ it('Normal par défaut ; Voiture ne propose que des jeux oraux', async () => {
   const user = userEvent.setup();
   await setSetting('catalogue', ['animal', 'couleur', 'mime', 'devinette']);
   open('/');
+  await user.click(await screen.findByRole('button', { name: /La partie/ }));
   expect(await screen.findByRole('radio', { name: 'Normal' })).toBeChecked();
   expect(screen.getByRole('link', { name: /Quelle lettre/ })).toBeInTheDocument();
 
@@ -90,6 +91,7 @@ describe('Coucher', () => {
     await setSetting('catalogue', ['mime']);
     open('/');
     expect(await screen.findByRole('link', { name: /Mime ça/ })).toBeInTheDocument();
+    await user.click(await screen.findByRole('button', { name: /La partie/ }));
     await user.click(within(modes()).getByRole('radio', { name: 'Coucher' }));
     expect(document.documentElement.dataset.theme).toBe('night');
     expect(screen.queryByRole('link', { name: /Mime ça/ })).not.toBeInTheDocument();

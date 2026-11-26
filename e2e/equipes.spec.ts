@@ -8,6 +8,7 @@ test('en équipes : invités ajoutés à la volée, équipes à tour de rôle', 
   await expect(page.getByLabel('Prénom de Léa')).toBeVisible();
   await page.getByRole('link', { name: 'Retour' }).click();
 
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page.getByRole('link', { name: 'Jouer en équipes' }).click();
   for (const name of ['Tom', 'Zoé', 'Inès']) {
     await page.getByPlaceholder('Prénom de l’invité').fill(name);
@@ -32,6 +33,7 @@ test('en équipes : invités ajoutés à la volée, équipes à tour de rôle', 
 
   // Les invités ne sont pas des joueurs de la famille.
   await page.getByRole('link', { name: 'Quitter la partie' }).click();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page.getByRole('link', { name: 'Modifier', exact: true }).click();
   await expect(page.getByLabel('Prénom de Léa')).toBeVisible();
   await expect(page.getByLabel('Prénom de Tom')).toHaveCount(0);

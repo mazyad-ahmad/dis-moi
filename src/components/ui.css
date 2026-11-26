@@ -272,35 +272,6 @@
   align-items: flex-start;
   gap: var(--space-1);
 }
-.players-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.players-card__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.players-card__names {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-.players-card__names strong {
-  font-size: 16px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.players-card a {
-  font-size: 14px;
-  font-weight: 600;
-  padding: 10px 4px;
-  flex: none;
-}
 /* Pastilles « Qui joue ? » (#37) : appuyée = le joueur joue aujourd'hui. */
 .player-toggles {
   display: flex;
@@ -1439,28 +1410,95 @@ a.pill {
   font-size: 14px;
 }
 
-/* ---------- Défi du jour (#43) ---------- */
-.daily-card {
+/* ---------- Ligne « La partie » de l'accueil et son panneau ---------- */
+.party {
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.party__open {
+  flex: 1;
+  min-width: 0;
+  min-height: 60px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 }
-.daily-card__icon {
-  color: var(--sun);
-  flex: none;
+.party__avatars {
   display: flex;
+  flex: none;
 }
-.daily-card__text {
+.party__avatars > * + * {
+  margin-left: -8px;
+}
+.party__text {
   display: flex;
   flex-direction: column;
   gap: 2px;
   flex: 1;
   min-width: 0;
-  font-size: 15px;
 }
-.daily-card a {
+.party__text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.party__text .muted {
+  font-size: 14px;
+}
+.party__action,
+.party > a {
+  flex: none;
   font-size: 14px;
   font-weight: 600;
-  padding: 14px 8px;
-  flex: none;
+  color: var(--forest);
+}
+.party > a {
+  padding: 14px 16px;
+}
+.party-players__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.party-players a {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 4px;
+  align-self: flex-start;
+}
+.party-players__head a {
+  align-self: auto;
+}
+/* Panneau du bas : collé au bord inférieur, défile s'il dépasse l'écran. */
+.dialog--sheet {
+  width: min(100%, 480px);
+  max-height: 92dvh;
+  margin: auto auto 0;
+  border-radius: 20px 20px 0 0;
+  overflow-y: auto;
+}
+.dialog--sheet .dialog__body {
+  padding: 20px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------- Défi du jour (#43), tuile de l'accueil ---------- */
+.daily-tile {
+  background: var(--dawn);
+}
+.daily-tile .game-tile__icon {
+  color: var(--sun);
+}
+.daily-tile--done {
+  background: transparent;
+  border: 1px solid var(--hairline);
 }

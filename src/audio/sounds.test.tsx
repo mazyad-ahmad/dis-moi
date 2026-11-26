@@ -148,7 +148,7 @@ describe('dans un jeu', () => {
 
   it('réglage coupé dans l’espace Parent : aucun son en jeu', async () => {
     const user = userEvent.setup();
-    const view = open('/parent');
+    const view = open('/parent/sons');
     expect(screen.getByRole('radio', { name: 'Activés' })).toBeChecked();
     await user.click(screen.getByRole('radio', { name: 'Désactivés' }));
     await waitFor(async () => expect((await db.settings.get('sounds'))?.value).toBe(false));

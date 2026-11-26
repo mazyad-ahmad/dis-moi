@@ -67,9 +67,11 @@ test('le petit marché : un prix, le porte-monnaie, des pièces à montrer', asy
   await page.goto('./#/ajouter');
   await page.getByRole('button', { name: 'Ajouter Le petit marché' }).click();
   await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page.getByText('En montrant', { exact: true }).click();
   await page.getByText('Grands', { exact: true }).click();
   await expect(page.getByText(/parmi 4 choix/)).toBeVisible();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Le petit marché/ }).click();
 
   await expect(page.getByRole('region', { name: 'Question' })).toContainText(

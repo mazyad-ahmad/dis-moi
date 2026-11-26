@@ -9,10 +9,12 @@ test('Que fais-tu si… ? en voiture : des pistes pour le parent, l’étoile po
   await page.goto('./#/ajouter');
   await page.getByRole('button', { name: 'Ajouter Que fais-tu si… ?' }).click();
   await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Voiture', { exact: true })
     .click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Que fais-tu si/ }).click();
 
   await expect(page.getByText('Manche 1 sur 10')).toBeVisible();

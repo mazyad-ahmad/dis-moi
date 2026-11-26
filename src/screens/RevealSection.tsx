@@ -51,7 +51,7 @@ export function RevealSection() {
                 type="button"
                 className={`pill${r.on ? ' pill--on' : ''}`}
                 aria-pressed={r.on}
-                aria-label={`${REVEAL_NAME} : ${r.name}`}
+                aria-label={`${REVEAL_NAME} : ${r.name}, ${r.on ? 'activée' : 'activer'}`}
                 onClick={() => void r.toggle()}
               >
                 {r.on ? 'Activée' : 'Activer'}

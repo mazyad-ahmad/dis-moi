@@ -221,11 +221,11 @@ describe('Image cachée dans l’appli', () => {
   it('catalogue : activée depuis l’espace Parent, puis jouée cachée', async () => {
     const user = userEvent.setup();
     await setSetting('catalogue', ['emotion']);
-    const view = open('/parent');
-    const toggle = await screen.findByRole('button', { name: 'Image cachée : Quelle émotion ?' });
+    const view = open('/parent/partie');
+    const toggle = await screen.findByRole('button', { name: /^Image cachée : Quelle émotion \?/ });
     expect(toggle).toHaveAttribute('aria-pressed', 'false');
     expect(
-      screen.queryByRole('button', { name: 'Image cachée : Quelle couleur ?' }),
+      screen.queryByRole('button', { name: /^Image cachée : Quelle couleur \?/ }),
     ).not.toBeInTheDocument();
     await user.click(toggle);
     await waitFor(() => expect(getSettings().revealCatalogue).toEqual(['emotion']));

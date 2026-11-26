@@ -49,12 +49,13 @@ it('verrou désactivé : l’espace Parent s’ouvre directement', async () => {
   window.location.hash = '#/parent';
   render(<App />);
   expect(screen.getByRole('heading', { name: 'Espace parent' })).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Désactivé' })).toBeChecked();
+  expect(screen.getByRole('link', { name: /Temps de jeu/ })).toBeInTheDocument();
   expect(screen.queryByRole('textbox', { name: /^Combien font/ })).not.toBeInTheDocument();
 });
 
 it.each([
   ['#/parent', 'Espace parent'],
+  ['#/parent/appli', 'Espace parent'],
   ['#/joueurs', 'Joueurs'],
   ['#/ajouter', 'Ajouter un jeu'],
   ['#/creer/1', 'Espace parent'],
@@ -92,16 +93,16 @@ it('mauvaise réponse : nouvelle opération ; bonne réponse : on entre', async 
 
   await user.type(screen.getByRole('textbox'), expectedAnswer());
   await user.click(screen.getByRole('button', { name: 'Entrer' }));
-  expect(await screen.findByText('Remise à zéro')).toBeInTheDocument();
+  expect(await screen.findByRole('link', { name: /Appli et données/ })).toBeInTheDocument();
 });
 
 it('activer le verrou depuis l’espace Parent ne met pas le parent dehors', async () => {
   const user = userEvent.setup();
-  window.location.hash = '#/parent';
+  window.location.hash = '#/parent/temps';
   render(<App />);
   await user.click(screen.getByRole('radio', { name: 'Activé' }));
   await waitFor(async () => expect((await db.settings.get('parentLock'))?.value).toBe(true));
-  expect(screen.getByText('Remise à zéro')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Temps de jeu' })).toBeInTheDocument();
   window.location.hash = '#/joueurs';
   expect(await screen.findByPlaceholderText('Prénom')).toBeInTheDocument();
 });

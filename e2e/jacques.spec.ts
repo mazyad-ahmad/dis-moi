@@ -23,9 +23,11 @@ test('Jacques a dit n’est pas proposé au Coucher', async ({ page }) => {
   await page.getByRole('button', { name: 'Ajouter Jacques a dit' }).click();
   await page.getByRole('link', { name: 'Retour' }).click();
   await expect(page.getByRole('link', { name: /Jacques a dit/ })).toBeVisible();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Coucher', { exact: true })
     .click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await expect(page.getByRole('link', { name: /Jacques a dit/ })).toHaveCount(0);
 });

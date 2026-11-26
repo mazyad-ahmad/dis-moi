@@ -6,10 +6,12 @@ test('Vrai ou faux rigolo : ajouté du catalogue, joué en Voiture', async ({ pa
   await page.goto('./#/ajouter');
   await page.getByRole('button', { name: 'Ajouter Vrai ou faux rigolo' }).click();
   await page.getByRole('link', { name: 'Retour' }).click();
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Voiture', { exact: true })
     .click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Vrai ou faux rigolo/ }).click();
 
   await expect(page.getByRole('region', { name: 'Question' })).toBeVisible();
@@ -23,7 +25,9 @@ test('Vrai ou faux rigolo, en montrant : deux choix, Vrai et Faux', async ({ pag
   await page.goto('./#/ajouter');
   await page.getByRole('button', { name: 'Ajouter Vrai ou faux rigolo' }).click();
   await page.getByRole('link', { name: 'Retour' }).click();
-  await page.getByText('En montrant').click();
+  await page.getByRole('button', { name: /La partie/ }).click();
+  await page.getByText('En montrant', { exact: true }).click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Vrai ou faux rigolo/ }).click();
   const board = page.getByRole('region', { name: 'Choix de l’enfant' });
   await expect(board.getByRole('button')).toHaveCount(2);

@@ -78,7 +78,7 @@ test('Trouvé et Passer jouent un son, réglage coupé : plus rien', async ({ pa
   await expect.poll(() => notes(page)).toBeGreaterThan(afterFound);
   expect(await page.evaluate(() => (window as unknown as { contexts: number }).contexts)).toBe(1);
 
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   await page.getByText('Désactivés', { exact: true }).click();
   // Attendre que le réglage soit écrit dans IndexedDB avant de recharger.
   await expect.poll(() => storedSetting(page, 'sounds')).toBe(false);
@@ -106,7 +106,7 @@ test('volume de l’appli : plafond toujours, doux par défaut, normal au choix'
   expect(soft.ceiling).toBeLessThanOrEqual(0.5);
   expect(soft.volume).toBe(0.5);
 
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   await expect(page.getByRole('radio', { name: 'Doux' })).toBeChecked();
   await page.getByText('Normal', { exact: true }).click();
   await expect.poll(() => storedSetting(page, 'volume')).toBe('normal');

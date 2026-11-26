@@ -1,5 +1,4 @@
 import { href } from '../app/router';
-import { Card } from '../components/Card';
 import { IconStar } from '../components/icons';
 import { useRecords } from '../data/history';
 import { useSettings } from '../data/settings';
@@ -7,32 +6,36 @@ import { DAILY_ID, DAILY_NAME, dailyDone, dailyPick, useToday } from '../games/d
 import { suitsMode } from '../games/modes';
 
 /**
- * Défi du jour sur l'accueil (#43) : une invitation, jamais un reproche.
+ * Défi du jour (#43), une tuile parmi les jeux : une invitation, jamais un reproche.
  * Rien ne rappelle les jours sans défi ; le parent peut le masquer dans son espace.
  * Masqué aussi quand la carte du jour ne convient pas à la façon de jouer (#42).
  */
-export function DailyCard() {
+export function DailyTile() {
   const { dailyChallenge, gameMode } = useSettings();
   const day = useToday();
   const records = useRecords();
   if (!dailyChallenge || records === undefined) return null;
-  // Carte du jour qui ne convient pas à la façon de jouer (#42) : pas proposée.
   if (!suitsMode(dailyPick(day).source.needs, gameMode)) return null;
   const done = dailyDone(records, day);
-  return (
-    <Card className="daily-card">
-      <span className="daily-card__icon" aria-hidden="true">
-        <IconStar size={22} />
+  const content = (
+    <>
+      <span className="game-tile__icon">
+        <IconStar size={26} />
       </span>
-      <span className="daily-card__text">
-        <span className="eyebrow">{DAILY_NAME}</span>
-        {done ? (
-          <span>Réussi ! À demain pour une nouvelle surprise.</span>
-        ) : (
-          <span>Une carte surprise, une étoile bonus.</span>
-        )}
+      <span>
+        <span className="game-tile__name">{DAILY_NAME}</span>
+        <span className="game-tile__category">
+          {done ? 'Réussi ! À demain.' : 'Une étoile bonus'}
+        </span>
       </span>
-      {!done && <a href={href(`/jeu/${DAILY_ID}`)}>Jouer</a>}
-    </Card>
+    </>
+  );
+  // Réussi : la tuile reste, sans lien, jusqu'au lendemain.
+  return done ? (
+    <div className="game-tile daily-tile daily-tile--done">{content}</div>
+  ) : (
+    <a href={href(`/jeu/${DAILY_ID}`)} className="game-tile daily-tile">
+      {content}
+    </a>
   );
 }

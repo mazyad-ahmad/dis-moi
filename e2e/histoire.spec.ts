@@ -6,10 +6,12 @@ test('Histoire à inventer en voiture : trois images, « Merci » donne l’éto
   page,
 }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Voiture', { exact: true })
     .click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Histoire à inventer/ }).click();
 
   await expect(page.getByText('Manche 1 sur 5')).toBeVisible();
@@ -40,7 +42,7 @@ test('le parent enregistre une histoire, la réécoute puis la supprime du livre
   await expect(page.getByRole('button', { name: 'Réécouter l’histoire' })).toBeVisible();
   await expect(page.getByText('Gardée dans le Livre d’histoires (espace Parent).')).toBeVisible();
 
-  await page.goto('./#/parent');
+  await page.goto('./#/parent/sons');
   const book = page.getByRole('list', { name: 'Histoires enregistrées' });
   await expect(book.getByText(word!, { exact: false })).toBeVisible();
   await expect(book.getByRole('button', { name: /^Écouter l’histoire/ })).toBeVisible();

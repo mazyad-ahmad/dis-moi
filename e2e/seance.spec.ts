@@ -20,11 +20,12 @@ for (const colorScheme of ['light', 'dark'] as const) {
   }) => {
     await page.clock.install();
     await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
-    await page.goto('./#/parent');
+    await page.goto('./#/parent/partie');
     await page
       .getByRole('group', { name: 'Manches par partie' })
       .getByText('5', { exact: true })
       .click();
+    await page.goto('./#/parent/temps');
     await page
       .getByRole('group', { name: 'Durée d’une séance' })
       .getByText('10', { exact: true })

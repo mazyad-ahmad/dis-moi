@@ -6,10 +6,12 @@ test('Raconte-moi en voiture : « Merci » donne l’étoile, « Passer » ne re
   page,
 }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Voiture', { exact: true })
     .click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Raconte-moi/ }).click();
 
   await expect(page.getByText('Manche 1 sur 10')).toBeVisible();
@@ -32,10 +34,12 @@ test('Raconte-moi en voiture : « Merci » donne l’étoile, « Passer » ne re
 
 test('Raconte-moi au coucher : tout passer finit sur un mot doux', async ({ page }) => {
   await page.goto('./');
+  await page.getByRole('button', { name: /La partie/ }).click();
   await page
     .getByRole('group', { name: 'Façon de jouer' })
     .getByText('Coucher', { exact: true })
     .click();
+  await page.getByRole('button', { name: 'Fermer' }).click();
   await page.getByRole('link', { name: /Raconte-moi/ }).click();
   await expect(page.getByText(/Manche 1 sur/)).toBeVisible();
   const rounds = Number((await page.getByText(/Manche 1 sur/).textContent())!.match(/\d+$/)![0]);

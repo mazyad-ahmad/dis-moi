@@ -19,6 +19,7 @@ test('parcours de base sur mobile', async ({ page }) => {
   await page.getByRole('link', { name: 'Quitter la partie' }).click();
 
   await page.getByRole('link', { name: 'Parent', exact: true }).click();
-  await page.getByText('Nuit').click();
+  await page.getByRole('link', { name: /Apparence/ }).click();
+  await page.getByText('Nuit', { exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'night');
 });
