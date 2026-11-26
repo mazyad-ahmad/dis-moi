@@ -236,6 +236,25 @@
   le service worker : elle marche hors ligne, aucune requête vers Google.
 - Le Défi du jour et le Grand Jeu gardent les majuscules et les chiffres.
 
+### Le son des lettres (#50)
+
+- En maternelle, on travaille le **son** de la lettre avant son nom. Pour chaque lettre
+  (majuscule, minuscule ou attachée), « Pour le parent » donne : le son écrit (« mmm », comme
+  au début de maison), **trois mots illustrés** d'un emoji, et une **question à poser**, tirée
+  au hasard à chaque manche : « Trouve un mot qui commence par “mmm”. » ou « Qu'est-ce qui
+  commence comme maison : 🏍️ moto ou 🍓 fraise ? » (avec un **intrus** et la réponse pour le
+  parent).
+- Les mots commencent **vraiment** par le son annoncé : pas de « ch » sous le C (canard, pas
+  cheval), pas de « ou » sous le O, pas de « h » muet sous une voyelle. Le E se dit « é »
+  (éléphant). Le H ne s'entend pas : il garde ses mots (hibou), mais pas de son à écouter ni à
+  comparer ; la question porte sur l'écrit. Le W se dit « ou » (wapiti), le X « ks » ou « gz ».
+  L'intrus commence par un son bien différent (jamais « ch » face au S, ni « f » face au V).
+- **Écouter les mots** : la voix française du téléphone (celle de « Lire ») dit les trois mots,
+  l'un après l'autre ; une voix de synthèse ne sait pas dire un son seul. Sans voix locale, le
+  bouton n'apparaît pas : tout est écrit et le parent lit.
+- Contenu dans `src/games/lettres/sons.ts` (une lettre par ligne), vérifié par les tests :
+  26 lettres, trois mots par lettre, chaque mot commence par sa lettre sans début piège.
+
 ### Tracer au doigt (#49)
 
 - Avec **Majuscules** ou **Chiffres**, le bouton **Tracer au doigt** (appuyé / non appuyé)
@@ -591,6 +610,7 @@ turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
 - Bouton **« Lire »** sous la question (jeux à questions, Devinettes), le mot (Dessine ça, mots à
   dessiner) et la consigne (Quelle lettre, quel chiffre ?), lu par la synthèse vocale du téléphone
   (`speechSynthesis`, module `src/voice/speech.ts`). Un second appui arrête la lecture.
+  Même voix pour **« Écouter les mots »** du son des lettres (#50).
 - Seule une voix française **installée sur le téléphone** est utilisée (`localService`) : une voix
   en ligne enverrait le texte à un serveur. Sans voix française locale, le bouton n'apparaît pas et
   l'espace Parent l'explique.

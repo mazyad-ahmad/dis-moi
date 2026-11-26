@@ -30,6 +30,8 @@ import {
   type GlyphCard,
 } from './bank';
 import { GlyphView } from './Glyph';
+import { LetterSoundBlock } from './LetterSound';
+import { letterSoundOf } from './sons';
 import { TracePad } from './TracePad';
 import { traceOf } from './trace';
 
@@ -98,7 +100,8 @@ function restorePlace(saved: unknown): Place | undefined {
  * Une manche : le glyphe en grand et la consigne du parent (aussi jouée dans le Grand Jeu).
  * Avec `pool` et « Répondre en montrant » (#123), des glyphes au choix remplacent le glyphe :
  * le parent demande, l'enfant montre. Avec `trace` (#49), une majuscule ou un chiffre
- * s'affiche en pointillés et l'enfant le repasse du doigt.
+ * s'affiche en pointillés et l'enfant le repasse du doigt. Pour une lettre, le parent a aussi
+ * son son, trois mots et une question (#50).
  */
 export function GlyphRound({
   card,
@@ -111,6 +114,8 @@ export function GlyphRound({
 }) {
   const choices = useChoices(pool && glyphOption(card), pool?.map(glyphOption));
   const model = trace ? traceOf(card) : undefined;
+  // Le son de la lettre (#50) : majuscules, minuscules et attaché.
+  const sound = letterSoundOf(card);
   return (
     <>
       {model ? (
@@ -143,6 +148,7 @@ export function GlyphRound({
         )}
         {card.hint}
         <ReadAloud text={card.hint} />
+        {sound && <LetterSoundBlock sound={sound} />}
       </ParentBlock>
     </>
   );
