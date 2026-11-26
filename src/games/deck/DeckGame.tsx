@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRecording } from '../../audio/recording';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
@@ -13,6 +14,7 @@ import { DrawingGame } from '../dessin/DrawingGame';
 import { hintLadder, writtenHints } from '../hints';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
+import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings } from '../../data/settings';
 import { cardLevel, drawForLevel } from '../levels';
 import { drawForTurns } from '../turns';
@@ -149,14 +151,23 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
   const turns = useTurns(deck.id);
   // Tirage figé pour la partie, même si le jeu est modifié entre-temps ou la page rafraîchie.
   // Chacun son tour (#38) : chaque carte au niveau de l'enfant de la manche.
+  // Les cartes pas encore vues d'abord (#55).
   const items = useSavedDraw(
     deck.id,
     'draw',
     deck.items,
-    () =>
-      turns
-        ? drawForTurns(deck.items, turns.levels(Math.min(setting, deck.items.length)), cardLevel)
-        : drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel),
+    () => {
+      const seen = seenOf(deck.id, deck.items, cardKey);
+      return turns
+        ? drawForTurns(
+            deck.items,
+            turns.levels(Math.min(setting, deck.items.length)),
+            cardLevel,
+            undefined,
+            seen,
+          )
+        : drawForLevel(deck.items, setting, getSettings().gameLevel, cardLevel, undefined, seen);
+    },
     cardKey,
   );
   const { round, rounds, stars, finished, answer, team, teams } = useRounds(
@@ -164,11 +175,14 @@ function DeckSession({ deck, onReplay }: { deck: Deck; onReplay: () => void }) {
     items.length,
     turns?.order,
   );
+  const item = items[round - 1];
+  // Clés des cartes au lancement (le jeu créé peut changer pendant la partie).
+  const [keys] = useState(() => new Map(deck.items.map((it, i) => [it, cardKey(it, i)])));
+  useMarkSeen(deck.id, finished ? undefined : keys.get(item));
 
   if (finished)
     return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
-  const item = items[round - 1];
   return (
     <main className="screen">
       <GameHeader

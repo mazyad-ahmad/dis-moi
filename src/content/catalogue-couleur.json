@@ -2,7 +2,7 @@
   "format": "dis-moi/jeu",
   "version": 1,
   "id": "couleur",
-  "revision": 2,
+  "revision": 3,
   "kind": "image",
   "name": "Quelle couleur ?",
   "lang": "fr",
@@ -23,6 +23,17 @@
     {"id": "marron", "level": 3, "answer": "Marron", "color": "#7a4a24", "hint": "Comme le chocolat."},
     {"id": "noir", "level": 2, "answer": "Noir", "color": "#111111", "hint": "Comme la nuit."},
     {"id": "blanc", "level": 2, "answer": "Blanc", "color": "#ffffff", "hint": "Comme la neige."},
-    {"id": "gris", "level": 3, "answer": "Gris", "color": "#8c8c8c", "hint": "Comme un éléphant."}
+    {"id": "gris", "level": 3, "answer": "Gris", "color": "#8c8c8c", "hint": "Comme un éléphant."},
+    {"id": "bleu-ciel", "level": 3, "answer": "Bleu ciel", "color": "#87ceeb", "hint": "Un bleu tout clair, comme un ciel d’été."},
+    {"id": "bleu-marine", "level": 3, "answer": "Bleu marine", "color": "#1b2a5c", "hint": "Un bleu très foncé, comme un pull de marin."},
+    {"id": "turquoise", "level": 3, "answer": "Turquoise", "color": "#1fb5ad", "hint": "Entre le bleu et le vert, comme la mer des îles."},
+    {"id": "vert-clair", "level": 3, "answer": "Vert clair", "color": "#8fd16a", "hint": "Comme une jeune pousse au printemps."},
+    {"id": "vert-fonce", "level": 3, "answer": "Vert foncé", "color": "#1f5130", "hint": "Comme les aiguilles d’un sapin."},
+    {"id": "beige", "level": 3, "answer": "Beige", "color": "#d8c3a0", "hint": "Comme le sable de la plage."},
+    {"id": "bordeaux", "level": 3, "answer": "Bordeaux", "color": "#6d1a2b", "hint": "Un rouge très foncé, comme une cerise bien mûre."},
+    {"id": "fuchsia", "level": 3, "answer": "Fuchsia", "color": "#d81b8c", "hint": "Un rose très vif, qui se voit de loin."},
+    {"id": "lilas", "level": 3, "answer": "Lilas", "color": "#c3a6e0", "hint": "Un violet tout clair, comme la fleur du même nom."},
+    {"id": "corail", "level": 3, "answer": "Corail", "color": "#ff7f61", "hint": "Entre le rose et l’orange."},
+    {"id": "moutarde", "level": 3, "answer": "Moutarde", "color": "#c9a21a", "hint": "Un jaune un peu foncé, comme la sauce qui pique."}
   ]
 }

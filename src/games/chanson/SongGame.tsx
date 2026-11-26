@@ -11,6 +11,7 @@ import { useChoices } from '../choices/useChoices';
 import { songOption } from '../choices/choices';
 import { Replayable } from '../Replayable';
 import { useSavedDraw } from '../session';
+import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings } from '../../data/settings';
 import { drawForLevel } from '../levels';
 import { drawForTurns } from '../turns';
@@ -95,10 +96,20 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
     'chanson',
     'draw',
     SONGS,
-    () =>
-      turns
-        ? drawForTurns(SONGS, turns.levels(Math.min(wanted, SONGS.length)), (s) => s.level)
-        : drawForLevel(SONGS, wanted, getSettings().gameLevel, (s) => s.level),
+    () => {
+      // Les chansons pas encore entendues d'abord (#55).
+      const seen = seenOf('chanson', SONGS, (s) => s.id);
+      const levelOf = (s: (typeof SONGS)[number]) => s.level;
+      return turns
+        ? drawForTurns(
+            SONGS,
+            turns.levels(Math.min(wanted, SONGS.length)),
+            levelOf,
+            undefined,
+            seen,
+          )
+        : drawForLevel(SONGS, wanted, getSettings().gameLevel, levelOf, undefined, seen);
+    },
     (s) => s.id,
   );
   const { round, rounds, stars, finished, answer, team, teams } = useRounds(
@@ -106,11 +117,12 @@ function SongSession({ onReplay }: { onReplay: () => void }) {
     songs.length,
     turns?.order,
   );
+  const song = songs[round - 1];
+  useMarkSeen('chanson', finished ? undefined : song.id);
 
   if (finished)
     return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
-  const song = songs[round - 1];
   return (
     <main className="screen">
       <GameHeader

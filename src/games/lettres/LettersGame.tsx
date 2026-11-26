@@ -8,6 +8,7 @@ import { useChoices } from '../choices/useChoices';
 import { glyphOption } from '../choices/choices';
 import { Replayable } from '../Replayable';
 import { useSaved, useSavedDraw } from '../session';
+import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings } from '../../data/settings';
 import { orderByLevel } from '../levels';
 import { drawForTurns } from '../turns';
@@ -62,10 +63,13 @@ const idOf = (card: GlyphCard) => card.id;
  * Paquet mélangé, les glyphes du niveau de la partie d'abord (#40). Chacun son tour (#38) :
  * un glyphe par manche, au niveau de l'enfant de la manche.
  */
-const byLevel = (cards: GlyphCard[], turns: Turns | null, rounds: number) =>
-  turns
-    ? drawForTurns(cards, turns.levels(rounds), (c) => c.level)
-    : orderByLevel(cards, getSettings().gameLevel, (c) => c.level);
+const byLevel = (cards: GlyphCard[], turns: Turns | null, rounds: number) => {
+  // Les glyphes pas encore vus d'abord (#55).
+  const seen = seenOf(GAME, cards, idOf);
+  return turns
+    ? drawForTurns(cards, turns.levels(rounds), (c) => c.level, undefined, seen)
+    : orderByLevel(cards, getSettings().gameLevel, (c) => c.level, undefined, seen);
+};
 
 /** Partie retrouvée ; un paquet sans position (partie d'avant le #48) repart du début. */
 function restorePlace(saved: unknown): Place | undefined {
@@ -147,12 +151,14 @@ function LettersSession({ onReplay }: { onReplay: () => void }) {
   );
   const setMode = (m: Mode) => setPlace({ mode: m, pos });
 
-  if (finished)
-    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
-
   const deck = decks[mode];
   // Chacun son tour : la carte de la manche, au niveau de l'enfant, quel que soit le paquet.
   const card = deck[(turns ? round - 1 : pos[mode]) % deck.length];
+  useMarkSeen(GAME, finished ? undefined : card.id);
+
+  if (finished)
+    return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
+
   const next = (found: boolean) => {
     setPlace({ mode, pos: { ...pos, [mode]: pos[mode] + 1 } });
     answer(found);

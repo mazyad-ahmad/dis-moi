@@ -5,6 +5,7 @@ import type { Team } from '../games/teams';
 import type { TurnMode } from '../games/turns';
 import type { SpeechSpeed } from '../voice/speech';
 import { db, type Theme } from './db';
+import { restoreSeen, SEEN_KEY } from './seen';
 
 export interface Settings {
   theme: Theme;
@@ -101,6 +102,8 @@ export async function loadSettings(): Promise<Settings> {
   const next: Settings = { ...DEFAULT_SETTINGS };
   for (const { key, value } of rows)
     if (key in DEFAULT_SETTINGS) (next as unknown as Record<string, unknown>)[key] = value;
+  // Mémoire des cartes vues (#55), gardée dans la même table : remise à zéro avec elle.
+  restoreSeen(rows.find((r) => r.key === SEEN_KEY)?.value);
   emit(next);
   return next;
 }

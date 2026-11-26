@@ -275,6 +275,22 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 | **Mime ça**          | L'écran montre à l'enfant ce qu'il doit mimer (emoji + consigne), le parent devine.                                                        |
 | **Devinettes**       | Le parent lit l'énigme, la réponse est cachée derrière « Voir la réponse ».                                                                |
 
+Contenu (#55) : 18 animaux, 22 couleurs (dont des nuances pour les grands : bleu marine,
+turquoise, bordeaux…), 40 mimes et 50 devinettes, écrits pour l'appli.
+
+### Cartes déjà vues (#55)
+
+- L'appli retient, pour chaque jeu, quand chaque carte a été montrée pour la dernière fois
+  (jeux de base, catalogue et jeux créés). Une nouvelle partie sert d'abord les cartes **jamais
+  vues**, puis les plus anciennes : deux parties de suite n'ont aucune carte commune tant qu'il
+  en reste de nouvelles (4 parties de 10 manches sans doublon avec 40 mimes).
+- Avec un niveau : une carte neuve du niveau voisin passe avant une carte déjà vue du bon niveau ;
+  une carte à deux niveaux d'écart (Grands pour les Petits) reste toujours en dernier.
+- Une carte compte comme vue dès qu'elle est affichée. Le Grand Jeu et le Défi du jour gardent
+  leur propre tirage.
+- Mémoire gardée sur le téléphone (table des réglages, clé `seenCards`), hors sauvegarde ;
+  « Effacer toutes les données » l'efface.
+
 ### Le Grand Jeu (#41)
 
 - Tuile « Le Grand Jeu » en tête de la grille de l'accueil (`#/jeu/grand-jeu`).
@@ -416,6 +432,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   Petits, Moyens ou Grands. Il s'applique à la partie suivante.
 - Un tirage ne manque jamais de cartes : les cartes du niveau choisi passent d'abord, puis celles
   du niveau voisin (le plus facile d'abord à égale distance), puis les autres.
+  Les cartes jamais vues passent avant (voir « Cartes déjà vues »).
 - Chacun son tour : chaque carte est tirée au niveau de l'enfant dont c'est le tour (repli sur le
   niveau voisin comme ci-dessus) ; un enfant sans niveau suit le niveau de la partie.
 - Interface en **français uniquement** pour la v1.

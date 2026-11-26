@@ -144,6 +144,15 @@ describe('catalogue', () => {
         for (const item of g.items) expect(() => cleanItem(g.kind, item)).not.toThrow();
     }
   });
+  it('a de quoi jouer plusieurs parties sans revoir une carte (#55)', () => {
+    const count = (id: string) => findCatalogueGame(id)!.items.length;
+    expect(count('mime')).toBeGreaterThanOrEqual(40);
+    expect(count('devinette')).toBeGreaterThanOrEqual(50);
+    // Couleurs : des nuances pour les grands.
+    const colors = findCatalogueGame('couleur')!.items;
+    expect(colors.filter((c) => c.level === 3).length).toBeGreaterThanOrEqual(10);
+    expect(new Set(colors.map((c) => c.color)).size).toBe(colors.length);
+  });
   it('montre une image pour chaque carte image et un bruit pour chaque cri', () => {
     for (const g of CATALOGUE.filter((c) => c.kind === 'image'))
       for (const i of g.items) expect(i.color ?? i.emoji).toBeTruthy();

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
 import { playSound } from '../../audio/sounds';
+import { seenOf, useMarkSeen } from '../../data/seen';
 import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
@@ -40,12 +41,13 @@ function DrawingSession({
 }: DrawingProps & { onReplay: () => void }) {
   const turns = useTurns(gameId);
   // Tirage figé pour la partie (la banque peut venir d'une requête qui se met à jour),
-  // retrouvé après un rafraîchissement.
+  // retrouvé après un rafraîchissement. Les mots pas encore dessinés d'abord (#55).
+  const [seen] = useState(() => seenOf(gameId, bank, (w) => w));
   const words = useSavedDraw(
     gameId,
     'draw',
     bank,
-    () => orderByLevel(bank, getSettings().gameLevel, levelOf),
+    () => orderByLevel(bank, getSettings().gameLevel, levelOf, undefined, seen),
     (w) => w,
   );
   const setting = useRoundSetting();
@@ -67,7 +69,7 @@ function DrawingSession({
   const [shown, setShown] = useSaved<string[]>(
     gameId,
     'shown',
-    () => (turns ? [nextForLevel(words, turns.levelAt(1), levelOf, [])!] : []),
+    () => (turns ? [nextForLevel(words, turns.levelAt(1), levelOf, [], undefined, seen)!] : []),
     (saved) =>
       Array.isArray(saved) && saved.every((w) => words.includes(w as string))
         ? (saved as string[])
@@ -78,17 +80,23 @@ function DrawingSession({
     modeDrawSeconds(getSettings().drawSeconds, getSettings().gameMode),
   );
 
+  const word = turns && shown.length ? shown[shown.length - 1] : words[index % words.length];
+  useMarkSeen(gameId, finished ? undefined : word);
+
   if (finished)
     return <GameResult stars={stars} rounds={rounds} teams={teams} onReplay={onReplay} />;
 
   const heading = { round, rounds, stars, category, title, player: turns?.playerAt(round), team };
   if (turns && shown.length) {
     const show = (forRound: number) =>
-      setShown([...shown, nextForLevel(words, turns.levelAt(forRound), levelOf, shown)!]);
+      setShown([
+        ...shown,
+        nextForLevel(words, turns.levelAt(forRound), levelOf, shown, undefined, seen)!,
+      ]);
     return (
       <DrawingBoard
         heading={heading}
-        word={shown[shown.length - 1]}
+        word={word}
         turn={shown.length}
         seconds={seconds}
         onOtherWord={words.length > 1 ? () => show(round) : undefined}
@@ -103,7 +111,7 @@ function DrawingSession({
   return (
     <DrawingBoard
       heading={heading}
-      word={words[index % words.length]}
+      word={word}
       turn={index}
       seconds={seconds}
       onOtherWord={() => setIndex(index + 1)}
