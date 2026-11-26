@@ -321,6 +321,10 @@
   font-size: 15px;
   line-height: 20px;
 }
+.last-game a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .last-game svg {
   color: var(--sun);
   flex: none;
@@ -1162,4 +1166,67 @@ a.pill {
   flex: none;
   font: var(--text-h2);
   text-align: center;
+}
+
+/* ---------- Fin de séance ---------- */
+.seance-notice {
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  background: var(--meadow);
+  color: var(--ink);
+  font-weight: 600;
+}
+.seance-over {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-2);
+  border-radius: 20px;
+  background: var(--sky);
+}
+.seance-over p {
+  margin: 0;
+}
+.seance-over__moon {
+  font-size: 56px;
+  line-height: 1;
+}
+.seance-over__title {
+  margin: 0;
+  font: var(--text-h2);
+}
+.breathe {
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-3);
+}
+.breathe__ball {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-full);
+  background: var(--sky);
+  border: 4px solid var(--river);
+  animation: breathe 8s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+}
+.breathe__text {
+  margin: 0;
+  font-weight: 600;
+}
+.segmented--5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }

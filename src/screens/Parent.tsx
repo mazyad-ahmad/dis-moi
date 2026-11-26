@@ -9,6 +9,7 @@ import { IconBack } from '../components/icons';
 import { db, type Theme } from '../data/db';
 import { clearRecords } from '../data/history';
 import { lock, unlock } from '../data/parentLock';
+import { extend, resetSeance, SESSION_CHOICES, useSeance } from '../data/seance';
 import {
   DRAW_SECONDS_CHOICES,
   loadSettings,
@@ -92,6 +93,7 @@ async function eraseEverything() {
       db.settings.clear(),
     ]);
   });
+  resetSeance();
   await loadSettings();
 }
 
@@ -114,6 +116,32 @@ function Install() {
           Ajouter à l’écran d’accueil ».
         </p>
       )}
+    </section>
+  );
+}
+
+/** Séance terminée ou en cours : le parent peut accorder un peu de temps ou repartir à zéro. */
+function SeanceControls() {
+  const seance = useSeance();
+  if (!seance.active) return null;
+  return (
+    <section className="setting" aria-labelledby="seance-title">
+      <h2 id="seance-title" className="eyebrow">
+        Séance
+      </h2>
+      <p className="muted" role="status">
+        {seance.over
+          ? 'La séance est terminée.'
+          : seance.lastGame || seance.nextIsLast
+            ? 'La dernière partie est annoncée.'
+            : 'Une séance est en cours.'}
+      </p>
+      <Button variant="secondary" block onClick={() => extend()}>
+        Prolonger de 10 minutes
+      </Button>
+      <Button variant="ghost" block onClick={() => resetSeance()}>
+        Nouvelle séance
+      </Button>
     </section>
   );
 }
@@ -168,6 +196,20 @@ export function Parent() {
         className="segmented--2"
         hint="Une petite opération avant l’espace Parent, les joueurs et les jeux."
       />
+
+      <Choice
+        legend="Durée d’une séance"
+        name="session-minutes"
+        value={settings.sessionMinutes}
+        options={SESSION_CHOICES.map((n) => ({ value: n, label: n ? String(n) : 'Non' }))}
+        onChange={(v) => {
+          resetSeance();
+          void setSetting('sessionMinutes', v);
+        }}
+        className="segmented--5"
+        hint="En minutes, à partir du premier jeu. La partie en cours va jusqu’au bout, puis on range."
+      />
+      <SeanceControls />
 
       <Install />
 

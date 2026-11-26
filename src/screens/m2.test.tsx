@@ -263,7 +263,9 @@ describe('Espace parent', () => {
     expect(await db.players.count()).toBe(0);
     expect(await db.customGames.count()).toBe(0);
     expect(getSettings().rounds).toBe(10);
-    expect(screen.getByLabelText('10')).toBeChecked();
+    expect(
+      within(screen.getByRole('group', { name: 'Manches par partie' })).getByLabelText('10'),
+    ).toBeChecked();
   });
 
   it('ne fait rien si le parent annule', async () => {
