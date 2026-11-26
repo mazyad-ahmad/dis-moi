@@ -1,7 +1,14 @@
 import { CustomGameError } from './customGames';
-import { db, PLAYER_COLORS, type CustomGame, type GameRecord, type Player } from './db';
+import {
+  db,
+  PLAYER_ANIMALS,
+  PLAYER_COLORS,
+  type CustomGame,
+  type GameRecord,
+  type Player,
+} from './db';
 import { decodeGame, encodeGame, shareFile, uniqueGameName, type GameFile } from './gameFile';
-import { cleanName, MAX_PLAYERS, PlayerError } from './players';
+import { cleanName, isAnimal, isPlayerColor, MAX_PLAYERS, PlayerError } from './players';
 import {
   DEFAULT_SETTINGS,
   DRAW_SECONDS_CHOICES,
@@ -112,7 +119,7 @@ function fail(message = INVALID): never {
   throw new BackupError(message);
 }
 
-function readPlayer(raw: unknown): Player {
+function readPlayer(raw: unknown, index: number): Player {
   if (!isObject(raw) || !isId(raw.id) || typeof raw.name !== 'string') fail();
   let name: string;
   try {
@@ -120,10 +127,18 @@ function readPlayer(raw: unknown): Player {
   } catch {
     fail();
   }
-  const color = PLAYER_COLORS.includes(raw.color as Player['color'])
-    ? (raw.color as Player['color'])
-    : PLAYER_COLORS[0];
-  return { id: raw.id, name, color, createdAt: isNumber(raw.createdAt) ? raw.createdAt : 0 };
+  const color = isPlayerColor(raw.color) ? raw.color : PLAYER_COLORS[0];
+  // Sauvegarde d'avant les avatars (#39) : un animal par joueur, comme à la migration.
+  const animal = isAnimal(raw.animal)
+    ? raw.animal
+    : PLAYER_ANIMALS[index % PLAYER_ANIMALS.length].id;
+  return {
+    id: raw.id,
+    name,
+    color,
+    animal,
+    createdAt: isNumber(raw.createdAt) ? raw.createdAt : 0,
+  };
 }
 
 function readRecord(raw: unknown): GameRecord {
@@ -209,7 +224,7 @@ export function parseBackup(text: string): Backup {
   if (!isNumber(data.createdAt)) fail();
   if (![data.players, data.games, data.customGames].every(Array.isArray)) fail();
 
-  const players = (data.players as unknown[]).map(readPlayer);
+  const players = (data.players as unknown[]).map((p, i) => readPlayer(p, i));
   if (players.length > MAX_PLAYERS) fail();
   unique(players, (p) => p.id);
   const games = (data.games as unknown[]).map(readRecord);
@@ -269,6 +284,7 @@ async function mergeInto(backup: Backup) {
       const id = await db.players.add({
         name: p.name,
         color: p.color,
+        animal: p.animal,
         createdAt: p.createdAt,
       } as Player);
       byName.set(key(p.name), id);

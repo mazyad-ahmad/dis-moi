@@ -1,0 +1,173 @@
+/* Avatars des joueurs (#39) : un animal sur un fond doux, cerclé de sa couleur.
+   Le cercle contraste à 3:1 au moins avec le papier et la brume (avatar.test.ts). */
+
+:root {
+  --avatar-meadow: #cfe3c8;
+  --avatar-meadow-ring: #2f6b4f;
+  --avatar-sky: #dbe8ee;
+  --avatar-sky-ring: #2e6f8e;
+  --avatar-dawn: #f3e6cc;
+  --avatar-dawn-ring: #9a6516;
+  --avatar-rose: #f7d9e6;
+  --avatar-rose-ring: #a8386c;
+  --avatar-lilac: #e4dcf3;
+  --avatar-lilac-ring: #6a4ca6;
+  --avatar-ember: #f6d6cf;
+  --avatar-ember-ring: #a8432f;
+}
+
+:root[data-theme='night'] {
+  --avatar-meadow: #22402f;
+  --avatar-meadow-ring: #86c4a0;
+  --avatar-sky: #1f3642;
+  --avatar-sky-ring: #86bcd6;
+  --avatar-dawn: #3b311e;
+  --avatar-dawn-ring: #e3b45c;
+  --avatar-rose: #45283a;
+  --avatar-rose-ring: #f0a3c6;
+  --avatar-lilac: #33294a;
+  --avatar-lilac-ring: #bba6ee;
+  --avatar-ember: #4a2a24;
+  --avatar-ember-ring: #f0957f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --avatar-meadow: #22402f;
+    --avatar-meadow-ring: #86c4a0;
+    --avatar-sky: #1f3642;
+    --avatar-sky-ring: #86bcd6;
+    --avatar-dawn: #3b311e;
+    --avatar-dawn-ring: #e3b45c;
+    --avatar-rose: #45283a;
+    --avatar-rose-ring: #f0a3c6;
+    --avatar-lilac: #33294a;
+    --avatar-lilac-ring: #bba6ee;
+    --avatar-ember: #4a2a24;
+    --avatar-ember-ring: #f0957f;
+  }
+}
+
+.avatar {
+  --avatar-size: 40px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  flex: none;
+  border-radius: var(--radius-full);
+  border: 3px solid var(--avatar-ring);
+  background: var(--avatar-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--avatar-size) * 0.55);
+  line-height: 1;
+  user-select: none;
+}
+.avatar--sm {
+  --avatar-size: 30px;
+  border-width: 2px;
+}
+.avatar--lg {
+  --avatar-size: 72px;
+  border-width: 4px;
+}
+.avatar--meadow {
+  --avatar-bg: var(--avatar-meadow);
+  --avatar-ring: var(--avatar-meadow-ring);
+}
+.avatar--sky {
+  --avatar-bg: var(--avatar-sky);
+  --avatar-ring: var(--avatar-sky-ring);
+}
+.avatar--dawn {
+  --avatar-bg: var(--avatar-dawn);
+  --avatar-ring: var(--avatar-dawn-ring);
+}
+.avatar--rose {
+  --avatar-bg: var(--avatar-rose);
+  --avatar-ring: var(--avatar-rose-ring);
+}
+.avatar--lilac {
+  --avatar-bg: var(--avatar-lilac);
+  --avatar-ring: var(--avatar-lilac-ring);
+}
+.avatar--ember {
+  --avatar-bg: var(--avatar-ember);
+  --avatar-ring: var(--avatar-ember-ring);
+}
+
+/* Bouton qui ouvre le choix de l'avatar (gestion des joueurs). */
+.avatar-btn {
+  flex: none;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Accueil : les avatars des joueurs, en rang. */
+.avatar-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Choix de l'animal et de la couleur. */
+.avatar-picker__preview {
+  display: flex;
+  justify-content: center;
+}
+.avatar-picker__group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.avatar-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+.avatar-choice {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: var(--tap);
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  background: var(--mist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  cursor: pointer;
+}
+.avatar-choice input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.avatar-choice:has(input:checked) {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.avatar-choice:has(input:focus-visible) {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+}
+.avatar-choice__swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 3px solid var(--avatar-ring);
+  background: var(--avatar-bg);
+}

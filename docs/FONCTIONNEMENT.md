@@ -33,6 +33,22 @@
    là où elle en était : même carte, même manche, mêmes étoiles.
 6. Pas d'échec ni de compte à rebours punitif : le jeu reste un moment partagé.
 
+## Joueurs et avatars
+
+- Un joueur, c'est un **prénom** et un **avatar** : un animal (12 au choix : renard, ours, lapin,
+  chat, chien, lion, panda, grenouille, tortue, hibou, pingouin, koala) sur une couleur (6 au
+  choix : vert, bleu, orange, rose, violet, rouge). Un enfant qui ne lit pas encore reconnaît son
+  animal. 6 joueurs maximum.
+- À l'ajout, l'avatar proposé est le premier animal et la première couleur que personne n'a ; le
+  parent peut le choisir avant d'ajouter le prénom, puis le changer en touchant l'animal.
+- L'avatar apparaît dans la gestion des joueurs, sur l'accueil et dans l'historique des parties.
+  Son nom accessible est « prénom, animal » (« Léa, renard »).
+- Les animaux sont des emoji, dessinés par la police du téléphone : aucun fichier ajouté. Les
+  couleurs ont un cercle contrasté (3:1 au moins sur le fond, en jour et en nuit, vérifié par
+  `src/components/avatar.test.ts`).
+- Les joueurs enregistrés avant les avatars en reçoivent un à la mise à jour (animaux dans l'ordre
+  d'ajout, couleur gardée) ; une sauvegarde plus ancienne aussi, à la restauration.
+
 ## Étoiles (proposition)
 
 - Les étoiles sont **communes** à la famille (« gagnées ensemble »), pas un classement entre enfants.
@@ -248,7 +264,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 
 ## Écrans
 
-1. **Accueil** — titre « On joue à quoi ? », joueurs (prénoms, modifiables), grille des jeux,
+1. **Accueil** — titre « On joue à quoi ? », joueurs (avatars et prénoms, modifiables), grille des jeux,
    rappel de la dernière partie, barre de navigation _Jeux · Étoiles · Parent_.
 2. **Quelle chanson ?** — manche _n_ sur 10, compteur d'étoiles, lecteur d'extrait (10 s),
    bloc parent avec titre caché + indice, bouton « Voir la réponse ».

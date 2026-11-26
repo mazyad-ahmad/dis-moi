@@ -87,6 +87,25 @@ describe('Sauvegarde complète', () => {
     expect(await db.customGames.count()).toBe(1);
   });
 
+  it('garde les avatars, et en donne un aux joueurs d’une sauvegarde plus ancienne', async () => {
+    const id = await addPlayer('Léa', { animal: 'hibou', color: 'lilac' });
+    await addPlayer('Sami');
+    const text = await backupText();
+    await db.players.clear();
+    await restoreBackup(parseBackup(text), 'merge');
+    expect((await db.players.toArray()).find((p) => p.name === 'Léa')).toMatchObject({
+      animal: 'hibou',
+      color: 'lilac',
+    });
+
+    const data = JSON.parse(text);
+    for (const p of data.players) delete p.animal;
+    await restoreBackup(parseBackup(JSON.stringify(data)), 'replace');
+    const players = await db.players.toArray();
+    expect(players.map((p) => p.animal)).toEqual(['renard', 'ours']);
+    expect(players[0]).toMatchObject({ id, color: 'lilac' });
+  });
+
   describe('fichier refusé, sans rien modifier', () => {
     const cases: [string, (text: string) => string, RegExp][] = [
       ['pas du JSON', () => 'coucou', /pas une sauvegarde/],

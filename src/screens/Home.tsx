@@ -1,4 +1,5 @@
 import { href } from '../app/router';
+import { Avatar } from '../components/Avatar';
 import { Card } from '../components/Card';
 import { Logo } from '../components/Logo';
 import { Mascot } from '../components/Mascot';
@@ -56,7 +57,14 @@ export function Home() {
           {players === undefined ? (
             <strong>&nbsp;</strong>
           ) : players.length ? (
-            <strong>{players.map((p) => p.name).join(' · ')}</strong>
+            <>
+              <span className="avatar-row">
+                {players.map((p) => (
+                  <Avatar key={p.id} player={p} size="sm" />
+                ))}
+              </span>
+              <strong>{players.map((p) => p.name).join(' · ')}</strong>
+            </>
           ) : (
             <span className="muted">Ajoute le prénom des enfants</span>
           )}
