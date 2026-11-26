@@ -7,7 +7,14 @@ import {
   type GameRecord,
   type Player,
 } from './db';
-import { decodeGame, encodeGame, shareFile, uniqueGameName, type GameFile } from './gameFile';
+import {
+  decodeGame,
+  encodeGame,
+  shareFile,
+  uniqueGameName,
+  type GameFile,
+  type SharedGame,
+} from './gameFile';
 import { isLevel } from '../games/levels';
 import { isGameMode } from '../games/modes';
 import { TURN_MODES } from '../games/turns';
@@ -169,7 +176,7 @@ function readRecord(raw: unknown): GameRecord {
 
 function readCustomGame(raw: unknown): CustomGame {
   if (!isObject(raw) || !isId(raw.id)) fail();
-  let game: Pick<CustomGame, 'name' | 'kind' | 'items'>;
+  let game: SharedGame;
   try {
     game = decodeGame(raw);
   } catch (e) {

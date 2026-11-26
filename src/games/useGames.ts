@@ -1,16 +1,27 @@
 import { customDeck, customRouteId, useCustomGames } from '../data/customGames';
 import type { CustomGame } from '../data/db';
 import { setSetting, getSettings, useSettings } from '../data/settings';
+import { ALL_LEVELS, KIND_ACTIVITY } from './activities';
 import { CATALOGUE, findCatalogueGame } from './catalogue/catalogue';
 import { GRAND_ID, GRAND_NAME } from './grand/pool';
 import { DAILY_ID, DAILY_NAME } from './defi/daily';
 import { needsOf, suitsMode } from './modes';
 import { GAMES, type GameInfo } from './registry';
 
-function customInfo(g: CustomGame): GameInfo {
+/** Un jeu créé a le type choisi à la création (sinon celui de sa façon de jouer) et un âge facultatif. */
+export function customInfo(g: CustomGame): GameInfo {
   const d = customDeck(g);
   const { id, name, category, tint, mark } = d;
-  return { id, name, category, tint, mark, needs: needsOf(d.kind) };
+  return {
+    id,
+    name,
+    category,
+    tint,
+    mark,
+    needs: needsOf(d.kind),
+    activities: [g.activity ?? KIND_ACTIVITY[g.kind]],
+    levels: g.level ? [g.level] : [...ALL_LEVELS],
+  };
 }
 
 /** Jeux de l'accueil : jeux de base, jeux du catalogue ajoutés, puis jeux créés. */
@@ -18,13 +29,16 @@ export function useHomeGames(): GameInfo[] {
   const { catalogue } = useSettings();
   const custom = useCustomGames() ?? [];
   const added = CATALOGUE.filter((g) => catalogue.includes(g.id)).map(
-    ({ id, name, category, tint, mark, needs }): GameInfo => ({
+    ({ id, name, category, tint, mark, needs, activities, levels, skill }): GameInfo => ({
       id,
       name,
       category,
       tint,
       mark,
       needs,
+      activities,
+      levels,
+      skill,
     }),
   );
   return [...GAMES, ...added, ...custom.map(customInfo)];

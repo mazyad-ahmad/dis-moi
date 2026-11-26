@@ -863,6 +863,80 @@ a.pill {
   outline-offset: 2px;
 }
 
+/* ---------- Trouver le bon jeu (#137) ---------- */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.filter-group__label {
+  font: var(--text-label);
+  letter-spacing: 0.02em;
+}
+.filter-chip {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--hairline);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filter-chip[aria-pressed='true'] {
+  background: var(--river);
+  border-color: var(--river);
+  color: var(--on-river);
+  font-weight: 700;
+}
+.filter-chip:focus-visible {
+  outline: 3px solid var(--river);
+  outline-offset: 2px;
+}
+.filters__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+.filters__status p {
+  margin: 0;
+}
+.catalogue__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.catalogue__type {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.home-games {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.home-games__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.home-games__group h2 {
+  margin: 4px 0 0;
+}
+.home-games > .game-grid:empty {
+  display: none;
+}
+
 /* ---------- Éditeur de jeu ---------- */
 .item-form {
   background: var(--paper);

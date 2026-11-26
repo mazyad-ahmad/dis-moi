@@ -38,15 +38,16 @@ pack de jeu à cartes s'importe donc tel quel dans « Importer un jeu (fichier) 
 }
 ```
 
-| Champ du pack                      | Rôle                                                                            |
-| ---------------------------------- | ------------------------------------------------------------------------------- |
-| `format`, `version`                | `"dis-moi/jeu"` et `1`, comme un fichier de jeu                                 |
-| `id`                               | identifiant (minuscules, chiffres, tirets) ; fichier `<id>.json`                |
-| `revision`                         | révision du contenu, à augmenter à chaque changement de cartes                  |
-| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`         |
-| `name`, `lang`                     | nom (30 caractères max) et langue (`fr`)                                        |
-| `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS` |
-| `moves`                            | facultatif : `true` si le jeu fait bouger l'enfant (mime) ; écarté au Coucher   |
+| Champ du pack                      | Rôle                                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `format`, `version`                | `"dis-moi/jeu"` et `1`, comme un fichier de jeu                                                                                                                     |
+| `id`                               | identifiant (minuscules, chiffres, tirets) ; fichier `<id>.json`                                                                                                    |
+| `revision`                         | révision du contenu, à augmenter à chaque changement de cartes                                                                                                      |
+| `kind`                             | `sound`, `image`, `draw`, `question` (jeux à cartes), `melody`, `glyph`                                                                                             |
+| `name`, `lang`                     | nom (30 caractères max) et langue (`fr`)                                                                                                                            |
+| `category`, `desc`, `mark`, `tint` | jeux du catalogue : fichier `catalogue-<id>.json`, ordre dans `CATALOGUE_PACKS`                                                                                     |
+| `moves`                            | facultatif : `true` si le jeu fait bouger l'enfant (mime) ; écarté au Coucher                                                                                       |
+| `activities`, `skill`              | jeux du catalogue : types (`ecouter`, `parler`, `lire-compter`, `dessiner`, `bouger`, `calme` ; le premier range le jeu) et ce qu'il fait travailler, en une phrase |
 
 | Champ d'une carte | Rôle                                                                                                              |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------- |

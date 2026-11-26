@@ -10,6 +10,8 @@
   "desc": "Nomme la couleur montrée",
   "mark": "Aa",
   "tint": "dawn",
+  "activities": ["parler"],
+  "skill": "Apprend à nommer les couleurs",
   "items": [
     {"id": "rouge", "level": 1, "answer": "Rouge", "color": "#d7263d", "hint": "Comme une fraise."},
     {"id": "bleu", "level": 1, "answer": "Bleu", "color": "#1e5fbf", "hint": "Comme le ciel."},

@@ -10,6 +10,8 @@
   "desc": "Des énigmes à lire à voix haute",
   "mark": "?",
   "tint": "meadow",
+  "activities": ["parler", "ecouter"],
+  "skill": "Fait réfléchir et raisonner",
   "items": [
     {"id": "soleil", "level": 1, "text": "Je suis jaune, je brille dans le ciel et je chauffe. Qui suis-je ?", "answer": "Le soleil", "hint": "On me voit le jour.", "hints": ["Le soir, je me couche derrière les montagnes."]},
     {"id": "lapin", "level": 1, "text": "J’ai de longues oreilles et j’adore les carottes. Qui suis-je ?", "answer": "Le lapin", "hint": "Je fais des bonds.", "hints": ["Je vis dans un terrier."]},

@@ -10,6 +10,8 @@
   "desc": "Le parent imite le cri, l’enfant devine",
   "mark": "Cri",
   "tint": "meadow",
+  "activities": ["ecouter", "parler"],
+  "skill": "Enrichit le vocabulaire des animaux",
   "items": [
     {"id": "vache", "level": 1, "answer": "La vache", "emoji": "🐄", "text": "Meuh !", "hint": "Elle donne du lait."},
     {"id": "chat", "level": 1, "answer": "Le chat", "emoji": "🐈", "text": "Miaou !", "hint": "Il ronronne quand on le caresse."},

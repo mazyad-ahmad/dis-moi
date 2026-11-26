@@ -1,5 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import type { Activity } from '../games/activities';
 import type { Deck, DeckItem, DeckKind } from '../games/deck/types';
+import type { Level } from '../games/levels';
 import { db, type CustomGame } from './db';
 import { requestPersistentStorage } from './storage';
 
@@ -53,12 +55,30 @@ export function cleanItem(kind: DeckKind, raw: DeckItem): DeckItem {
   return item;
 }
 
-export async function createCustomGame(rawName: string, kind: DeckKind): Promise<number> {
+/** Type et âge choisis à la création (#137), tous deux facultatifs. */
+export interface CustomGameProfile {
+  activity?: Activity;
+  level?: Level | null;
+}
+
+export async function createCustomGame(
+  rawName: string,
+  kind: DeckKind,
+  { activity, level }: CustomGameProfile = {},
+): Promise<number> {
   const name = cleanGameName(rawName);
   const now = Date.now();
   const items: DeckItem[] = [];
   void requestPersistentStorage();
-  return db.customGames.add({ name, kind, items, createdAt: now, updatedAt: now } as CustomGame);
+  return db.customGames.add({
+    name,
+    kind,
+    items,
+    ...(activity && { activity }),
+    ...(level && { level }),
+    createdAt: now,
+    updatedAt: now,
+  } as CustomGame);
 }
 
 async function mutate(id: number, change: (g: CustomGame) => Partial<CustomGame>) {

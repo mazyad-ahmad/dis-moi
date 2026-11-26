@@ -1,4 +1,5 @@
 import { Dexie, type EntityTable } from 'dexie';
+import type { Activity } from '../games/activities';
 import type { DeckItem, DeckKind } from '../games/deck/types';
 import type { Level } from '../games/levels';
 import type { GameMode } from '../games/modes';
@@ -60,6 +61,10 @@ export interface CustomGame {
   name: string;
   kind: DeckKind;
   items: DeckItem[];
+  /** Type choisi à la création (#137) ; absent : d'après `kind`. */
+  activity?: Activity;
+  /** Âge facultatif (#137) : niveau visé ; absent : tous les âges. */
+  level?: Level;
   createdAt: number;
   updatedAt: number;
 }

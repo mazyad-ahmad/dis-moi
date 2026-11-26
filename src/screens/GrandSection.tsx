@@ -2,7 +2,7 @@ import { Card } from '../components/Card';
 import { useSettings } from '../data/settings';
 import { GRAND_NAME, MIN_GRAND_GAMES } from '../games/grand/pool';
 import { toggleGrandGame, useGrandPool } from '../games/grand/useGrand';
-import { TileIcon } from './Home';
+import { TileIcon } from './HomeGames';
 import '../games/grand/grand.css';
 
 /** Jeux mélangés dans le Grand Jeu (#41) : choix mémorisé, au moins deux jeux. */

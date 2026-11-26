@@ -1,6 +1,7 @@
 import { MAX_GAME_NAME, MAX_HINTS, MAX_TEXT } from '../data/customGames';
 import { GAME_FILE_FORMAT, GAME_FILE_VERSION } from '../data/gameFile';
 import { parseMelody } from '../games/chanson/melody';
+import { isActivity, type Activity } from '../games/activities';
 import { DECK_KINDS, type DeckItem, type DeckKind } from '../games/deck/types';
 import { isLevel, LEVELS, type Level } from '../games/levels';
 import type { Tint } from '../games/registry';
@@ -43,6 +44,9 @@ export interface Pack {
   tint?: Tint;
   /** Le jeu fait bouger l'enfant (mime…) : pas proposé en mode Coucher (#42). */
   moves?: boolean;
+  /** Jeux du catalogue (#137) : types du jeu (le premier le range) et ce qu'il fait travailler. */
+  activities?: Activity[];
+  skill?: string;
   items: PackItem[];
 }
 
@@ -64,6 +68,8 @@ const PACK_FIELDS = new Set([
   'mark',
   'tint',
   'moves',
+  'activities',
+  'skill',
   'items',
 ]);
 const ITEM_FIELDS = new Set([
@@ -177,7 +183,17 @@ export function validatePack(raw: unknown, file: string): Pack {
   if (pack.tint !== undefined && !TINTS.includes(pack.tint as Tint)) fail('teinte inconnue');
   if (pack.moves !== undefined && typeof pack.moves !== 'boolean')
     fail('« moves » : true ou false attendu');
-  for (const field of ['category', 'desc', 'mark'] as const)
+  if (
+    pack.activities !== undefined &&
+    !(
+      Array.isArray(pack.activities) &&
+      pack.activities.length > 0 &&
+      pack.activities.every(isActivity) &&
+      new Set(pack.activities).size === pack.activities.length
+    )
+  )
+    fail('« activities » : liste de types connus, sans doublon, attendue');
+  for (const field of ['category', 'desc', 'mark', 'skill'] as const)
     if (pack[field] !== undefined && !isText(pack[field])) fail(`« ${field} » vide ou trop long`);
   if (!Array.isArray(pack.items) || pack.items.length === 0) fail('aucune carte');
 

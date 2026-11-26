@@ -96,6 +96,30 @@
 - Le mode est noté dans la partie enregistrée (champ `mode`) et rappelé dans l'historique
   (« · Voiture »).
 
+## Trouver le bon jeu (#137)
+
+- Chaque jeu déclare un ou plusieurs **types** : Écouter, Parler, Lire et compter, Dessiner,
+  Bouger, Se calmer (le premier range le jeu), une **tranche d'âge** déduite des niveaux de ses
+  cartes (« Dès 3 ans », « 3-4 ans », « 3 à 6 ans ») et **ce qu'il fait travailler** en une
+  phrase. Jeux de base dans `src/games/registry.ts`, jeux du catalogue dans leur pack (champs
+  `activities` et `skill`), vérifiés par les tests. Règles communes, fonctions pures :
+  `src/games/activities.ts`.
+- **Ajouter un jeu** : le catalogue est groupé par type ; chaque jeu dit son âge et ce qu'il fait
+  travailler. Filtres **Type**, **Âge** et **Moment** (« Pour le coucher », « Pour la voiture » :
+  les jeux qui conviennent aux façons de jouer Coucher et Voiture, même règle `suitsMode`). Ils
+  se cumulent ; toucher de nouveau la pastille choisie la retire, « Retirer les filtres » les
+  retire tous. Pastilles « appuyée / non appuyée » dans des groupes nommés, nombre de jeux
+  annoncé au lecteur d'écran. Une **recherche** (sans accents ni majuscules) apparaît au-delà de
+  20 jeux du catalogue.
+- **Accueil** : aucun jeu n'est caché. En haut, les jeux qui conviennent aux joueurs du jour (le
+  niveau de la partie s'il est choisi, sinon les niveaux des joueurs actifs) ; les autres
+  viennent ensuite sous « Pour d'autres âges ». Jusqu'à 6 jeux, une seule grille comme avant ; à
+  partir de 7, un groupe par type. Sans joueur ni niveau renseigné, l'ordre ne change pas.
+- **Jeux créés** : à la création, « Ce que fait l'enfant » (proposé d'après la forme des cartes :
+  Son → Écouter, Image et Question → Parler, Mot à dessiner → Dessiner) et un **âge facultatif**
+  (Tous âges par défaut). Gardés dans le fichier de jeu partagé et la sauvegarde (champs
+  facultatifs `activity` et `level`, ignorés s'ils sont inconnus).
+
 ## Répondre en montrant (#123)
 
 - Pour un enfant qui ne parle pas encore bien, timide ou qui joue dans une autre langue : sur
@@ -371,8 +395,9 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 4. **Dessine ça** — minuteur, mot lu par le parent, zone de dessin au doigt,
    boutons Passer / C'est fini.
 5. **Ajouter un jeu** — catalogue (Quel animal ?, Quelle couleur ?, Mime ça, Devinettes)
-   avec bouton Ajouter / Ajouté, et formulaire « Créer mon propre jeu »
-   (nom, type : Son / Image / Mot à dessiner / Question, puis ajout des questions).
+   groupé par type, avec filtres (type, âge, moment) et bouton Ajouter / Ajouté, et formulaire
+   « Créer mon propre jeu » (nom, type : Son / Image / Mot à dessiner / Question, ce que fait
+   l'enfant, âge facultatif, puis ajout des questions).
 
 ## Principes produit
 

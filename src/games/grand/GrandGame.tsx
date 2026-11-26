@@ -4,7 +4,7 @@ import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
 import { Mascot } from '../../components/Mascot';
 import { getSettings } from '../../data/settings';
-import { TileIcon } from '../../screens/Home';
+import { TileIcon } from '../../screens/HomeGames';
 import { SongRound } from '../chanson/SongGame';
 import { SONGS } from '../chanson/songs';
 import { deckChoicePool } from '../choices/choices';

@@ -10,6 +10,8 @@
   "desc": "L’enfant mime, le parent devine",
   "mark": "Mi",
   "tint": "sky",
+  "activities": ["bouger"],
+  "skill": "Fait bouger et s’exprimer avec le corps",
   "moves": true,
   "items": [
     {"id": "lapin", "level": 1, "answer": "Le lapin", "emoji": "🐇", "text": "Saute comme un lapin"},

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { href, navigate } from '../app/router';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { FilterChips } from '../components/FilterChips';
 import { IconBack, IconImport } from '../components/icons';
 import {
   createCustomGame,
@@ -11,20 +12,38 @@ import {
 } from '../data/customGames';
 import { GAME_FILE_EXT, importGameFile } from '../data/gameFile';
 import { useSettings } from '../data/settings';
-import { CATALOGUE } from '../games/catalogue/catalogue';
+import {
+  ACTIVITIES,
+  activitiesOf,
+  activityName,
+  ageLabel,
+  filterGames,
+  groupByActivity,
+  KIND_ACTIVITY,
+  MOMENTS,
+  SEARCH_FROM,
+  type Activity,
+  type GameFilter,
+} from '../games/activities';
+import { CATALOGUE, type CatalogueGame } from '../games/catalogue/catalogue';
 import { DECK_KINDS, kindLabel, type DeckKind } from '../games/deck/types';
+import { LEVELS, type Level } from '../games/levels';
 import { GAMES } from '../games/registry';
 import { toggleCatalogueGame } from '../games/useGames';
 
 function CreateForm() {
   const [name, setName] = useState('');
   const [kind, setKind] = useState<DeckKind>('question');
+  // Type (#137) : celui de la façon de jouer tant que le parent n'en choisit pas un autre.
+  const [chosenActivity, setActivity] = useState<Activity | null>(null);
+  const activity = chosenActivity ?? KIND_ACTIVITY[kind];
+  const [level, setLevel] = useState<Level | null>(null);
   const [error, setError] = useState('');
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     try {
-      const id = await createCustomGame(name, kind);
+      const id = await createCustomGame(name, kind, { activity, level });
       navigate(`/creer/${id}`);
     } catch (err) {
       setError(err instanceof CustomGameError ? err.message : 'Impossible de créer le jeu.');
@@ -59,6 +78,40 @@ function CreateForm() {
               onChange={() => setKind(k.value)}
             />
             {k.label}
+          </label>
+        ))}
+      </div>
+      <span className="field-label" id="create-activity">
+        Ce que fait l’enfant
+      </span>
+      <div className="chips" role="radiogroup" aria-labelledby="create-activity">
+        {ACTIVITIES.map((a) => (
+          <label key={a.value} className="chip">
+            <input
+              type="radio"
+              name="activity"
+              value={a.value}
+              checked={activity === a.value}
+              onChange={() => setActivity(a.value)}
+            />
+            {a.name}
+          </label>
+        ))}
+      </div>
+      <span className="field-label" id="create-age">
+        Âge (facultatif)
+      </span>
+      <div className="chips" role="radiogroup" aria-labelledby="create-age">
+        {[{ value: null, ages: 'Tous âges' }, ...LEVELS].map((l) => (
+          <label key={l.value ?? 'tous'} className="chip">
+            <input
+              type="radio"
+              name="age"
+              value={l.value ?? ''}
+              checked={level === l.value}
+              onChange={() => setLevel(l.value)}
+            />
+            {l.ages}
           </label>
         ))}
       </div>
@@ -108,6 +161,113 @@ function ImportButton() {
   );
 }
 
+function CatalogueRow({ game: g, on }: { game: CatalogueGame; on: boolean }) {
+  return (
+    <li>
+      <Card className="catalogue-row">
+        <span className={`catalogue-row__mark tint--${g.tint}`} aria-hidden="true">
+          {g.mark}
+        </span>
+        <span className="catalogue-row__text">
+          <strong>{g.name}</strong>
+          <span className="muted">{g.desc}</span>
+          <span className="muted">
+            {ageLabel(g.levels)} · {g.skill}
+          </span>
+        </span>
+        <button
+          type="button"
+          className={`pill${on ? ' pill--on' : ''}`}
+          aria-pressed={on}
+          aria-label={`${on ? 'Retirer' : 'Ajouter'} ${g.name}`}
+          onClick={() => void toggleCatalogueGame(g.id)}
+        >
+          {on ? 'Ajouté' : 'Ajouter'}
+        </button>
+      </Card>
+    </li>
+  );
+}
+
+const AGE_OPTIONS = LEVELS.map((l) => ({ value: l.value, label: l.ages }));
+const MOMENT_OPTIONS = MOMENTS.map((m) => ({ value: m.value, label: m.name }));
+
+function countLabel(n: number): string {
+  return `${n} ${n > 1 ? 'jeux' : 'jeu'}`;
+}
+
+/**
+ * Catalogue (#137) : jeux groupés par type. Filtres par type, âge et moment, qui se cumulent et
+ * se retirent d'un geste ; une recherche quand la liste dépasse 20 jeux. Sans filtre : tout.
+ */
+function Catalogue({ added }: { added: string[] }) {
+  const [filter, setFilter] = useState<GameFilter>({});
+  const change = (patch: GameFilter) => setFilter((f) => ({ ...f, ...patch }));
+  const shown = filterGames(CATALOGUE, filter);
+  const filtered = !!(filter.activity || filter.level || filter.moment || filter.query?.trim());
+
+  return (
+    <section className="catalogue" aria-labelledby="catalogue-title">
+      <h2 id="catalogue-title" className="eyebrow">
+        Catalogue
+      </h2>
+      <div className="filters">
+        {CATALOGUE.length >= SEARCH_FROM && (
+          <label className="field-label">
+            Chercher un jeu
+            <input
+              type="search"
+              className="field"
+              autoComplete="off"
+              value={filter.query ?? ''}
+              onChange={(e) => change({ query: e.target.value })}
+            />
+          </label>
+        )}
+        <FilterChips
+          label="Type"
+          options={activitiesOf(CATALOGUE).map((a) => ({ value: a.value, label: a.name }))}
+          value={filter.activity}
+          onChange={(activity) => change({ activity })}
+        />
+        <FilterChips
+          label="Âge"
+          options={AGE_OPTIONS}
+          value={filter.level}
+          onChange={(level) => change({ level })}
+        />
+        <FilterChips
+          label="Moment"
+          options={MOMENT_OPTIONS}
+          value={filter.moment}
+          onChange={(moment) => change({ moment })}
+        />
+        <div className="filters__status">
+          <p className="muted" role="status">
+            {filtered ? `${countLabel(shown.length)} sur ${CATALOGUE.length}` : ''}
+          </p>
+          {filtered && (
+            <button type="button" className="link-btn" onClick={() => setFilter({})}>
+              Retirer les filtres
+            </button>
+          )}
+        </div>
+      </div>
+      {shown.length === 0 && <p className="muted">Aucun jeu du catalogue pour ces filtres.</p>}
+      {groupByActivity(shown).map((group) => (
+        <div key={group.activity} className="catalogue__group">
+          <h3 className="catalogue__type">{activityName(group.activity)}</h3>
+          <ul className="catalogue__list">
+            {group.games.map((g) => (
+              <CatalogueRow key={g.id} game={g} on={added.includes(g.id)} />
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  );
+}
+
 export function AddGame() {
   const { catalogue } = useSettings();
   const custom = useCustomGames();
@@ -124,38 +284,7 @@ export function AddGame() {
       </div>
       <h1 className="h1">Ajouter un jeu</h1>
 
-      <section className="catalogue" aria-labelledby="catalogue-title">
-        <h2 id="catalogue-title" className="eyebrow">
-          Catalogue
-        </h2>
-        <ul className="catalogue__list">
-          {CATALOGUE.map((g) => {
-            const on = catalogue.includes(g.id);
-            return (
-              <li key={g.id}>
-                <Card className="catalogue-row">
-                  <span className={`catalogue-row__mark tint--${g.tint}`} aria-hidden="true">
-                    {g.mark}
-                  </span>
-                  <span className="catalogue-row__text">
-                    <strong>{g.name}</strong>
-                    <span className="muted">{g.desc}</span>
-                  </span>
-                  <button
-                    type="button"
-                    className={`pill${on ? ' pill--on' : ''}`}
-                    aria-pressed={on}
-                    aria-label={`${on ? 'Retirer' : 'Ajouter'} ${g.name}`}
-                    onClick={() => void toggleCatalogueGame(g.id)}
-                  >
-                    {on ? 'Ajouté' : 'Ajouter'}
-                  </button>
-                </Card>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      <Catalogue added={catalogue} />
 
       {custom && custom.length > 0 && (
         <section className="catalogue" aria-labelledby="mine-title">
@@ -169,7 +298,8 @@ export function AddGame() {
                   <span className="catalogue-row__text">
                     <strong>{g.name}</strong>
                     <span className="muted">
-                      {kindLabel(g.kind)} · {g.items.length}{' '}
+                      {kindLabel(g.kind)} · {activityName(g.activity ?? KIND_ACTIVITY[g.kind])}
+                      {g.level && ` · ${ageLabel([g.level])}`} · {g.items.length}{' '}
                       {g.items.length > 1 ? 'cartes' : 'carte'}
                     </span>
                   </span>

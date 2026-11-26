@@ -6,31 +6,17 @@ import { ModeChoice } from '../components/ModeChoice';
 import { Logo } from '../components/Logo';
 import { Mascot } from '../components/Mascot';
 import { useNightTheme } from '../components/useNightTheme';
-import { IconMusic, IconPencil, IconPerson, IconPlus } from '../components/icons';
+import { IconPerson } from '../components/icons';
 import { activePlayers, setPlayerActive, usePlayers } from '../data/players';
 import { setSetting, useSettings } from '../data/settings';
 import { useSeance } from '../data/seance';
 import { AnswerModeChoice } from '../games/choices/AnswerModeChoice';
-import { GrandTile } from '../games/grand/GrandTile';
-import type { GameInfo } from '../games/registry';
 import { MIN_TURN_PLAYERS, type TurnMode } from '../games/turns';
 import { usePlayableGames } from '../games/useGames';
 import { DailyCard } from './DailyCard';
+import { HomeGames } from './HomeGames';
 import { LastGame } from './LastGame';
 import { SeanceOverCard } from './SeanceOver';
-
-const ICON_COLOR = { music: 'var(--forest)', letters: 'var(--river)', pencil: 'var(--sun)' };
-
-export function TileIcon({ game: { icon, mark } }: { game: GameInfo }) {
-  return (
-    <span className="game-tile__icon" style={icon && { color: ICON_COLOR[icon] }}>
-      {icon === 'music' && <IconMusic size={26} />}
-      {icon === 'letters' && 'A1'}
-      {icon === 'pencil' && <IconPencil size={26} />}
-      {!icon && mark}
-    </span>
-  );
-}
 
 const TURN_CHOICES: { value: TurnMode; label: string }[] = [
   { value: 'team', label: 'En équipe' },
@@ -151,31 +137,7 @@ export function Home() {
         <ModeChoice value={gameMode} onChange={(mode) => void setSetting('gameMode', mode)} />
       )}
 
-      {over ? (
-        <SeanceOverCard />
-      ) : (
-        <div className="game-grid">
-          <GrandTile />
-          {games.map((g) => (
-            <a key={g.id} href={href(`/jeu/${g.id}`)} className={`game-tile game-tile--${g.tint}`}>
-              <TileIcon game={g} />
-              <span>
-                <span className="game-tile__name">{g.name}</span>
-                <span className="game-tile__category">{g.category}</span>
-              </span>
-            </a>
-          ))}
-          <a href={href('/ajouter')} className="game-tile game-tile--add">
-            <span className="game-tile__icon">
-              <IconPlus />
-            </span>
-            <span>
-              <span className="game-tile__name">Ajouter un jeu</span>
-              <span className="game-tile__category">Catalogue ou créer</span>
-            </span>
-          </a>
-        </div>
-      )}
+      {over ? <SeanceOverCard /> : <HomeGames games={games} />}
 
       <div className="spacer" />
 

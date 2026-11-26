@@ -81,6 +81,9 @@ describe('un pack invalide nomme la carte fautive', () => {
       'carte 1 (« Rouge ») : couleur invalide',
     ],
     ['type inconnu', { ...animals, kind: 'video' }, 'type (« kind ») inconnu'],
+    ['type de jeu inconnu', { ...animals, activities: ['nager'] }, '« activities »'],
+    ['type de jeu en double', { ...animals, activities: ['parler', 'parler'] }, '« activities »'],
+    ['aucun type de jeu', { ...animals, activities: [] }, '« activities »'],
     ['format', { ...animals, format: 'autre' }, '« format » doit valoir'],
   ];
   it.each(cases)('%s', (_, pack, message) => {
