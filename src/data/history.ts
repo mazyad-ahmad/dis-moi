@@ -26,9 +26,16 @@ export function useRecords(): GameRecord[] | undefined {
   return useLiveQuery(listRecords, []);
 }
 
-/** Remise à zéro des étoiles : efface l'historique des parties. */
+/**
+ * Remise à zéro des étoiles : efface l'historique des parties.
+ * Suppression partie par partie, dans une transaction, plutôt que `clear()` (effacement « de
+ * plage », traité à part par le cache des requêtes en direct) : chaque requête en direct
+ * (onglet Étoiles, accueil) apprend quelles parties sont effacées et relit la base (#143).
+ */
 export async function clearRecords(): Promise<void> {
-  await db.games.clear();
+  await db.transaction('rw', db.games, async () => {
+    await db.games.bulkDelete(await db.games.toCollection().primaryKeys());
+  });
 }
 
 export function totalStars(records: GameRecord[]): number {

@@ -5,21 +5,27 @@ import { db } from '../data/db';
 import { getSettings, loadSettings, setSetting } from '../data/settings';
 import { MelodyPlayer } from '../games/chanson/player';
 import { DeckGame } from '../games/deck/DeckGame';
+import { customDeck } from '../data/customGames';
 import {
   contexts,
   decoded,
+  elementPlayable,
+  FakeAudioElement,
   FakeBuffer,
   FakeContext,
   FakeGain,
   FakeShaper,
+  objectUrls,
   pathToSpeaker,
   resetFakeAudio,
+  stubMediaElement,
 } from '../test/fakeAudio';
 import {
   audioBusy,
   CEILING,
   ceilingCurve,
   FADE_IN,
+  releaseAudioContext,
   resetAudioForTests,
   VOLUME_GAIN,
 } from './context';
@@ -31,7 +37,7 @@ import {
   TARGET_PEAK,
   TARGET_RMS,
 } from './level';
-import { playRecording } from './recording';
+import { playRecording, UNMEASURED_GAIN } from './recording';
 import { playSound, UI_SOUNDS, type UiSound } from './sounds';
 
 const RATE = 8000;
@@ -61,10 +67,14 @@ beforeEach(async () => {
   resetFakeAudio();
   resetAudioForTests();
   vi.stubGlobal('AudioContext', FakeContext);
+  stubMediaElement();
   await Promise.all([db.players.clear(), db.settings.clear(), db.games.clear()]);
   await loadSettings();
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe('plafond', () => {
   it('aucune amplitude ne dépasse le plafond, quelle que soit l’entrée', () => {
@@ -215,6 +225,101 @@ describe('enregistrements du parent', () => {
     expect(target(source.outputs[0] as FakeGain)).toBeLessThan(0.2);
     act(() => source.end());
     expect(await screen.findByRole('button', { name: 'Écouter le son' })).toBeInTheDocument();
+  });
+});
+
+describe('son d’une carte créée sur Android (#141)', () => {
+  /** Enregistrement que Web Audio ne sait pas décoder mais que l'élément <audio> lit. */
+  function phoneRecording(name: string) {
+    elementPlayable.add(name);
+    return new Blob([name], { type: 'audio/webm;codecs=opus' });
+  }
+
+  it('décodage refusé : lu par un élément <audio>, par la sortie commune', async () => {
+    const playback = await playRecording(phoneRecording('vroum'));
+    expect(playback).not.toBeNull();
+    const [el] = FakeAudioElement.created;
+    expect(el.paused).toBe(false);
+    // Branché sur la sortie commune (plafond puis volume), au gain d'un son mis à niveau.
+    const [node] = ctx().mediaSources;
+    expect(node.element).toBe(el);
+    const env = node.outputs[0] as FakeGain;
+    expect(target(env)).toBe(UNMEASURED_GAIN);
+    expect(UNMEASURED_GAIN).toBe(TARGET_PEAK);
+    expect(fade(env)).toBeGreaterThanOrEqual(FADE_IN);
+    const path = pathToSpeaker(ctx(), node);
+    expect(path.some((n) => n instanceof FakeShaper)).toBe(true);
+    expect(path.at(-1)).toBe(ctx().destination);
+    expect(audioBusy()).toBe(true);
+    // L'URL du son reste valide pendant toute la lecture, libérée à la fin.
+    expect(objectUrls.size).toBe(1);
+    el.end();
+    await playback!.ended;
+    expect(objectUrls.size).toBe(0);
+    expect(audioBusy()).toBe(false);
+  });
+
+  it('un échec passager n’empêche pas la lecture suivante', async () => {
+    const audio = new Blob(['tut']);
+    await expect(playRecording(audio)).resolves.toBeNull();
+    decoded.set('tut', new FakeBuffer([sine(0.3)], RATE));
+    await expect(playRecording(audio)).resolves.not.toBeNull();
+    expect(ctx().sources).toHaveLength(1);
+  });
+
+  it('après le micro, le son repart d’un contexte neuf', async () => {
+    await playRecording(recording('avant', 0.5));
+    releaseAudioContext();
+    expect(contexts[0].state).toBe('closed');
+    await playRecording(recording('après', 0.5));
+    expect(contexts).toHaveLength(2);
+    expect(contexts[1].sources[0].started).toBe(true);
+  });
+
+  it('jeu créé : le son de chaque manche est joué', async () => {
+    const user = userEvent.setup();
+    const game = {
+      id: 7,
+      name: 'Bruits de la maison',
+      kind: 'sound' as const,
+      createdAt: 0,
+      updatedAt: 0,
+      items: [
+        { answer: 'La voiture', audio: phoneRecording('vroum') },
+        { answer: 'Le chat', audio: recording('miaou', 0.5) },
+      ],
+    };
+    render(<DeckGame deck={customDeck(game)} />);
+    for (let round = 0; round < 2; round++) {
+      await user.click(await screen.findByRole('button', { name: 'Écouter le son' }));
+      await waitFor(() => expect(audioBusy()).toBe(true));
+      await user.click(screen.getByRole('button', { name: 'Pause' }));
+      expect(audioBusy()).toBe(false);
+      await user.click(screen.getByRole('button', { name: /Trouvé/ }));
+    }
+    // Un son de chaque sorte : décodé par Web Audio, et lu par l'élément <audio>.
+    expect(contexts.flatMap((c) => c.sources.filter((s) => s.started))).toHaveLength(1);
+    expect(FakeAudioElement.created).toHaveLength(1);
+  });
+
+  it('son illisible : le parent voit un message et peut réessayer', async () => {
+    const user = userEvent.setup();
+    render(
+      <DeckGame
+        deck={{
+          id: 'perso-2',
+          name: 'Quel bruit ?',
+          category: 'Son',
+          kind: 'sound',
+          tint: 'dawn',
+          mark: 'QB',
+          items: [{ answer: 'Le chien', audio: new Blob(['abîmé']) }],
+        }}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: 'Écouter le son' }));
+    expect(await screen.findByText(/Le son ne s’est pas lancé/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Écouter le son' })).toBeEnabled();
   });
 });
 

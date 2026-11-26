@@ -26,9 +26,15 @@ body,
   height: 100%;
 }
 
+html,
+body {
+  /* La page ne défile jamais : seul .screen défile, la barre du bas reste en bas (#145). */
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   background: var(--mist);
-  overscroll-behavior: none;
 }
 
 button,

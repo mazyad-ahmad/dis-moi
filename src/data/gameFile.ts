@@ -44,7 +44,10 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
 /** Relit un média du fichier ; refuse tout ce qui n'est pas une image ou un son. */
 function dataUrlToBlob(value: unknown, family: 'image' | 'audio'): Blob | undefined {
   if (value === undefined) return undefined;
-  const match = typeof value === 'string' && /^data:([\w.+-]+\/[\w.+-]+);base64,(.*)$/s.exec(value);
+  // Le type peut porter des paramètres : « audio/webm;codecs=opus » des enregistrements Android.
+  const match =
+    typeof value === 'string' &&
+    /^data:([\w.+-]+\/[\w.+-]+(?:;[\w.+-]+=[\w.+-]+)*);base64,(.*)$/s.exec(value);
   if (!match || !match[1].startsWith(`${family}/`)) throw new CustomGameError(INVALID);
   let binary: string;
   try {

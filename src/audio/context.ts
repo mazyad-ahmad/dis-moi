@@ -98,6 +98,19 @@ export async function runningAudioContext(): Promise<AudioContext | null> {
   return c;
 }
 
+/**
+ * Ferme le contexte partagé ; le prochain son en crée un neuf. Appelé après un enregistrement
+ * au micro (#141) : sur Android, un contexte ouvert pendant que le micro tourne peut rester
+ * routé comme un appel (écouteur, volume très bas) et les sons suivants ne s'entendent plus.
+ */
+export function releaseAudioContext(): void {
+  const old = ctx;
+  ctx = null;
+  output = null;
+  volume = null;
+  if (old && old.state !== 'closed') void old.close().catch(() => {});
+}
+
 /** Sources qui jouent un son « important » (mélodie, son enregistré) : rien ne doit les couvrir. */
 const sources = new Set<() => boolean>();
 

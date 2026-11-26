@@ -17,7 +17,7 @@ import { useObjectUrl } from './useObjectUrl';
 
 /** Lecture d'un son enregistré par le parent, ramené au niveau commun de l'appli. */
 function RecordedSound({ audio }: { audio: Blob }) {
-  const { playing, toggle } = useRecording(audio);
+  const { playing, failed, toggle } = useRecording(audio);
   return (
     <>
       <button
@@ -28,7 +28,11 @@ function RecordedSound({ audio }: { audio: Blob }) {
       >
         {playing ? <IconPause size={40} /> : <IconPlay size={40} />}
       </button>
-      <span role="status">Fais écouter le son à l’enfant</span>
+      <span role="status">
+        {failed
+          ? 'Le son ne s’est pas lancé. Touche encore le bouton, ou fais le bruit toi-même.'
+          : 'Fais écouter le son à l’enfant'}
+      </span>
     </>
   );
 }
