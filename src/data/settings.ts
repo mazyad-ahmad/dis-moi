@@ -20,6 +20,8 @@ export interface Settings {
   vibrations: boolean;
   /** Bouton « Lire » des jeux (#35) : vitesse de lecture, ou « off » pour le masquer. */
   readAloud: ReadAloud;
+  /** Sons d'interface (étoile, passer, minuteur, fin de partie) (#30). */
+  sounds: boolean;
 }
 
 export type ReadAloud = 'off' | SpeechSpeed;
@@ -35,6 +37,7 @@ export const DEFAULT_SETTINGS: Settings = {
   sessionMinutes: 0,
   vibrations: true,
   readAloud: 'normal',
+  sounds: true,
 };
 
 export const ROUND_CHOICES = [5, 10, 15] as const;

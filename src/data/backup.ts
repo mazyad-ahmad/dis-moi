@@ -175,6 +175,7 @@ function readSettings(raw: unknown): Partial<Settings> {
   if (typeof raw.vibrations === 'boolean') out.vibrations = raw.vibrations;
   if ((READ_ALOUD_CHOICES as readonly unknown[]).includes(raw.readAloud))
     out.readAloud = raw.readAloud as Settings['readAloud'];
+  if (typeof raw.sounds === 'boolean') out.sounds = raw.sounds;
   return out;
 }
 

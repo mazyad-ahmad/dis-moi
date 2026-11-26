@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { playSound } from '../../audio/sounds';
 import { getSettings } from '../../data/settings';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
@@ -70,6 +71,10 @@ function DrawingSession({
   useEffect(() => {
     if (timeUp && !finished) vibrate('timeUp');
   }, [timeUp, finished]);
+  // Fin du minuteur : une clochette douce, le parent valide le dessin.
+  useEffect(() => {
+    if (timeUp) void playSound('timer');
+  }, [timeUp]);
 
   if (finished) return <GameResult stars={stars} rounds={rounds} onReplay={onReplay} />;
 

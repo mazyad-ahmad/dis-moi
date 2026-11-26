@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { registerAudioSource } from '../../audio/context';
 import { AnswerBar } from '../../components/AnswerBar';
 import { GameHeader } from '../../components/GameHeader';
 import { GameResult } from '../../components/GameResult';
@@ -20,6 +21,15 @@ function RecordedSound({ audio }: { audio: Blob }) {
   const el = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   useEffect(() => () => el.current?.pause(), []);
+  // Pendant l'écoute, aucun son d'interface ne couvre l'enregistrement.
+  useEffect(
+    () =>
+      registerAudioSource(() => {
+        const a = el.current;
+        return !!a && !a.paused && !a.ended;
+      }),
+    [],
+  );
 
   const toggle = () => {
     const a = el.current;

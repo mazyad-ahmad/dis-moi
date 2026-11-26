@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
-import { startRecord, updateRecord } from '../data/history';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { answerSound, playSound } from '../audio/sounds';
+import { listRecords, REWARDS, startRecord, totalStars, updateRecord } from '../data/history';
 import { beginGame, endGame, touch } from '../data/seance';
 import { DEFAULT_SETTINGS, getSettings } from '../data/settings';
 import { vibrate } from '../pwa/haptics';
@@ -66,11 +67,28 @@ export function useRounds(gameId: string, wanted?: number): Rounds {
   const record = useRef<Promise<number> | null>(resumed);
   useClearSavedOnLeave(gameId);
 
+  // Étoiles des autres parties, pour reconnaître une récompense débloquée (son « récompense »).
+  const others = useRef<number | null>(null);
+  const [starsAtStart] = useState(stars);
+  useEffect(() => {
+    let live = true;
+    void listRecords()
+      .then((r) => {
+        if (live) others.current = totalStars(r) - starsAtStart;
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [starsAtStart]);
+
   const answer = useCallback(
     (found: boolean) => {
       if (played >= rounds) return;
       const data = { played: played + 1, stars: stars + (found ? 1 : 0) };
       setProgress(data);
+      const total = others.current === null ? null : others.current + data.stars;
+      void playSound(answerSound(found, data.played >= rounds, total, REWARDS));
       if (data.played >= rounds) {
         clearSaved(gameId);
         endGame();

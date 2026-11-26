@@ -56,6 +56,10 @@ function ReadAloudSetting() {
     />
   );
 }
+const SOUND_CHOICES = [
+  { value: 'on', label: 'Activés' },
+  { value: 'off', label: 'Désactivés' },
+] as const;
 
 const LOCK_CHOICES = [
   { value: 'off', label: 'Désactivé' },
@@ -228,6 +232,16 @@ export function Parent() {
         onChange={(v) => void setSetting('vibrations', v === 'on')}
         className="segmented--2"
         hint="Une petite vibration sur « Trouvé », à la fin du minuteur et de la partie, sur les téléphones qui le permettent. Jamais pendant le dessin."
+      />
+
+      <Choice
+        legend="Sons"
+        name="sounds"
+        value={settings.sounds ? 'on' : 'off'}
+        options={SOUND_CHOICES}
+        onChange={(v) => void setSetting('sounds', v === 'on')}
+        className="segmented--2"
+        hint="Petits sons quand on gagne une étoile, qu’on passe ou que la partie se termine."
       />
 
       <Choice

@@ -126,6 +126,18 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
   Dans « Dessine ça », le mot est gardé ; le minuteur et le dessin repartent à zéro.
 - Données gardées : jeu, date, manches jouées, étoiles, joueurs présents (sur l'appareil uniquement).
 
+## Sons d'interface
+
+- Petits sons **synthétisés** dans l'appli (Web Audio), comme les mélodies : aucun fichier audio,
+  donc aucun droit à gérer, et ils marchent hors ligne.
+- **Trouvé** : un petit arpège montant ; **Passer / Pas encore** : une seule note douce, jamais un
+  son d'échec ; **fin du minuteur** de Dessine ça : deux tintements ; **fin de partie** : un arpège
+  complet ; **récompense débloquée** (1, 10, 25… étoiles) : un arpège plus long.
+- Un seul contexte audio pour toute l'appli (`src/audio/context.ts`), relancé au réveil du
+  téléphone. Un son d'interface ne couvre jamais une mélodie, un son enregistré ou une lecture à
+  voix haute en cours : il n'est alors pas joué.
+- Réglage **Sons** (activés par défaut) dans l'espace Parent ; coupés, aucun son d'interface.
+
 ## Public visé (proposition)
 
 - **3 à 7 ans**. Niveaux de difficulté reportés après la v1.
@@ -134,7 +146,7 @@ cartes : réponse, indice, et selon le jeu une question, un bruit, un emoji ou u
 ## Espace Parent (proposition)
 
 - Joueurs, jeux, thème (auto / jour / nuit), **manches par partie** (5, 10 ou 15),
-  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **vibrations**, remise à zéro des étoiles,
+  **minuteur de Dessine ça** (30 s, 1 min, 1 min 30), **sons** (activés / désactivés), **vibrations**, remise à zéro des étoiles,
   effacement de toutes les données. Chaque action destructive demande confirmation.
 - Les réglages s'appliquent à la partie suivante.
 - **Vibrations** (activées par défaut), sur les téléphones qui le permettent (Android) :

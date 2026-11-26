@@ -59,6 +59,7 @@ La CI GitHub Actions lance lint, format, types, tests, build et e2e à chaque PR
 ```
 src/
   app/          routeur (hash) et composition des écrans
+  audio/        contexte audio partagé et sons d'interface synthétisés
   components/   composants du design system (Button, Card, ParentBlock, GameHeader, BottomNav…)
   data/         base locale IndexedDB (Dexie) : joueurs, réglages, parties, jeux créés, médias
   pwa/          service worker (enregistrement, mise à jour), installation, Wake Lock
